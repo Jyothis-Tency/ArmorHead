@@ -1,0 +1,40 @@
+<%- include("../partials/userHeader") %>
+
+<main>
+  <!-- breadcrumb-area-start -->
+  <section class="breadcrumb-area" data-background="/user-assets/img/bg/page-title.png">
+    <div class="container">
+      <div class="row">
+        <div class="col-xl-12">
+          <div class="breadcrumb-text text-center">
+            <h1>Verify OTP</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- breadcrumb-area-end -->
+
+  <!-- OTP Verification Area -->
+  <section class="otp-verification-area pt-100 pb-100">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+          <div class="basic-login">
+            <h3 class="text-center mb-60">Enter OTP to Verify</h3>
+            <form action="/verifyPassOtp" method="post">
+              <label for="otp">Enter OTP <span>**</span></label>
+              <input id="otp" name="otp" type="text" placeholder="Enter OTP..." />
+
+              <button class="btn theme-btn-2 w-100">Verify OTP</button>
+
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- OTP Verification Area End -->
+</main>
+
+<%- include("../partials/userFooter") %>
