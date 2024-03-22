@@ -1,0 +1,105 @@
+<%- include("../partials/userHeader") %>
+<main>
+  <!-- breadcrumb-area-start -->
+  <section
+    class="breadcrumb-area"
+    data-background="/user-assets/img/bg/page-title.png"
+  >
+    <div class="container">
+      <div class="row">
+        <div class="col-xl-12">
+          <div class="breadcrumb-text text-center">
+            <h1>Sign Up</h1>
+            <ul class="breadcrumb-menu">
+              <li><a href="index.html">home</a></li>
+              <li><span>Login</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- breadcrumb-area-end -->
+
+  <!-- login Area Strat-->
+  <section class="login-area pt-100 pb-100">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+          <div class="basic-login">
+            <h3 class="text-center mb-60">Signup From Here</h3>
+            <form
+              action="/signup"
+              method="post"
+              autocomplete="off"
+              onsubmit="return validateForm()"
+            >
+              <label for="username">User Name <span>**</span></label>
+              <input
+                id="name"
+                name="username"
+                type="text"
+                placeholder="Enter First Name and Last Name..."
+                oninput="validateName()"
+              />
+              <span id="name-error" class="error"></span>
+              <!-- Error message container -->
+
+              <label for="email-id">Email Address <span>**</span></label>
+              <input
+                id="email-id"
+                name="email"
+                type="email"
+                placeholder="Enter Email address..."
+                oninput="validateEmail()"
+              />
+              <span id="email-error" class="error"></span>
+              <!-- Error message container -->
+
+              <label for="phone">Phone Number <span>**</span></label>
+              <input
+                id="phone"
+                name="phone"
+                type="text"
+                placeholder="Enter Phone number..."
+                oninput="validatePhone()"
+              />
+              <span id="phone-error" class="error"></span>
+              <!-- Error message container -->
+
+              <label for="pass">Password <span>**</span></label>
+              <input
+                id="pass"
+                name="password"
+                type="password"
+                placeholder="Enter password..."
+                oninput="validatePassword()"
+              />
+              <span id="password-error" class="error"></span>
+              <!-- Error message container -->
+
+              <label for="repass">Re-enter Password <span>**</span></label>
+              <input
+                id="repass"
+                name="repassword"
+                type="password"
+                placeholder="Re-enter password..."
+                oninput="validateRePassword()"
+              />
+              <span id="repassword-error" class="error"></span>
+              <!-- Error message container -->
+
+              <div class="mt-10"></div>
+              <button class="btn theme-btn-2 w-100">Register Now</button>
+              <div class="or-divide"><span>or</span></div>
+              <button class="btn theme-btn w-100" onclick="window.location.href='/login'">Login Now</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- login Area End-->
+
+  <%- include("../partials/userFooter") %>
+</main>
