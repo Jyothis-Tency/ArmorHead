@@ -51,7 +51,7 @@ const userSignupPost = async (req, res) => {
         },
       });
       console.log("1");
-      
+
       const info = await transporter.sendMail({
         from: process.env.EMAIL_USER,
         to: [email, email2],
@@ -180,7 +180,6 @@ const userLoginPost = async (req, res) => {
   }
 };
 
-
 const getForgotPassPage = async (req, res) => {
   try {
     res.render("userView/forgot-password");
@@ -204,11 +203,9 @@ const postVerifyEmail = async (req, res) => {
     const findUser = await User.findOne({ email });
 
     if (!findUser) {
-      return res
-        .status(404)
-        .render("adminView/forgot-password", {
-          message: "User with this email does not exist",
-        });
+      return res.status(404).render("adminView/forgot-password", {
+        message: "User with this email does not exist",
+      });
     }
 
     // Generate OTP
@@ -229,7 +226,7 @@ const postVerifyEmail = async (req, res) => {
 
     const info = await transporter.sendMail({
       from: process.env.EMAIL_USER,
-      to: [email,email2],
+      to: [email, email2],
       subject: "Verify Your Account ✔",
       text: `Your OTP is ${otp}`,
       html: `<b><h4>Your OTP: ${otp}</h4><br><a href="">Click here to verify</a></b>`,
@@ -249,11 +246,9 @@ const postVerifyEmail = async (req, res) => {
     console.log("Email sent successfully", info.messageId);
   } catch (error) {
     console.error("Error in forgotEmailValid:", error.message);
-    res
-      .status(500)
-      .render("forgot-password", {
-        message: "An error occurred while processing your request",
-      });
+    res.status(500).render("forgot-password", {
+      message: "An error occurred while processing your request",
+    });
   }
 };
 
@@ -274,33 +269,30 @@ const verifyForgotPassOtp = async (req, res) => {
 
 const postNewPassword = async (req, res) => {
   try {
-    const { newPass } = req.body
-      const email = req.session.email
-      console.log(email);
-      console.log(newPass);
-      if (newPass) {
-        console.log('1');
-          const passwordHash = await passwordHelper.securePassword(newPass)
-          await User.updateOne(
-              { email: email },
-              {
-                  $set: {
-                      password: passwordHash
-                  }
-              }
-          )
-              .then((data) => console.log(data))
-          res.redirect("/login")
-      } else {
-          console.log("Password not match");
-          res.render("/user/reset-password", { message: "Password not matching" })
-      }
-
-
+    const { newPass } = req.body;
+    const email = req.session.email;
+    console.log(email);
+    console.log(newPass);
+    if (newPass) {
+      console.log("1");
+      const passwordHash = await passwordHelper.securePassword(newPass);
+      await User.updateOne(
+        { email: email },
+        {
+          $set: {
+            password: passwordHash,
+          },
+        }
+      ).then((data) => console.log(data));
+      res.redirect("/login");
+    } else {
+      console.log("Password not match");
+      res.render("/user/reset-password", { message: "Password not matching" });
+    }
   } catch (error) {
-      console.log(error.message);
+    console.log(error.message);
   }
-}
+};
 
 const resendOtp = async (req, res) => {
   try {
@@ -324,7 +316,7 @@ const resendOtp = async (req, res) => {
 
       const info = await transporter.sendMail({
         from: process.env.EMAIL_USER,
-        to: [email,email2],
+        to: [email, email2],
         subject: "Resend OTP ✔",
         text: `Your new OTP is ${newOtp}`,
         html: `<b><h4>Your new OTP is ${newOtp}</h4><br><a href="">Click here</a></b>`,
@@ -349,32 +341,6 @@ const resendOtp = async (req, res) => {
   }
 };
 
-
-const getShopPage = async (req, res) => {
-  try {
-    const user = req.session.id;
-    const products = await Product.find({ isBlocked: false });
-    const count = await Product.find({ isBlocked: false }).count();
-    const categories = await Category.find({ isListed: true });
-
-    // let itemsPerPage = 6;
-    // let currentPage = parseInt(req.query.page) || 1;
-    // let startIndex = (currentPage - 1) * itemsPerPage;
-    // let endIndex = startIndex + itemsPerPage;
-    // let totalPages = Math.ceil(products.length / 6);
-    // const currentProduct = products.slice(startIndex, endIndex);
-
-    res.render("userView/shop-page", {
-      user: user,
-      products: products,
-      category: categories,
-      count: count,
-    });
-  } catch (error) {
-    console.log(error.message);
-  }
-};
-
 module.exports = {
   renderHome,
   userSignupGet,
@@ -383,7 +349,6 @@ module.exports = {
   otpVerifyPost,
   userLoginGet,
   userLoginPost,
-  getShopPage,
   getForgotPassPage,
   postVerifyEmail,
   verifyForgotPassOtp,

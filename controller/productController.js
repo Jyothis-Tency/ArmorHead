@@ -201,6 +201,59 @@ const getUnblockProduct = async (req, res) => {
   }
 };
 
+const getShopPage = async (req, res) => {
+  try {
+    let sort = req.query.sort; // Retrieve sort value from query parameters
+    console.log(sort);
+    const user = req.session.id;
+
+    // Define sort options based on the value received from the client
+    let sortOption = {};
+    if (sort === "1") {
+      sortOption = { salePrice: -1 }; // High to low
+    } else if (sort === "2") {
+      sortOption = { salePrice: 1 }; // Low to high
+    } else if (sort === "3") {
+      sortOption = { productName: 1 }; // A to Z
+    } else if (sort === "4") {
+      sortOption = { productName: -1 }; // Z to A
+    }
+
+    // Construct the MongoDB query with sorting
+    let query = { isBlocked: false };
+    let currentProduct;
+    if (sortOption) {
+      currentProduct = await Product.find(query).sort(sortOption);
+    } else {
+      currentProduct = await Product.find(query);
+    }
+
+    // Paginate the results
+    const count = await Product.countDocuments(query);
+    const categories = await Category.find({ isBlocked: false });
+
+    const itemsPerPage = 8;
+    const currentPage = parseInt(req.query.page) || 1;
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const totalPages = Math.ceil(count / itemsPerPage);
+    const productsOnPage = currentProduct.slice(startIndex, endIndex);
+
+    // Render the shop page with the sorted and paginated products
+    res.render("userView/shop-page", {
+      user: user,
+      products: productsOnPage,
+      category: categories,
+      count: count,
+      totalPages: totalPages,
+      currentPage: currentPage,
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
 const getProductDetailsPage = async (req, res) => {
   try {
     console.log('1');
@@ -237,4 +290,5 @@ module.exports = {
   getBlockProduct,
   getUnblockProduct,
   getProductDetailsPage,
+  getShopPage,
 };

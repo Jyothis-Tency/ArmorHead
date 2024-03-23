@@ -18,6 +18,6 @@ userRoute.post("/verifyPassOtp", userController.verifyForgotPassOtp);
 userRoute.post("/resetPassword", userController.postNewPassword);
 // Products based routes
 userRoute.get("/productDetails/:id", productController.getProductDetailsPage);
-userRoute.get("/shopPage", userController.getShopPage);
+userRoute.get("/shopPage", productController.getShopPage);
 
 module.exports = userRoute;
