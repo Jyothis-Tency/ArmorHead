@@ -1,15 +1,13 @@
-const mongoose = require("mongoose")
 const productHelper = require("../helper/productHelper");
 const Product = require("../model/productModel");
 const Category = require("../model/categoryModel");
 const User = require("../model/userModel")
 const fs = require("fs");
 const path = require("path");
-const isValidObjectId = mongoose.Types.ObjectId.isValid;
 
 const getAddProductPage = async (req, res) => {
   try {
-    console.log("5");
+    console.log("getAddProductPage triggered");
     const category = await Category.find({ isListed: true });
     console.log(category);
     res.render("adminView/product-add", { cat: category });
@@ -20,7 +18,7 @@ const getAddProductPage = async (req, res) => {
 
 const addProducts = async (req, res) => {
   try {
-    console.log("working");
+    console.log("addProducts triggered");
 
     const products = req.body;
     console.log("req.body data =" + JSON.stringify(products));
@@ -68,16 +66,23 @@ const addProducts = async (req, res) => {
   }
 };
 
-const ProductList = (req, res) => {
-  productHelper.getAllProducts().then((response) => {
+const ProductList = async (req, res) => {
+  try {
+    console.log("ProductList triggered");
+    const response = await productHelper.getAllProducts();
     res.render("adminView/products", {
       data: response,
     });
-  });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
 };
+
 
 const getEditProduct = async (req, res) => {
   try {
+    console.log("getEditProduct triggered");
     const id = req.query.id;
     const findProduct = await Product.findOne({ _id: id });
 
@@ -93,6 +98,7 @@ const getEditProduct = async (req, res) => {
 
 const editProduct = async (req, res) => {
   try {
+    console.log("editProduct triggered");
     const id = req.params.id;
     const products = req.body;
     const smallQuantity = parseInt(req.body.small_quantity, 10) || 0;
@@ -156,6 +162,7 @@ const editProduct = async (req, res) => {
 
 const deleteSingleImage = async (req, res) => {
   try {
+    console.log("deleteSingleImage triggered");
     console.log("hi");
     const id = req.body.productId;
     const image = req.body.filename;
@@ -181,6 +188,7 @@ const deleteSingleImage = async (req, res) => {
 
 const getBlockProduct = async (req, res) => {
   try {
+    console.log("getBlockProduct triggered");
     let id = req.query.id;
     await Product.updateOne({ _id: id }, { $set: { isBlocked: true } });
     console.log("product blocked");
@@ -192,6 +200,7 @@ const getBlockProduct = async (req, res) => {
 
 const getUnblockProduct = async (req, res) => {
   try {
+    console.log("getUnblockProduct triggered");
     let id = req.query.id;
     await Product.updateOne({ _id: id }, { $set: { isBlocked: false } });
     console.log("product unblocked");
@@ -203,11 +212,14 @@ const getUnblockProduct = async (req, res) => {
 
 const getShopPage = async (req, res) => {
   try {
-    let sort = req.query.sort; // Retrieve sort value from query parameters
-    console.log(sort);
-    const user = req.session.id;
+    console.log("getShopPage triggered");
 
-    // Define sort options based on the value received from the client
+    // Retrieve the value of the 'sort' parameter from the query string
+    console.log(`Received params: ${req.params.sortValue}`);
+    let sort = req.params.sortValue; // Retrieve sort value from query parameters
+    console.log(sort);
+
+    // Process the value of 'sort' to define sorting options
     let sortOption = {};
     if (sort === "1") {
       sortOption = { salePrice: -1 }; // High to low
@@ -227,6 +239,7 @@ const getShopPage = async (req, res) => {
     } else {
       currentProduct = await Product.find(query);
     }
+    console.log("Sorted products:", currentProduct);
 
     // Paginate the results
     const count = await Product.countDocuments(query);
@@ -241,7 +254,7 @@ const getShopPage = async (req, res) => {
 
     // Render the shop page with the sorted and paginated products
     res.render("userView/shop-page", {
-      user: user,
+      // user: user,
       products: productsOnPage,
       category: categories,
       count: count,
@@ -254,15 +267,16 @@ const getShopPage = async (req, res) => {
   }
 };
 
+
 const getProductDetailsPage = async (req, res) => {
   try {
-    console.log('1');
+    console.log("getProductDetailsPage triggered");
     const user = req.session.user;
-    // console.log("wrking");
+    console.log(`this is fetched user: ${user}`);
     const id = req.params.id;
-    console.log(id);
+    console.log(`This is required id: ${id}`);
     const findProduct = await Product.findOne({ _id: id });
-    console.log('product is is here',findProduct);
+    console.log(`Product Name in complete details of fetched product: ${findProduct.productName}`);
     // console.log(findProduct.id, "Hello world");
     let products = await productHelper.getAllUnblockedProducts();
     if (findProduct) {

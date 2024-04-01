@@ -2,6 +2,7 @@ const Product = require("../model/productModel");
 
 const getAllProducts = async () => {
   try {
+    console.log("getAllProducts triggered");
     const result = await Product.aggregate([
       {
         $lookup: {
@@ -22,7 +23,7 @@ const getAllProducts = async () => {
 
 const getAllUnblockedProducts = async () => {
   try {
-    console.log('unblock');
+    console.log("getAllUnblockedProducts triggered");
     const unblockedProducts = await Product.find({ isBlocked: false });
     return unblockedProducts;
   } catch (error) {

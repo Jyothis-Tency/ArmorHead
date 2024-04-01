@@ -178,7 +178,7 @@
   <div class="pro-item" style="width: calc(33.33% - 20px); margin-right: 20px; float: left;">
     <div class="product-wrapper mb-50">
       <div class="product-img mb-25">
-        <a href="/shopPage"> <!-- Updated href attribute -->
+        <a href="/shopPage/:sortValue"> <!-- Updated href attribute -->
           <img src="/uploads/product-images/<%= product.productImage[1] %>" alt="<%= product.productName %>" style="width: 100%; height: auto" />
         </a>
         <!-- Other product image elements -->
@@ -215,7 +215,7 @@
           <% } %> <% } %>
         </div>
         <h4>
-          <a href="/shopPage"><%= product.productName %></a> <!-- Updated href attribute -->
+          <a href="/shopPage/:sortValue"><%= product.productName %></a> <!-- Updated href attribute -->
         </h4>
         <div class="product-meta">
           <div class="pro-price">

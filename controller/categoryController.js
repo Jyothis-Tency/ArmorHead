@@ -3,6 +3,7 @@ const Category = require("../model/categoryModel")
 
 const getCategoryInfo = async (req, res) => {
   try {
+    console.log("getCategoryInfo triggered");
     const categoryData = await Category.find({});
     res.render("adminView/category", { cat: categoryData });
   } catch (error) {
@@ -12,6 +13,7 @@ const getCategoryInfo = async (req, res) => {
 
 const addCategory = async (req, res) => {
   try {
+    console.log("addCategory triggered");
     const { name, description } = req.body;
     let catName = name.toLowerCase()
     console.log(catName);
@@ -42,6 +44,7 @@ const addCategory = async (req, res) => {
 
 const getAllCategories = async (req, res) => {
   try {
+    console.log("getAllCategories triggered");
     const categoryData = await Category.find({});
     res.render("adminView/category", { cat: categoryData });
   } catch (error) {
@@ -51,6 +54,7 @@ const getAllCategories = async (req, res) => {
 
 const getListCategory = async (req, res) => {
   try {
+    console.log("getListCategory triggered");
     let id = req.query.id;
     console.log("working");
     await Category.updateOne({ _id: id }, { $set: { isListed: false } });
@@ -62,6 +66,7 @@ const getListCategory = async (req, res) => {
 
 const getUnListCategory = async (req, res) => {
   try {
+    console.log("getUnListCategory triggered");
     let id = req.query.id;
     await Category.updateOne({ _id: id }, { $set: { isListed: true } });
     res.redirect("/admin/category");
@@ -72,6 +77,7 @@ const getUnListCategory = async (req, res) => {
 
 const getEditCategory = async (req, res) => {
   try {
+    console.log("getEditCategory triggered");
     const id = req.query.id;
     const category = await Category.findOne({ _id: id });
     res.render("adminView/edit-category", { category: category });
@@ -82,6 +88,7 @@ const getEditCategory = async (req, res) => {
 
 const editCategory = async (req, res) => {
   try {
+    console.log("editCategory triggered");
     const id = req.params.id;
     const { categoryName, description } = req.body;
     const findCategory = await Category.find({ _id: id });

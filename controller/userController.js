@@ -9,6 +9,7 @@ const email2 = "jyothisgtency@gmail.com";
 
 const renderHome = async (req, res) => {
   try {
+    console.log("renderHome triggered");
     const userNow = req.session.user;
     const products = await Product.find();
     if (userNow) {
@@ -23,6 +24,7 @@ const renderHome = async (req, res) => {
 
 const userSignupGet = async (req, res) => {
   try {
+    console.log("userSignupGet triggered");
     const message = req.flash("message");
     res.render("userView/register");
   } catch (err) {
@@ -32,6 +34,7 @@ const userSignupGet = async (req, res) => {
 
 const userSignupPost = async (req, res) => {
   try {
+    console.log("userSignupPost triggered");
     console.log(req.body);
     const { username, email, phone, password } = req.body;
     req.session.userData = { username, email, phone, password };
@@ -80,6 +83,7 @@ const userSignupPost = async (req, res) => {
 
 const otpVerifyGet = async (req, res) => {
   try {
+    console.log("otpVerifyGet triggered");
     res.render("userView/verify-otp");
   } catch (err) {
     console.error(err);
@@ -89,6 +93,7 @@ const otpVerifyGet = async (req, res) => {
 
 const otpVerifyPost = async (req, res) => {
   try {
+    console.log("otpVerifyPost triggered");
     console.log("first");
     const { otp } = req.body;
     const storedOtp = req.session.userOtp;
@@ -129,6 +134,7 @@ const otpVerifyPost = async (req, res) => {
 
 const userLoginGet = async (req, res) => {
   try {
+    console.log("userLoginGet triggered");
     if (req.session.loggedIn) {
       // If logged in, render the logout page
       res.render("userView/logout");
@@ -143,7 +149,7 @@ const userLoginGet = async (req, res) => {
 
 const userLoginPost = async (req, res) => {
   try {
-    console.log("first userLoginPost");
+    console.log("userLoginPost triggered");
 
     console.log(req.body);
 
@@ -154,7 +160,7 @@ const userLoginPost = async (req, res) => {
 
     const checkUser = await User.findOne({ email: curEmail });
     console.log(checkUser);
-
+    req.session.user = checkUser
     if (checkUser) {
       const passwordTrue = await bcrypt.compare(
         curPassword,
@@ -182,6 +188,7 @@ const userLoginPost = async (req, res) => {
 
 const getForgotPassPage = async (req, res) => {
   try {
+    console.log("getForgotPassPage triggered");
     res.render("userView/forgot-password");
   } catch (error) {
     console.log(error.message);
@@ -190,6 +197,7 @@ const getForgotPassPage = async (req, res) => {
 
 const postVerifyEmail = async (req, res) => {
   try {
+    console.log("postVerifyEmail triggered");
     const { email } = req.body;
 
     // Check if the email is provided
@@ -254,6 +262,7 @@ const postVerifyEmail = async (req, res) => {
 
 const verifyForgotPassOtp = async (req, res) => {
   try {
+    console.log("verifyForgotPassOtp triggered");
     console.log(req.body.otp);
     const enteredOtp = req.body.otp;
     if (enteredOtp === req.session.userOtp) {
@@ -269,6 +278,7 @@ const verifyForgotPassOtp = async (req, res) => {
 
 const postNewPassword = async (req, res) => {
   try {
+    console.log("postNewPassword triggered");
     const { newPass } = req.body;
     const email = req.session.email;
     console.log(email);
@@ -296,7 +306,7 @@ const postNewPassword = async (req, res) => {
 
 const resendOtp = async (req, res) => {
   try {
-    console.log("inside resendotp");
+    console.log("resendOtp triggered");
     if (req.session.userData.email) {
       const email = req.session.userData.email;
       console.log(email);

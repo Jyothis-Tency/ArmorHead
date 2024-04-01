@@ -66,8 +66,8 @@
                 </ul>
               </div>
               <div class="pro-filter mb-40 f-right">
-                <form action="/shopPage" method="get">
-                  <select name="sort" id="sort">
+                <form id="sortForm" method="get">
+                  <select id="sort" name="sort" onchange="redirectToShopPage()">
                     <option value="1">High - Low</option>
                     <option value="2">Low - High</option>
                     <option value="3">A - Z</option>
@@ -340,5 +340,11 @@
   </section>
   <!-- shop-area end -->
 </main>
-
+<script>
+  function redirectToShopPage() {
+    const selectedValue = document.getElementById("sort").value; // Get the selected value
+    const url = `/shopPage/${selectedValue}`; // Construct the URL
+    window.location.href = url; // Redirect to the constructed URL
+  }
+</script>
 <%- include("../partials/userFooter") %>

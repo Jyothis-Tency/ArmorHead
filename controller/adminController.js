@@ -7,7 +7,7 @@ const PDFDocument = require("pdfkit");
 
 const renderAdmin = async (req, res) => {
   try {
-    console.log("1");
+    console.log("renderAdmin triggered");
     res.render("adminView/admin-index");
   } catch (error) {
     console.error(error);
@@ -16,6 +16,7 @@ const renderAdmin = async (req, res) => {
 
 const getLoginPage = async (req, res) => {
   try {
+    console.log("getLoginPage triggered");
     res.render("adminView/admin-login");
   } catch (error) {
     console.log(error.message);
@@ -24,6 +25,7 @@ const getLoginPage = async (req, res) => {
 
 const verifyLogin = async (req, res) => {
   try {
+    console.log("verifyLogin triggered");
     const { email, password } = req.body;
     console.log(email);
 
@@ -50,6 +52,7 @@ const verifyLogin = async (req, res) => {
 
 const getLogout = async (req, res) => {
   try {
+    console.log("getLogout triggered");
     req.session.admin = null;
     res.redirect("/admin/login");
   } catch (error) {
