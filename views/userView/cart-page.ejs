@@ -31,59 +31,53 @@
                     <th class="product-thumbnail">Images</th>
                     <th class="cart-product-name">Product</th>
                     <th class="product-price">Unit Price</th>
+                    <th class="product-size">Size</th>
+                    <!-- Added Size column -->
                     <th class="product-quantity">Quantity</th>
                     <th class="product-subtotal">Total</th>
                     <th class="product-remove">Remove</th>
                   </tr>
                 </thead>
                 <tbody>
+                  <% for (let i = 0; i < allCartItems.length; i++) { %>
                   <tr>
                     <td class="product-thumbnail">
-                      <a href="#"><img src="img/product/pro1.jpg" alt="" /></a>
+                      <a href="#"
+                        ><img
+                          src="/uploads/product-images/<%=allCartItems[i].product.productImage[0] %>"
+                          alt=""
+                      /></a>
                     </td>
                     <td class="product-name">
-                      <a href="#">Bakix Furniture</a>
+                      <a href="#"
+                        ><%= allCartItems[i].product.productName %>
+                      </a>
                     </td>
                     <td class="product-price">
-                      <span class="amount">$130.00</span>
+                      ₹<%= allCartItems[i].product.salePrice %>
                     </td>
+                    <td class="product-size"><%= allCartItems[i].size %></td>
                     <td class="product-quantity">
                       <div class="cart-plus-minus">
-                        <input type="text" value="1" />
+                        <input
+                          type="text"
+                          value="<%= allCartItems[i].quantity %>"
+                        />
                       </div>
                     </td>
                     <td class="product-subtotal">
-                      <span class="amount">$130.00</span>
+                      <%= currencyFormat(allCartItems[i].product.salePrice *
+                      allCartItems[i].quantity) %>
                     </td>
                     <td class="product-remove">
                       <a href="#"><i class="fa fa-times"></i></a>
                     </td>
                   </tr>
-                  <tr>
-                    <td class="product-thumbnail">
-                      <a href="#"><img src="img/product/pro2.jpg" alt="" /></a>
-                    </td>
-                    <td class="product-name">
-                      <a href="#">Sujon Chair Set</a>
-                    </td>
-                    <td class="product-price">
-                      <span class="amount">$120.50</span>
-                    </td>
-                    <td class="product-quantity">
-                      <div class="cart-plus-minus">
-                        <input type="text" value="1" />
-                      </div>
-                    </td>
-                    <td class="product-subtotal">
-                      <span class="amount">$120.50</span>
-                    </td>
-                    <td class="product-remove">
-                      <a href="#"><i class="fa fa-times"></i></a>
-                    </td>
-                  </tr>
+                  <% } %>
                 </tbody>
               </table>
             </div>
+
             <div class="row">
               <div class="col-12">
                 <div class="coupon-all">

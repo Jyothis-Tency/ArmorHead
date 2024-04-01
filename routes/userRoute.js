@@ -3,6 +3,7 @@ const userRoute = express();
 const userController = require("../controller/userController");
 const productController = require("../controller/productController")
 const cartController = require("../controller/cartController")
+const {isLoggedIn}=require("../authentication/authentify")
 
 // User actions
 userRoute.get("/", userController.renderHome);
@@ -13,7 +14,7 @@ userRoute.post("/verify-otp", userController.otpVerifyPost);
 userRoute.post("/resendOtp", userController.resendOtp);
 userRoute.get("/login", userController.userLoginGet);
 userRoute.post("/login", userController.userLoginPost);
-userRoute.get("/profile",userController.userProfile)
+userRoute.get("/profile", isLoggedIn,userController.userProfile);
 userRoute.get("/forgotPassword",userController.getForgotPassPage)
 userRoute.post("/forgotPassword", userController.postVerifyEmail);
 userRoute.post("/verifyPassOtp", userController.verifyForgotPassOtp);
@@ -23,7 +24,7 @@ userRoute.get("/productDetails/:id", productController.getProductDetailsPage);
 userRoute.get("/shopPage/:sortValue", productController.getShopPage);
 
 // Cart
-userRoute.get("/cart",cartController.userCart)
-
+userRoute.get("/cart", isLoggedIn,cartController.userCart);
+userRoute.post("/addToCart/:prodId/:quantity/:size",isLoggedIn,cartController.addToCart);
 
 module.exports = userRoute;

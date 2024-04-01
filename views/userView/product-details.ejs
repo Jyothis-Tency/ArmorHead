@@ -26,32 +26,55 @@
   <section class="shop-details-area pt-100 pb-100">
     <div class="container">
       <div class="row">
-<div class="col-xl-6 col-lg-4">
-<div class="product-details-img mb-10">
-  <div class="tab-content" id="myTabContentpro">
-    <% for (let i = 0; i < data.productImage.length; i++) { %>
-      <div class="tab-pane fade <%= i === 0 ? 'show active' : '' %>" id="profile<%= i %>" role="tabpanel">
-        <div class="product-large-img" style="overflow: hidden; position: relative;">
-          <img src="/uploads/product-images/<%= data.productImage[i] %>" alt="Product Image" class="zoomable-image" style="transition: transform 0.3s ease;" onmouseover="this.style.transform = 'scale(1.2)';" onmouseout="this.style.transform = 'scale(1)';" />
+        <div class="col-xl-6 col-lg-4">
+          <div class="product-details-img mb-10">
+            <div class="tab-content" id="myTabContentpro">
+              <% for (let i = 0; i < data.productImage.length; i++) { %>
+              <div
+                class="tab-pane fade <%= i === 0 ? 'show active' : '' %>"
+                id="profile<%= i %>"
+                role="tabpanel"
+              >
+                <div
+                  class="product-large-img"
+                  style="overflow: hidden; position: relative"
+                >
+                  <img
+                    src="/uploads/product-images/<%= data.productImage[i] %>"
+                    alt="Product Image"
+                    class="zoomable-image"
+                    style="transition: transform 0.3s ease"
+                    onmouseover="this.style.transform = 'scale(1.2)';"
+                    onmouseout="this.style.transform = 'scale(1)';"
+                  />
+                </div>
+              </div>
+              <% } %>
+            </div>
+          </div>
+
+          <div class="shop-thumb-tab mb-30">
+            <ul class="nav" id="myTab2" role="tablist">
+              <% for (let j = 0; j < data.productImage.length; j++) { %>
+              <li class="nav-item">
+                <a
+                  class="nav-link <%= j === 0 ? 'active' : '' %>"
+                  id="home-tab<%= j %>"
+                  data-toggle="tab"
+                  href="#profile<%= j %>"
+                  role="tab"
+                  aria-selected="<%= j === 0 ? 'true' : 'false' %>"
+                >
+                  <img
+                    src="/uploads/product-images/<%= data.productImage[j] %>"
+                    alt="Thumbnail Image"
+                  />
+                </a>
+              </li>
+              <% } %>
+            </ul>
+          </div>
         </div>
-      </div>
-    <% } %>
-  </div>
-</div>
-
-
-  <div class="shop-thumb-tab mb-30">
-    <ul class="nav" id="myTab2" role="tablist">
-      <% for (let j = 0; j < data.productImage.length; j++) { %>
-        <li class="nav-item">
-          <a class="nav-link <%= j === 0 ? 'active' : '' %>" id="home-tab<%= j %>" data-toggle="tab" href="#profile<%= j %>" role="tab" aria-selected="<%= j === 0 ? 'true' : 'false' %>">
-            <img src="/uploads/product-images/<%= data.productImage[j] %>" alt="Thumbnail Image"/>
-          </a>
-        </li>
-      <% } %>
-    </ul>
-  </div>
-</div>
 
         <div class="col-xl-6 col-lg-8">
           <div class="product-details mb-30 pl-30">
@@ -73,8 +96,8 @@
                 </div>
                 <ul class="shop-link shop-size">
                   <li class="active"><a href="/productDetails/:id">L </a></li>
-                  <li><a href="/productDetails/:id">M </a></li>
-                  <li><a href="/productDetails/:id">S </a></li>
+                  <li class="active"><a href="/productDetails/:id">M </a></li>
+                  <li class="active"><a href="/productDetails/:id">S </a></li>
                 </ul>
               </div>
 
@@ -104,11 +127,11 @@
                     <button class="details-action-icon" type="submit">
                       <i class="fas fa-heart"></i>
                     </button>
-                    <button class="details-action-icon" type="submit">
+                    <!-- <button class="details-action-icon" type="submit">
                       <i class="fas fa-hourglass"></i>
-                    </button>
+                    </button> -->
                     <div class="details-cart mt-40">
-                      <button class="btn theme-btn">purchase now</button>
+                      <button class="btn theme-btn" onclick="addToCart('<%= data._id %>')">Add to Cart</button>
                     </div>
                   </form>
                 </div>
@@ -315,7 +338,6 @@
         </div>
       </div>
       <div class="product-slider-2 owl-carousel">
- 
         <div class="pro-item">
           <div class="product-wrapper">
             <div class="product-img mb-25">

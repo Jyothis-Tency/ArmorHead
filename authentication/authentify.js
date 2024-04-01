@@ -1,18 +1,32 @@
 const User = require("../model/userModel");
 
-const isLogged = (req, res, next) => {
-  if (req.session.username) {
-    User.findById({ _id: req.session.username })
-      .lean()
-      .then((data) => {
-        if (data.isBlocked == false) {
+const isLoggedIn = async (req, res, next) => {
+  try {
+    console.log("isLoggedIn triggered");
+    if (req.session.userData) {
+      const user = await User.findOne({ _id: req.session.userData._id });
+      console.log(user);
+      if (user) {
+        if (!user.isBlocked) {
+          // User is not blocked, proceed
           next();
         } else {
+          // User is blocked, redirect to login page with a message
+          // console.log('1');
+          req.flash("error", "Your account has been blocked");
           res.redirect("/login");
         }
-      });
-  } else {
-    res.redirect("/login");
+      } else {
+        // User not found, redirect to login page
+        res.redirect("/login");
+      }
+    } else {
+      // User not logged in, redirect to login page
+      res.redirect("/login");
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).send({ message: "Internal error occurred" });
   }
 };
 
@@ -36,6 +50,6 @@ const isAdmin = (req, res, next) => {
 };
 
 module.exports = {
-    isLogged,
+    isLoggedIn,
     isAdmin
 }

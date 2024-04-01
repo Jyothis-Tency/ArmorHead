@@ -21,6 +21,10 @@ const cartModel = new mongoose.Schema(
           default: "Small",
           enum: ["Small", "Medium", "Large"], // Replace with full names
         },
+        total: {
+          type: Number,
+          default: 0, // Default value is set to 0
+        },
       },
     ],
     coupon: {

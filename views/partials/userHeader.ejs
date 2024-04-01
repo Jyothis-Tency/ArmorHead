@@ -14,7 +14,7 @@
       href="/user-assets/img/logo-only.png"
     />
     <!-- Place favicon.ico in the root directory -->
-    
+
     <!-- CSS here -->
     <link rel="stylesheet" href="/user-assets/css/bootstrap.min.css" />
     <link rel="stylesheet" href="/user-assets/css/owl.carousel.min.css" />
@@ -158,16 +158,7 @@
                       ><i class="fas fa-search"></i
                     ></a>
                   </li>
-                  <li class="login-btn">
-                    <% if (loggedIn) { %>
-                    <!-- If user is logged in, render profile page button -->
-                    <a href="/profile"><i class="far fa-user"></i></a>
-                    <% } else { %>
-                    <!-- If user is not logged in, render login page button -->
-                    <a href="/login"><i class="far fa-user"></i></a>
-                    <% } %>
-                  </li>
-
+                 <li class="login-btn"><a href="/profile"><i class="far fa-user"></i></a></li>
                   <li class="d-shop-cart">
                     <a href="/cart"
                       ><i class="flaticon-shopping-cart"></i>

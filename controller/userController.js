@@ -11,9 +11,8 @@ const renderHome = async (req, res) => {
   try {
     console.log("renderHome triggered");
     const userNow = req.session.userData;
-    const loggedIn = !!userNow;
     const products = await Product.find();
-    res.render("userView/index-main", { user: userNow, products, loggedIn });
+    res.render("userView/index-main", { user: userNow, products });
   } catch (err) {
     console.error(err);
   }
@@ -133,9 +132,7 @@ const otpVerifyPost = async (req, res) => {
 const userLoginGet = async (req, res) => {
   try {
     console.log("userLoginGet triggered");
-    const userNow = req.session.userData;
-    const loggedIn = !!userNow;
-    res.render("userView/login", { loggedIn });
+    res.render("userView/login");
   } catch (err) {
     console.error(err);
   }
@@ -183,10 +180,11 @@ const userLoginPost = async (req, res) => {
 
 const userProfile = async (req, res) => {
   try {
+    
     console.log("userProfile triggered");
     res.render("userView/profile")
   } catch (error) {
-    
+    console.error(error);
   }
 }
 
