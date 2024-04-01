@@ -7,14 +7,14 @@
     <meta name="description" content="" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <link rel="manifest"/>
+    <link rel="manifest" />
     <link
       rel="shortcut icon"
       type="image/x-icon"
       href="/user-assets/img/logo-only.png"
     />
     <!-- Place favicon.ico in the root directory -->
-
+    
     <!-- CSS here -->
     <link rel="stylesheet" href="/user-assets/css/bootstrap.min.css" />
     <link rel="stylesheet" href="/user-assets/css/owl.carousel.min.css" />
@@ -42,7 +42,16 @@
 
     <!-- header start -->
     <header>
-      <div id="header-sticky" class="header-area box-90">
+      <div
+        id="header-sticky"
+        class="header-area"
+        style="
+          height: 80px;
+          display: flex;
+          align-items: center;
+          background-color: rgba(220, 220, 220, 0.9);
+        "
+      >
         <div class="container-fluid">
           <div class="row align-items-center">
             <div
@@ -150,11 +159,17 @@
                     ></a>
                   </li>
                   <li class="login-btn">
+                    <% if (loggedIn) { %>
+                    <!-- If user is logged in, render profile page button -->
+                    <a href="/profile"><i class="far fa-user"></i></a>
+                    <% } else { %>
+                    <!-- If user is not logged in, render login page button -->
                     <a href="/login"><i class="far fa-user"></i></a>
+                    <% } %>
                   </li>
 
                   <li class="d-shop-cart">
-                    <a href="#"
+                    <a href="/cart"
                       ><i class="flaticon-shopping-cart"></i>
                       <span class="cart-count">3</span></a
                     >

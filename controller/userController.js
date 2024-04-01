@@ -10,17 +10,15 @@ const email2 = "jyothisgtency@gmail.com";
 const renderHome = async (req, res) => {
   try {
     console.log("renderHome triggered");
-    const userNow = req.session.user;
+    const userNow = req.session.userData;
+    const loggedIn = !!userNow;
     const products = await Product.find();
-    if (userNow) {
-      res.render("userView/index-main", { user: userNow, product: products });
-    } else {
-      res.render("userView/index-main", { products });
-    }
+    res.render("userView/index-main", { user: userNow, products, loggedIn });
   } catch (err) {
     console.error(err);
   }
 };
+
 
 const userSignupGet = async (req, res) => {
   try {
@@ -64,7 +62,7 @@ const userSignupPost = async (req, res) => {
 
       if (info) {
         req.session.userOtp = otp;
-        req.session.userData = req.body;
+        // req.session.userData = req.body;
         console.log("inside info");
         res.render("userView/verify-otp", { email });
         console.log("Email sent", info.messageId);
@@ -135,13 +133,9 @@ const otpVerifyPost = async (req, res) => {
 const userLoginGet = async (req, res) => {
   try {
     console.log("userLoginGet triggered");
-    if (req.session.loggedIn) {
-      // If logged in, render the logout page
-      res.render("userView/logout");
-    } else {
-      // If not logged in, render the login page
-      res.render("userView/login");
-    }
+    const userNow = req.session.userData;
+    const loggedIn = !!userNow;
+    res.render("userView/login", { loggedIn });
   } catch (err) {
     console.error(err);
   }
@@ -160,7 +154,7 @@ const userLoginPost = async (req, res) => {
 
     const checkUser = await User.findOne({ email: curEmail });
     console.log(checkUser);
-    req.session.user = checkUser
+    req.session.userData = checkUser
     if (checkUser) {
       const passwordTrue = await bcrypt.compare(
         curPassword,
@@ -170,6 +164,7 @@ const userLoginPost = async (req, res) => {
       console.log(passwordTrue);
 
       if (passwordTrue) {
+        req.session.userData = checkUser
         console.log("Authentication successful");
         console.log("user logged in");
         res.redirect("/");
@@ -185,6 +180,15 @@ const userLoginPost = async (req, res) => {
     console.error(error);
   }
 };
+
+const userProfile = async (req, res) => {
+  try {
+    console.log("userProfile triggered");
+    res.render("userView/profile")
+  } catch (error) {
+    
+  }
+}
 
 const getForgotPassPage = async (req, res) => {
   try {
@@ -359,9 +363,11 @@ module.exports = {
   otpVerifyPost,
   userLoginGet,
   userLoginPost,
+  userProfile,
   getForgotPassPage,
   postVerifyEmail,
   verifyForgotPassOtp,
   postNewPassword,
   resendOtp,
 };
+ 

@@ -215,8 +215,8 @@ const getShopPage = async (req, res) => {
     console.log("getShopPage triggered");
 
     // Retrieve the value of the 'sort' parameter from the query string
-    console.log(`Received params: ${req.params.sortValue}`);
-    let sort = req.params.sortValue; // Retrieve sort value from query parameters
+    console.log(`Received params: ${req.query.sortValue}`);
+    let sort = req.query.sort; // Retrieve sort value from query parameters
     console.log(sort);
 
     // Process the value of 'sort' to define sorting options
@@ -239,7 +239,7 @@ const getShopPage = async (req, res) => {
     } else {
       currentProduct = await Product.find(query);
     }
-    console.log("Sorted products:", currentProduct);
+    // console.log("Sorted products:", currentProduct);
 
     // Paginate the results
     const count = await Product.countDocuments(query);
@@ -271,7 +271,7 @@ const getShopPage = async (req, res) => {
 const getProductDetailsPage = async (req, res) => {
   try {
     console.log("getProductDetailsPage triggered");
-    const user = req.session.user;
+    const user = req.session.userData;
     console.log(`this is fetched user: ${user}`);
     const id = req.params.id;
     console.log(`This is required id: ${id}`);

@@ -1,0 +1,76 @@
+<%- include("../partials/userHeader") %>
+
+<main>
+  <!-- User Profile Section -->
+  <section class="user-profile-area pt-100 pb-100">
+    <div class="container">
+      <div class="row">
+        <div class="col-xl-3">
+          <!-- User Profile Sidebar -->
+          <div class="user-profile-sidebar">
+            <ul class="user-profile-menu">
+              <li><a href="#">Account Details</a></li>
+              <li><a href="#">Addresses</a></li>
+              <li><a href="#">My Orders</a></li>
+              <li><a href="#">Sign Out</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-xl-9">
+          <!-- User Profile Content -->
+          <div class="user-profile-content">
+            <h2>Hello User (not User? Log out)</h2>
+            <p>From your account dashboard you can view your recent orders, manage your shipping and billing addresses, and edit your password and account details.</p>
+            
+            <!-- Recent Orders -->
+            <div class="recent-orders">
+              <h3>Recent Orders</h3>
+              <p>No order has been made yet.</p>
+              <a href="#">GO SHOP</a>
+            </div>
+
+            <!-- Downloads -->
+            <div class="downloads">
+              <h3>Downloads</h3>
+              <p>No downloads available yet.</p>
+              <a href="#">GO SHOP</a>
+            </div>
+
+            <!-- Edit Address -->
+            <div class="edit-address">
+              <h3>Edit Address</h3>
+              <!-- Billing Address -->
+              <% for( let i=0; i < allAddress.length; i++ ) { %>
+                <div class="billing-address">
+                  <h4>Billing Address</h4>
+                  <p><%= allAddress[i].first_name %> <%= allAddress[i].last_name %></p>
+                  <p><%= allAddress[i].email_id %></p>
+                  <p><%= allAddress[i].mobile %></p>
+                  <p><%= allAddress[i].address %></p>
+                  <p><%= allAddress[i].city %></p>
+                  <p><%= allAddress[i].state %></p>
+                  <p><%= allAddress[i].country %></p>
+                  <p><%= allAddress[i].pincode %></p>
+                  <button class="edit-address-btn">Edit Address</button>
+                </div>
+              <% } %>
+              <!-- Shipping Address -->
+              <div class="shipping-address">
+                <h4>Shipping Address</h4>
+                <p>Add New Address</p>
+                <form class="shipping-address-form">
+                  <input type="text" placeholder="Name" value="<%= loginStatus.name %>" readonly />
+                  <input type="email" placeholder="Email" value="<%= loginStatus.email %>" readonly />
+                  <input type="text" placeholder="Phone Number" value="<%= loginStatus.phone %>" readonly />
+                  <button class="add-address-btn">Submit</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include("../partials/userFooter") %>

@@ -1,24 +1,22 @@
 <%- include("../partials/userHeader") %>
 <main>
   <!-- breadcrumb-area-start -->
-  <section
-    class="breadcrumb-area"
-    data-background="/user-assets/img/bg/page-title.png"
-  >
-    <div class="container">
-      <div class="row">
-        <div class="col-xl-12">
-          <div class="breadcrumb-text text-center">
-            <h1>Our Shop</h1>
-            <ul class="breadcrumb-menu">
-              <li><a href="/">home</a></li>
-              <li><span>shop</span></li>
-            </ul>
-          </div>
+<section class="breadcrumb-area" data-background="/user-assets/img/bg/page-title.png" style="height: 120px; display: flex; justify-content: center; align-items: center;">
+  <div class="container">
+    <div class="row">
+      <div class="col-xl-12">
+        <div class="breadcrumb-text text-center">
+          <h1>Our Shop</h1>
+          <ul class="breadcrumb-menu">
+            <li><a href="/">home</a></li>
+            <li><span>shop</span></li>
+          </ul>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
+
   <!-- breadcrumb-area-end -->
 
   <!-- shop-area start -->
@@ -26,9 +24,9 @@
     <div class="container">
       <div class="row">
         <div class="col-xl-9 col-lg-8">
-          <div class="shop-banner mb-50">
+          <!-- <div class="shop-banner mb-50">
             <img src="/user-assets/img/bg/shop-banner-2.jpg" alt="" />
-          </div>
+          </div> -->
           <!-- tab filter -->
           <div class="row mb-10">
             <div class="col-xl-5 col-lg-6 col-md-6">
@@ -342,7 +340,9 @@
 </main>
 <script>
   function redirectToShopPage() {
+    console.log("1");
     const selectedValue = document.getElementById("sort").value; // Get the selected value
+    console.log(`selected value = ${selectedValue}`);
     const url = `/shopPage/${selectedValue}`; // Construct the URL
     window.location.href = url; // Redirect to the constructed URL
   }
