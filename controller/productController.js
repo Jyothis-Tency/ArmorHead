@@ -1,7 +1,7 @@
 const productHelper = require("../helper/productHelper");
 const Product = require("../model/productModel");
 const Category = require("../model/categoryModel");
-const User = require("../model/userModel")
+const User = require("../model/userModel");
 const fs = require("fs");
 const path = require("path");
 
@@ -78,7 +78,6 @@ const ProductList = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
-
 
 const getEditProduct = async (req, res) => {
   try {
@@ -267,16 +266,17 @@ const getShopPage = async (req, res) => {
   }
 };
 
-
 const getProductDetailsPage = async (req, res) => {
   try {
     console.log("getProductDetailsPage triggered");
     const user = req.session.userData;
-    console.log(`this is fetched user: ${user}`);
+    console.log("this is fetched user:" + user);
     const id = req.params.id;
     console.log(`This is required id: ${id}`);
     const findProduct = await Product.findOne({ _id: id });
-    console.log(`Product Name in complete details of fetched product: ${findProduct.productName}`);
+    console.log(
+      `Product Name in complete details of fetched product: ${findProduct.productName}`
+    );
     // console.log(findProduct.id, "Hello world");
     let products = await productHelper.getAllUnblockedProducts();
     if (findProduct) {
@@ -285,7 +285,7 @@ const getProductDetailsPage = async (req, res) => {
         user: user,
         products,
       });
-      console.log("Everything success");
+      console.log("getProductDetailsPage success");
     } else {
       res.render("userView/product-details", { data: findProduct });
     }

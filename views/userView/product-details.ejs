@@ -90,7 +90,7 @@
               >
             </div>
             <div class="product-variant">
-              <div class="product-size variant-item">
+              <!-- <div class="product-size variant-item">
                 <div class="variant-name">
                   <span>size</span>
                 </div>
@@ -99,7 +99,7 @@
                   <li class="active"><a href="/productDetails/:id">M </a></li>
                   <li class="active"><a href="/productDetails/:id">S </a></li>
                 </ul>
-              </div>
+              </div> -->
 
               <div class="product-desc variant-item">
                 <%= data.productDescription %>
@@ -118,20 +118,44 @@
 
               <div class="product-action-details variant-item">
                 <div class="product-details-action">
-                  <form action="/login">
+                  <form>
+                    <div class="product-size variant-item">
+                      <div class="variant-name">
+                        <span>size</span>
+                      </div>
+<ul class="shop-link shop-size">
+  <li class="active" onclick="setSize('Large')">
+    <button id="buttonL" type="button" class="size-button">L</button>
+  </li>
+  <li class="active" onclick="setSize('Medium')">
+    <button id="buttonM" type="button" class="size-button">M</button>
+  </li>
+  <li class="active" onclick="setSize('Small')">
+    <button id="buttonS" type="button" class="size-button">S</button>
+  </li>
+</ul>
+                    </div>
                     <div class="plus-minus">
                       <div class="cart-plus-minus">
-                        <input type="text" value="1" />
+                        <input
+                          id="quantityInput"
+                          type="text"
+                          name="quantity"
+                          value="1"
+                        />
                       </div>
                     </div>
                     <button class="details-action-icon" type="submit">
                       <i class="fas fa-heart"></i>
                     </button>
-                    <!-- <button class="details-action-icon" type="submit">
-                      <i class="fas fa-hourglass"></i>
-                    </button> -->
                     <div class="details-cart mt-40">
-                      <button class="btn theme-btn" onclick="addToCart('<%= data._id %>')">Add to Cart</button>
+                      <button
+                        class="btn theme-btn"
+                        type="button"
+                        onclick="addToCart('<%= data._id%>')"
+                      >
+                        Add to Cart
+                      </button>
                     </div>
                   </form>
                 </div>
@@ -549,3 +573,80 @@
 </main>
 
 <%- include("../partials/userFooter") %>
+<script>
+
+  function addToCart(prodId) {
+    try {
+      alert("hi");
+      // Get the quantity from the plus-minus input
+      var quantity = $("#quantityInput").val();
+      console.log(`this is quantity ${quantity}`);
+      // Get the selected size
+      console.log(`this is size ${size}`);
+      console.log(`this is prodId ${prodId}`);
+      $.ajax({
+        type: "POST",
+        url: "/addToCart", // Adjust the URL if needed
+        data: {
+          size: size,
+          quantity: quantity,
+          prodId: prodId,
+        },
+        success: function (response) {
+          if (response.status === "true") {
+            alert("Product added to cart successfully");
+          } else {
+            alert("Failed to add product to cart");
+          }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+          console.error("Error in addToCart AJAX request:", errorThrown);
+          alert("Error occurred while adding product to cart");
+        },
+      });
+    } catch (error) {
+      console.error("Error in addToCart function:", error);
+    }
+  }
+</script>
+
+<script>
+  // Get all buttons with the size-button class
+  var buttons = document.querySelectorAll('.size-button');
+
+  // Add event listener to each button
+  buttons.forEach(function(button) {
+    button.addEventListener('click', function() {
+      // Remove 'clicked' class from all buttons
+      buttons.forEach(function(btn) {
+        btn.classList.remove('clicked');
+      });
+      // Add 'clicked' class to the clicked button
+      button.classList.add('clicked');
+    });
+  });
+
+  // Function to set size
+var size = ''; // Variable to store the size value
+
+function setSize(value) {
+  size = value; // Update the size variable with the value passed to the function
+  console.log('Selected size:', size); // Log the selected size (for demonstration)
+}
+
+</script>
+
+<style>
+  .size-button {
+    border: 2px solid red;
+    color: red;
+    background-color: transparent;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+
+  .size-button.clicked {
+    color: white;
+    background-color: red;
+  }
+</style>

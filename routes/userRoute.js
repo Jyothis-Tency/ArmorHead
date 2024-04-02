@@ -25,6 +25,9 @@ userRoute.get("/shopPage/:sortValue", productController.getShopPage);
 
 // Cart
 userRoute.get("/cart", isLoggedIn,cartController.userCart);
-userRoute.post("/addToCart/:prodId/:quantity/:size",isLoggedIn,cartController.addToCart);
+userRoute.post("/addToCart", isLoggedIn, cartController.addToCart);
+userRoute.post('/remove-cart-item/:id', isLoggedIn, cartController.removeFromCart);
+userRoute.post("/quantity-change",isLoggedIn,cartController.incDecQuantity)
+userRoute.post("/clear-cart", isLoggedIn, cartController.clearCart);
 
 module.exports = userRoute;

@@ -6,7 +6,7 @@
       <div class="row">
         <div class="col-xl-12">
           <div class="breadcrumb-text text-center">
-            <h1>Shoping Cart</h1>
+            <h1>Shopping Cart</h1>
             <ul class="breadcrumb-menu">
               <li><a href="index.html">home</a></li>
               <li><span>Cart</span></li>
@@ -58,19 +58,35 @@
                     </td>
                     <td class="product-size"><%= allCartItems[i].size %></td>
                     <td class="product-quantity">
-                      <div class="cart-plus-minus">
-                        <input
-                          type="text"
-                          value="<%= allCartItems[i].quantity %>"
-                        />
-                      </div>
-                    </td>
-                    <td class="product-subtotal">
-                      <%= currencyFormat(allCartItems[i].product.salePrice *
-                      allCartItems[i].quantity) %>
-                    </td>
+    <input
+        id="quantity<%= allCartItems[i].product._id %>"
+        min="1"
+        max="5"
+        value="<%= allCartItems[i].quantity %>"
+        type="number"
+        onchange="updateQuantityAndMax('<%= allCartItems[i].product._id %>', '<%= allCartItems[i]._id %>', this.value, '<%= allCartItems[i].size %>', '<%= allCartItems[i].product.salePrice %>')"
+    />
+</td>
+<td id="productSubtotal<%= allCartItems[i].product._id %>" class="product-subtotal">
+    ₹<%= (allCartItems[i].product.salePrice * allCartItems[i].quantity) %>
+</td>
                     <td class="product-remove">
-                      <a href="#"><i class="fa fa-times"></i></a>
+                      <button
+                        style="
+                          background-color: red;
+                          border: none;
+                          color: white;
+                          padding: 5px 10px;
+                          border-radius: 50%;
+                          cursor: pointer;
+                        "
+                        onclick="productRemove('<%= allCartItems[i].product._id %>', '<%= allCartItems[i]._id %>', '<%= allCartItems[i].size %>')"
+                      >
+                        <i
+                          class="fa fa-times"
+                          style="color: white; font-size: 14px"
+                        ></i>
+                      </button>
                     </td>
                   </tr>
                   <% } %>
@@ -98,11 +114,11 @@
                       Apply coupon
                     </button>
                   </div>
-                  <div class="coupon2">
+                  <div class="coupon2" id="clearCartButton">
                     <input
                       class="btn theme-btn"
                       name="update_cart"
-                      value="Update cart"
+                      value="Clear Cart"
                       type="submit"
                     />
                   </div>
@@ -113,10 +129,13 @@
               <div class="col-md-5 ml-auto">
                 <div class="cart-page-total">
                   <h2>Cart totals</h2>
-                  <ul class="mb-20">
-                    <li>Subtotal <span>$250.00</span></li>
-                    <li>Total <span>$250.00</span></li>
-                  </ul>
+                  <div class="coupon_inner">
+                                    <div class="cart_subtotal" id="totalAmount">
+                                        <p>Total</p>
+                                        <p class="cart_amount" >
+                                            <%= totalAmount %>
+                                        </p>
+                                    </div>
                   <a class="btn theme-btn" href="#">Proceed to checkout</a>
                 </div>
               </div>
@@ -129,3 +148,127 @@
   <!-- Cart Area End-->
 </main>
 <%- include("../partials/userFooter") %>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+  function productRemove(productId, cartId, size) {
+    console.log("productRemoveAJAX triggered");
+    console.log(productId);
+    console.log(cartId);
+    console.log(size);
+    Swal.fire({
+      title: "Do you want to remove this item from cart?",
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        $.ajax({
+          url: "/remove-cart-item/" + productId,
+          data: {
+            cartId: cartId,
+            size: size,
+          },
+          type: "post",
+        })
+          .done((res) => {
+            Swal.fire("Success", `${res.message}`, "success").then(() => {
+              location.reload();
+            });
+            console.log(`${res.message}`);
+          })
+          .fail((error) => {
+            console.log(error);
+          });
+      }
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const clearCartButton = document.getElementById("clearCartButton");
+    clearCartButton.addEventListener("click", async (event) => {
+      event.preventDefault(); // Prevent default form submission behavior
+      try {
+        console.log("1");
+        const response = await fetch("/clear-cart", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({}),
+        });
+        const data = await response.json();
+        if (data.success) {
+          // Use Swal.fire for notification
+          Swal.fire({
+            icon: "success",
+            title: "Cart Cleared",
+            text: "Your cart has been cleared successfully!",
+          }).then((result) => {
+            // Reload the page after clearing the cart
+            if (result.isConfirmed || result.isDismissed) {
+              location.reload();
+            }
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Failed to Clear Cart",
+            text: data.message,
+          });
+        }
+      } catch (error) {
+        console.error("Error clearing cart:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Failed to clear cart. Please try again later.",
+        });
+      }
+      // Your fetch and Swal.fire logic goes here
+    });
+  });
+
+function updateQuantityAndMax(itemId, cartId, newQuantity, selectedSize, price) {
+    console.log(itemId + " " + cartId + " " + newQuantity + " " + selectedSize + " " + price);
+
+    // Make an AJAX request to update the quantity and obtain the new subtotal
+    $.ajax({
+        url: "/quantity-change",
+        type: "POST",
+        data: {
+            productId: itemId,
+            cartId: cartId,
+            quantity: newQuantity,
+            selectedSize: selectedSize
+        },
+        success: function(response) {
+            if (response) {
+              const { quantity, totalAmount } = response;
+                // Update the quantity displayed in the UI
+                document.getElementById("quantity" + itemId).value = response.message.quantity;
+
+                // Update the total amount displayed in the UI
+                document.getElementById("totalAmount").innerHTML = response.message.totalAmount;
+
+                // Calculate the new total amount for the current product
+                let newTotal = response.message.quantity * price;
+
+                // Format the new total as currency
+                let formattedNewTotal = newTotal.toLocaleString("en-in", {
+                    style: "currency",
+                    currency: "INR",
+                    maximumFractionDigits: 0
+                });
+
+                // Update the content of the product subtotal <td> with the new total
+                document.getElementById("product_subtotal_" + itemId).innerHTML = formattedNewTotal;
+            }
+        },
+        error: function(error) {
+            console.error("Error updating quantity:", error);
+        }
+    });
+}
+</script>

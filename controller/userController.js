@@ -206,14 +206,14 @@ const postVerifyEmail = async (req, res) => {
     if (!email) {
       return res
         .status(400)
-        .render("adminView/forgot-password", { message: "Email is required" });
+        .render("userView/forgot-password", { message: "Email is required" });
     }
 
     // Check if a user with the provided email exists
     const findUser = await User.findOne({ email });
 
     if (!findUser) {
-      return res.status(404).render("adminView/forgot-password", {
+      return res.status(404).render("userView/forgot-password", {
         message: "User with this email does not exist",
       });
     }
@@ -256,7 +256,7 @@ const postVerifyEmail = async (req, res) => {
     console.log("Email sent successfully", info.messageId);
   } catch (error) {
     console.error("Error in forgotEmailValid:", error.message);
-    res.status(500).render("forgot-password", {
+    res.status(500).render("userView/forgot-password", {
       message: "An error occurred while processing your request",
     });
   }
