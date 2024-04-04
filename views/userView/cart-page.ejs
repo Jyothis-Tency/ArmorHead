@@ -18,7 +18,7 @@
   </section>
   <!-- breadcrumb-area-end -->
 
-  <!-- Cart Area Strat-->
+  <!-- Cart Area Start-->
   <section class="cart-area pt-100 pb-100">
     <div class="container">
       <div class="row">
@@ -32,7 +32,6 @@
                     <th class="cart-product-name">Product</th>
                     <th class="product-price">Unit Price</th>
                     <th class="product-size">Size</th>
-                    <!-- Added Size column -->
                     <th class="product-quantity">Quantity</th>
                     <th class="product-subtotal">Total</th>
                     <th class="product-remove">Remove</th>
@@ -42,50 +41,20 @@
                   <% for (let i = 0; i < allCartItems.length; i++) { %>
                   <tr>
                     <td class="product-thumbnail">
-                      <a href="#"
-                        ><img
-                          src="/uploads/product-images/<%=allCartItems[i].product.productImage[0] %>"
-                          alt=""
-                      /></a>
+                      <a href="#"><img src="/uploads/product-images/<%=allCartItems[i].product.productImage[1] %>" alt=""></a>
                     </td>
                     <td class="product-name">
-                      <a href="#"
-                        ><%= allCartItems[i].product.productName %>
-                      </a>
+                      <a href="#"><%= allCartItems[i].product.productName %></a>
                     </td>
-                    <td class="product-price">
-                      ₹<%= allCartItems[i].product.salePrice %>
-                    </td>
+                    <td class="product-price">₹<%= allCartItems[i].product.salePrice %></td>
                     <td class="product-size"><%= allCartItems[i].size %></td>
                     <td class="product-quantity">
-    <input
-        id="quantity<%= allCartItems[i].product._id %>"
-        min="1"
-        max="5"
-        value="<%= allCartItems[i].quantity %>"
-        type="number"
-        onchange="updateQuantityAndMax('<%= allCartItems[i].product._id %>', '<%= allCartItems[i]._id %>', this.value, '<%= allCartItems[i].size %>', '<%= allCartItems[i].product.salePrice %>')"
-    />
-</td>
-<td id="productSubtotal<%= allCartItems[i].product._id %>" class="product-subtotal">
-    ₹<%= (allCartItems[i].product.salePrice * allCartItems[i].quantity) %>
-</td>
+                      <input id="quantity<%= allCartItems[i].product._id %>" min="1" max="5" value="<%= allCartItems[i].quantity %>" type="number" onchange="updateQuantityAndMax('<%= allCartItems[i].product._id %>', '<%= allCartItems[i]._id %>', this.value, '<%= allCartItems[i].size %>', '<%= allCartItems[i].product.salePrice %>')">
+                    </td>
+                    <td id="productSubtotal<%= allCartItems[i].product._id %>" class="product-subtotal">₹<%= (allCartItems[i].product.salePrice * allCartItems[i].quantity) %></td>
                     <td class="product-remove">
-                      <button
-                        style="
-                          background-color: red;
-                          border: none;
-                          color: white;
-                          padding: 5px 10px;
-                          border-radius: 50%;
-                          cursor: pointer;
-                        "
-                        onclick="productRemove('<%= allCartItems[i].product._id %>', '<%= allCartItems[i]._id %>', '<%= allCartItems[i].size %>')"
-                      >
-                        <i
-                          class="fa fa-times"
-                          style="color: white; font-size: 14px"
-                        ></i>
+                      <button style="background-color: red; border: none; color: white; padding: 5px 10px; border-radius: 50%; cursor: pointer;" onclick="productRemove('<%= allCartItems[i].product._id %>', '<%= allCartItems[i]._id %>', '<%= allCartItems[i].size %>')">
+                        <i class="fa fa-times" style="color: white; font-size: 14px"></i>
                       </button>
                     </td>
                   </tr>
@@ -93,34 +62,15 @@
                 </tbody>
               </table>
             </div>
-
             <div class="row">
               <div class="col-12">
                 <div class="coupon-all">
                   <div class="coupon">
-                    <input
-                      id="coupon_code"
-                      class="input-text"
-                      name="coupon_code"
-                      value=""
-                      placeholder="Coupon code"
-                      type="text"
-                    />
-                    <button
-                      class="btn theme-btn-2"
-                      name="apply_coupon"
-                      type="submit"
-                    >
-                      Apply coupon
-                    </button>
+                    <input id="coupon_code" class="input-text" name="coupon_code" value="" placeholder="Coupon code" type="text">
+                    <button class="btn theme-btn-2" name="apply_coupon" type="submit">Apply coupon</button>
                   </div>
                   <div class="coupon2" id="clearCartButton">
-                    <input
-                      class="btn theme-btn"
-                      name="update_cart"
-                      value="Clear Cart"
-                      type="submit"
-                    />
+                    <input class="btn theme-btn" name="update_cart" value="Clear Cart" type="submit">
                   </div>
                 </div>
               </div>
@@ -130,13 +80,12 @@
                 <div class="cart-page-total">
                   <h2>Cart totals</h2>
                   <div class="coupon_inner">
-                                    <div class="cart_subtotal" id="totalAmount">
-                                        <p>Total</p>
-                                        <p class="cart_amount" >
-                                            <%= totalAmount %>
-                                        </p>
-                                    </div>
-                  <a class="btn theme-btn" href="#">Proceed to checkout</a>
+                    <div class="cart_subtotal" id="totalAmount">
+                      <p>Total</p>
+                      <p class="cart_amount">₹<%= totalAmount %></p>
+                    </div>
+                    <a class="btn theme-btn" href="/checkoutPage">Proceed to checkout</a>
+                  </div>
                 </div>
               </div>
             </div>
@@ -245,25 +194,24 @@ function updateQuantityAndMax(itemId, cartId, newQuantity, selectedSize, price) 
         },
         success: function(response) {
             if (response) {
-              const { quantity, totalAmount } = response;
+                const { quantity, totalAmount, totSinglePro } = response;
+
                 // Update the quantity displayed in the UI
-                document.getElementById("quantity" + itemId).value = response.message.quantity;
+                document.getElementById("quantity" + itemId).value = quantity;
 
                 // Update the total amount displayed in the UI
-                document.getElementById("totalAmount").innerHTML = response.message.totalAmount;
+                document.getElementById("totalAmount").innerHTML = totalAmount;
 
-                // Calculate the new total amount for the current product
-                let newTotal = response.message.quantity * price;
+                var newTotal = quantity * price;
+                console.log(newTotal);
+                // Construct the ID of the total <td> element
+                var totalTdId = 'productSubtotal' + itemId;
 
-                // Format the new total as currency
-                let formattedNewTotal = newTotal.toLocaleString("en-in", {
-                    style: "currency",
-                    currency: "INR",
-                    maximumFractionDigits: 0
-                });
-
-                // Update the content of the product subtotal <td> with the new total
-                document.getElementById("product_subtotal_" + itemId).innerHTML = formattedNewTotal;
+                // Target the total <td> element by its ID and update its content with the new total
+                var totalTdElement = document.getElementById(totalTdId);
+                if (totalTdElement) {
+                    totalTdElement.innerHTML = '₹' + newTotal;
+                }
             }
         },
         error: function(error) {
@@ -271,4 +219,5 @@ function updateQuantityAndMax(itemId, cartId, newQuantity, selectedSize, price) 
         }
     });
 }
+
 </script>

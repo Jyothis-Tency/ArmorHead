@@ -19,52 +19,107 @@
         <div class="col-xl-9">
           <!-- User Profile Content -->
           <div class="user-profile-content">
-            <h2>Hello User (not User? Log out)</h2>
-            <p>From your account dashboard you can view your recent orders, manage your shipping and billing addresses, and edit your password and account details.</p>
-            
+            <h2>Hello <%= loginStatus.username %></h2>
+            <p>
+              From your account dashboard you can view your recent orders,
+              manage your shipping and billing addresses, and edit your password
+              and account details.
+            </p>
+
             <!-- Recent Orders -->
             <div class="recent-orders">
               <h3>Recent Orders</h3>
-              <p>No order has been made yet.</p>
-              <a href="#">GO SHOP</a>
+              <table class="order-table">
+                <!-- Table Header -->
+                <thead>
+                  <tr>
+                    <th>Order</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Payment Method</th>
+                    <th>Total</th>
+                    <th>Discount</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <!-- Table Body -->
+                <tbody>
+                  <!-- Use JavaScript to populate table rows dynamically -->
+                </tbody>
+              </table>
             </div>
 
-            <!-- Downloads -->
-            <div class="downloads">
-              <h3>Downloads</h3>
-              <p>No downloads available yet.</p>
-              <a href="#">GO SHOP</a>
-            </div>
-
-            <!-- Edit Address -->
-            <div class="edit-address">
-              <h3>Edit Address</h3>
-              <!-- Billing Address -->
-              <% for( let i=0; i < allAddress.length; i++ ) { %>
-                <div class="billing-address">
-                  <h4>Billing Address</h4>
-                  <p><%= allAddress[i].first_name %> <%= allAddress[i].last_name %></p>
-                  <p><%= allAddress[i].email_id %></p>
-                  <p><%= allAddress[i].mobile %></p>
-                  <p><%= allAddress[i].address %></p>
-                  <p><%= allAddress[i].city %></p>
-                  <p><%= allAddress[i].state %></p>
-                  <p><%= allAddress[i].country %></p>
-                  <p><%= allAddress[i].pincode %></p>
-                  <button class="edit-address-btn">Edit Address</button>
-                </div>
-              <% } %>
-              <!-- Shipping Address -->
-              <div class="shipping-address">
-                <h4>Shipping Address</h4>
-                <p>Add New Address</p>
-                <form class="shipping-address-form">
-                  <input type="text" placeholder="Name" value="<%= loginStatus.name %>" readonly />
-                  <input type="email" placeholder="Email" value="<%= loginStatus.email %>" readonly />
-                  <input type="text" placeholder="Phone Number" value="<%= loginStatus.phone %>" readonly />
-                  <button class="add-address-btn">Submit</button>
-                </form>
+            <!-- Addresses -->
+            <div class="addresses">
+              <h3>Addresses</h3>
+              <% if (userAddress) { %>
+              <div class="address">
+                <h4>Edit Address</h4>
+                <p>First Name: <%= userAddress.firstName %></p>
+                <p>Last Name: <%= userAddress.lastName %></p>
+                <p>House: <%= userAddress.house %></p>
+                <p>Locality: <%= userAddress.locality %></p>
+                <p>City: <%= userAddress.city %></p>
+                <p>State: <%= userAddress.state %></p>
+                <p>Pincode: <%= userAddress.pincode %></p>
+                <p>Country: <%= userAddress.country %></p>
+                <p>Email: <%= userAddress.email %></p>
+                <p>Phone: <%= userAddress.phone %></p>
+                <button class="edit-address-btn">Edit Address</button>
               </div>
+              <% } else { %>
+              <p>No address found</p>
+              <% } %>
+            </div>
+
+            <!-- Add Address -->
+            <div class="add-address">
+              <h3>Add Address</h3>
+              <form class="address-form" action="/add-address" method="post">
+                <label for="firstName">First Name</label>
+                <input type="text" id="firstName" name="firstName" required />
+                <label for="lastName">Last Name</label>
+                <input type="text" id="lastName" name="lastName" required />
+                <label for="house">House / Flat</label>
+                <input type="text" id="house" name="house" required />
+                <label for="locality">Locality</label>
+                <input type="text" id="locality" name="locality" required />
+                <label for="city">City</label>
+                <input type="text" id="city" name="city" required />
+                <label for="state">State</label>
+                <input type="text" id="state" name="state" required />
+                <label for="pincode">Pin-code</label>
+                <input type="text" id="pincode" name="pincode" required />
+                <label for="country">Country</label>
+                <input type="text" id="country" name="country" required />
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required />
+                <label for="phone">Phone</label>
+                <input type="text" id="phone" name="phone" required />
+                <button type="submit">Save</button>
+              </form>
+            </div>
+
+            <!-- Change Password -->
+            <div class="change-password">
+              <h3>Change Password</h3>
+              <form class="password-form">
+                <label for="current-password">Current Password</label>
+                <input
+                  type="password"
+                  id="current-password"
+                  name="current-password"
+                  required
+                />
+                <label for="new-password">New Password</label>
+                <input
+                  type="password"
+                  id="new-password"
+                  name="new-password"
+                  required
+                />
+                <button type="submit">Change Password</button>
+              </form>
             </div>
           </div>
         </div>
@@ -74,3 +129,103 @@
 </main>
 
 <%- include("../partials/userFooter") %>
+
+<style>
+  /* User Profile Page Styles */
+  .user-profile-area {
+    padding-top: 100px;
+    padding-bottom: 100px;
+  }
+
+  .user-profile-menu {
+    list-style: none;
+    padding: 0;
+  }
+
+  .user-profile-menu li {
+    margin-bottom: 10px;
+  }
+
+  .user-profile-menu a {
+    text-decoration: none;
+    color: #333;
+  }
+
+  .user-profile-content h2 {
+    margin-bottom: 20px;
+  }
+
+  .user-profile-content p {
+    margin-bottom: 30px;
+  }
+
+  .order-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .order-table th,
+  .order-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+
+  .order-table th {
+    background-color: #f2f2f2;
+  }
+
+  .address {
+    margin-bottom: 30px;
+    padding: 20px;
+    border: 1px solid #ddd;
+  }
+
+  .address h4 {
+    margin-bottom: 10px;
+  }
+
+  .address p {
+    margin-bottom: 5px;
+  }
+
+  .address-form label {
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .address-form input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+  }
+
+  .address-form button {
+    padding: 10px 20px;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+  }
+
+  .password-form label {
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .password-form input[type="password"] {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+  }
+
+  .password-form button {
+    padding: 10px 20px;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+  }
+</style>

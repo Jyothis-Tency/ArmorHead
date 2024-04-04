@@ -4,6 +4,9 @@ const Category = require("../model/categoryModel");
 const bcrypt = require("bcrypt");
 const otpHelper = require("../helper/otpHelper");
 const passwordHelper = require("../helper/passwordHelper");
+const addressHelper = require("../helper/addressHelper")
+const cartHelper = require("../helper/cartHelper")
+const dateFormatHelper = require("../helper/dateFormatHelper")
 const nodemailer = require("nodemailer");
 const email2 = "jyothisgtency@gmail.com";
 
@@ -180,13 +183,40 @@ const userLoginPost = async (req, res) => {
 
 const userProfile = async (req, res) => {
   try {
-    
     console.log("userProfile triggered");
-    res.render("userView/profile")
+    let userId = req.session.userData._id;
+    console.log(userId);
+    let userAddress = await addressHelper.findAnAddress(userId);
+    console.log(userAddress);
+    // let userOrders = await Order.find({ user: userId });
+    cartCount = await cartHelper.getCartCount(userId);
+    // wishListCount = await wishlistHelper.getWishListCount(userId)
+    // let walletDetails = await walletHelper.getWalletAmount(userId)
+    let allAddress = await addressHelper.findAllAddress(userId);
+    res.render("userView/profile", {
+      loginStatus: req.session.userData,
+      allAddress: allAddress,
+      userAddress: userAddress,
+      formatDate: dateFormatHelper.formatDate,
+    });
   } catch (error) {
     console.error(error);
+    // res.status(500).render('user/404');
   }
-}
+};
+
+const addAddress = async (req, res) => {
+  try {
+    // console.log('1');
+    // console.log(req.body);
+    addressHelper.addAddress(req.body,req.session.userData).then((result) => {
+      res.status(202).json({ message: "address added successfully" });
+    });
+    // console.log('4');
+  } catch (error) {
+    res.status(500).render("user/404");
+  }
+};
 
 const getForgotPassPage = async (req, res) => {
   try {
@@ -362,6 +392,7 @@ module.exports = {
   userLoginGet,
   userLoginPost,
   userProfile,
+  addAddress,
   getForgotPassPage,
   postVerifyEmail,
   verifyForgotPassOtp,

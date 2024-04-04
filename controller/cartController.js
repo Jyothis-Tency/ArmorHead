@@ -29,8 +29,8 @@ const userCart = async (req, res) => {
       user._id,
       allCartItems
     );
-
-    totalAndSubTotal = currencyFormatter(totalAndSubTotal);
+      console.log(totalAndSubTotal);
+    // totalAndSubTotal = currencyFormatter(totalAndSubTotal);
 
     res.render("userView/cart-page", {
       loginStatus: req.session.userData,
@@ -116,7 +116,7 @@ const clearCart = async (req, res) => {
 
 const incDecQuantity = async (req, res) => {
   try {
-    console.log("inside inDecQuantity");
+    console.log("inside incDecQuantity");
     console.log(
       req.body.productId +
         " " +
@@ -186,12 +186,13 @@ const incDecQuantity = async (req, res) => {
     };
 
     // Send the response
-    res.status(202).json({ message: response });
+    res.status(202).json(response);
   } catch (error) {
     console.log(error);
     res.status(500).render("user/404");
   }
 };
+
 
 module.exports = {
   userCart,

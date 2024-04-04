@@ -1,5 +1,5 @@
 const Cart = require("../model/cartModel");
-const User = require("../model/userModel")
+const User = require("../model/userModel");
 const Product = require("../model/productModel");
 const mongoose = require("mongoose");
 const ObjectId = require("mongoose").Types.ObjectId;
@@ -314,6 +314,37 @@ const updateCartItemTotal = async (
   }
 };
 
+function currencyFormat(amount) {
+  return Number(amount).toLocaleString("en-in", {
+    style: "currency",
+    currency: "INR",
+    minimumFractionDigits: 0,
+  });
+}
+
+const totalAmount = async (userId) => {
+  try {
+    const cart = await Cart.findOne({ user: userId });
+    return cart.totalPrice;
+  } catch (error) {
+    // Handle error if necessary
+    throw error;
+  }
+};
+
+  const clearTheCart = async (userId) => {
+    try {
+      const result = await Cart.findOneAndUpdate(
+        { user: userId },
+        { $set: { items: [] } },
+        { new: true }
+      );
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  };
+
 module.exports = {
   getAllCartItems,
   addToUserCart,
@@ -323,4 +354,7 @@ module.exports = {
   getMaxQuantityForUser,
   incDecProductQuantity,
   updateCartItemTotal,
+  currencyFormat,
+  totalAmount,
+  clearTheCart,
 };
