@@ -27,27 +27,59 @@
             </p>
 
             <!-- Recent Orders -->
-            <div class="recent-orders">
-              <h3>Recent Orders</h3>
-              <table class="order-table">
-                <!-- Table Header -->
-                <thead>
-                  <tr>
-                    <th>Order</th>
-                    <th>Date</th>
-                    <th>Status</th>
-                    <th>Payment Method</th>
-                    <th>Total</th>
-                    <th>Discount</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <!-- Table Body -->
-                <tbody>
-                  <!-- Use JavaScript to populate table rows dynamically -->
-                </tbody>
-              </table>
-            </div>
+<div class="recent-orders">
+  <h3>Recent Orders</h3>
+  <% if (userOrders.length === 0) { %>
+    <table class="order-table">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Quantity</th>
+          <th>Size</th>
+          <th>Order Date</th>
+          <th>Payment Method</th>
+          <th>Order Status</th>
+        </tr>
+      </thead>
+      <tbody id="order-details">
+        <tr>
+          <td colspan="6">No new orders yet !!!!!!</td>
+        </tr>
+      </tbody>
+    </table>
+  <% } else { %>
+    <table class="order-table">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Quantity</th>
+          <th>Size</th>
+          <th>Order Date</th>
+          <th>Payment Method</th>
+          <th>Order Status</th>
+        </tr>
+      </thead>
+      <tbody id="order-details">
+        <% for (let i = 0; i < userOrders.length; i++) { %> 
+          <% const order = userOrders[i]; %>
+          <tr>
+            <td class="product-name">
+              <a href="#"><%= order.productName %></a>
+            </td>
+            <td class="product-quantity"><%= order.quantity %></td>
+            <td class="product-size"><%= order.size %></td>
+            <td class="order-date"><%= order.orderDate %></td>
+            <td class="payment-method"><%= order.paymentMethod %></td>
+            <td class="order-status"><%= order.orderStatus %></td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  <% } %>
+  <!-- Button to navigate to order details -->
+  <button style="background-color: red; color: white; padding: 10px 20px; border: none; cursor: pointer;" onclick="window.location.href='/order-details'">To Order Details</button>
+</div>
+
 
             <!-- Addresses -->
             <div class="addresses">
@@ -76,27 +108,7 @@
             <div class="add-address">
               <h3>Add Address</h3>
               <form class="address-form" action="/add-address" method="post">
-                <label for="firstName">First Name</label>
-                <input type="text" id="firstName" name="firstName" required />
-                <label for="lastName">Last Name</label>
-                <input type="text" id="lastName" name="lastName" required />
-                <label for="house">House / Flat</label>
-                <input type="text" id="house" name="house" required />
-                <label for="locality">Locality</label>
-                <input type="text" id="locality" name="locality" required />
-                <label for="city">City</label>
-                <input type="text" id="city" name="city" required />
-                <label for="state">State</label>
-                <input type="text" id="state" name="state" required />
-                <label for="pincode">Pin-code</label>
-                <input type="text" id="pincode" name="pincode" required />
-                <label for="country">Country</label>
-                <input type="text" id="country" name="country" required />
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" required />
-                <label for="phone">Phone</label>
-                <input type="text" id="phone" name="phone" required />
-                <button type="submit">Save</button>
+                <!-- Form fields for adding address -->
               </form>
             </div>
 
@@ -104,21 +116,7 @@
             <div class="change-password">
               <h3>Change Password</h3>
               <form class="password-form">
-                <label for="current-password">Current Password</label>
-                <input
-                  type="password"
-                  id="current-password"
-                  name="current-password"
-                  required
-                />
-                <label for="new-password">New Password</label>
-                <input
-                  type="password"
-                  id="new-password"
-                  name="new-password"
-                  required
-                />
-                <button type="submit">Change Password</button>
+                <!-- Form fields for changing password -->
               </form>
             </div>
           </div>

@@ -23,7 +23,9 @@ userRoute.post("/resetPassword", userController.postNewPassword);
 
 // Profile Routes
 userRoute.get("/user-profile",isLoggedIn,userController.userProfile)
-userRoute.post("/add-address",isLoggedIn,userController.addAddress)
+userRoute.post("/add-address", isLoggedIn, userController.addAddress)
+userRoute.post("/cancel-order", isLoggedIn, userController.cancelOrder);
+userRoute.post("/return-order", isLoggedIn, userController.returnOrder);
 
 // Products Routes
 userRoute.get("/productDetails/:id", productController.getProductDetailsPage);
@@ -38,6 +40,7 @@ userRoute.post("/clear-cart", isLoggedIn, cartController.clearCart);
 
 // Purchase Routes
 userRoute.get("/checkoutPage",isLoggedIn,orderController.checkoutRender)
-userRoute.post("/place-order",isLoggedIn,orderController.placeOrder)
+userRoute.post("/place-order", isLoggedIn, orderController.placeOrder)
+userRoute.get("/order-details", isLoggedIn, orderController.orderDetailsPage);
 
 module.exports = userRoute;

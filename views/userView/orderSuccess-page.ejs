@@ -1,0 +1,97 @@
+<%- include("../partials/userHeader") %>
+
+<main>
+  <section class="order-success-message pt-100 pb-100 box-90">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-xl-12">
+          <div class="area-title text-center mb-50">
+            <h2>Order Placed Successfully</h2>
+            <p>Your order has been successfully placed. Thank you for shopping with us!</p>
+            <div class="order-details">
+              <h3>Order Details</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Product Name</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% cartItems.forEach(item => { %>
+                    <tr>
+                      <td><%= item.product.productName %></td>
+                      <td><%= item.quantity %></td>
+                      <td>₹<%= item.total %></td>
+                    </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+            </div>
+            <div class="delivery-details">
+              <% const orderedDate = new Date(); %>
+              <% const deliveryDate = new Date(orderedDate); %>
+              <% deliveryDate.setDate(deliveryDate.getDate() + 7); %>
+              <h3>Estimated Delivery Date</h3>
+              <p>Your order will arrive on <%= deliveryDate.toDateString() %>.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <a href="/" style="background-color: red; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none;">Back to Home</a>
+    </div>
+  </section>
+</main>
+
+<%- include("../partials/userFooter") %>
+
+<style>
+  /* Styles for order success page */
+.order-success-message {
+  text-align: center;
+}
+
+.order-details {
+  margin-top: 50px;
+  width: 80%; /* Reduced width of details table */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.order-details table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 2px solid #000; /* Thicker border */
+}
+
+.order-details th, .order-details td {
+  padding: 8px; /* Compact padding */
+  border: 2px solid #000; /* Thicker border */
+}
+
+.delivery-details {
+  margin-top: 30px; /* Reduced margin top */
+}
+
+.delivery-details h3 {
+  margin-bottom: 10px;
+}
+
+/* Styles for the back to home button */
+.back-to-home {
+  display: block;
+  margin-top: 700px;
+}
+
+.back-to-home a {
+  display: inline-block;
+  background-color: red;
+  color: white;
+  padding: 15px 30px; /* Increased padding */
+  border-radius: 5px;
+  text-decoration: none;
+  margin-top: 100px; /* Added margin top */
+}
+
+</style>

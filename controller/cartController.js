@@ -24,12 +24,13 @@ const userCart = async (req, res) => {
     let allCartItems = await cartHelper.getAllCartItems(user._id);
     console.log(allCartItems);
     let cartCount = await cartHelper.getCartCount(user._id);
+    console.log(cartCount);
     // wishListCount = await wishlistHelper.getWishListCount(user._id);
     let totalAndSubTotal = await cartHelper.totalSubtotal(
       user._id,
       allCartItems
     );
-      console.log(totalAndSubTotal);
+    console.log(totalAndSubTotal);
     // totalAndSubTotal = currencyFormatter(totalAndSubTotal);
 
     res.render("userView/cart-page", {
@@ -192,7 +193,6 @@ const incDecQuantity = async (req, res) => {
     res.status(500).render("user/404");
   }
 };
-
 
 module.exports = {
   userCart,

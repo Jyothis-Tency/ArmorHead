@@ -111,7 +111,9 @@
                   <li><span>Product Code:</span> d12</li>
                   <li><span>Reward Points:</span> 100</li>
                   <li>
-                    <span>Stock:</span> <span class="in-stock">In Stock</span>
+                    <span class="<%= data.totalQuantity === 0 ? 'out-of-stock' : 'in-stock' %>">
+        <%= data.totalQuantity === 0 ? 'Out of Stock' : 'In Stock' %>
+      </span>
                   </li>
                 </ul>
               </div>
@@ -649,4 +651,10 @@ function setSize(value) {
     color: white;
     background-color: red;
   }
+
+  .out-of-stock {
+  color: red; /* Change text color for out of stock */
+  font-weight: bold; /* Optionally, make it bold */
+}
+
 </style>

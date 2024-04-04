@@ -36,15 +36,18 @@ const stockDecrease = async (cartItems) => {
     console.log('stockDecrease triggered');
 
     for (let i = 0; i < cartItems.length; i++) {
-      const { item: productId, size, quantity } = cartItems[i];
+      const { productId, size, quantity } = cartItems[i];
       console.log(`productId: ${productId}, size: ${size}, quantity: ${quantity}`);
+      
       const product = await Product.findById(productId);
+      console.log(product);
 
       if (!product) {
         throw new Error(`Product with ID ${productId} not found`);
       }
 
       const sizeIndex = product.productSizes.findIndex((s) => s.size === size);
+      console.log(`sizeIndex: ${sizeIndex}`);
 
       if (sizeIndex === -1) {
         throw new Error(
@@ -54,6 +57,7 @@ const stockDecrease = async (cartItems) => {
 
       const availableQuantity =
         product.productSizes[sizeIndex].quantity - quantity;
+      console.log(availableQuantity);
 
       if (availableQuantity >= 0) {
         product.productSizes[sizeIndex].quantity = availableQuantity;
@@ -69,7 +73,9 @@ const stockDecrease = async (cartItems) => {
 
     // Update total quantity for each product
     const productIds = cartItems.map((item) => item.item);
+    console.log(`productIds: ${productIds}`);
     const products = await Product.find({ _id: { $in: productIds } });
+    console.log(`products: ${products}`);
 
     for (const product of products) {
       let totalQuantity = 0;

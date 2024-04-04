@@ -1,7 +1,51 @@
+const Order = require("../model/orderModel")
 const cartHelper = require("../helper/cartHelper");
 const addressHelper = require("../helper/addressHelper");
 const orderHelper = require("../helper/orderHelper");
 const productHelper = require("../helper/productHelper");
+const mongoose = require("mongoose")
+function orderDate() {
+  const date = new Date();
+  const days = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  const dayOfWeek = days[date.getDay()];
+  const dayOfMonth = date.getDate();
+  const month = months[date.getMonth()];
+  const year = date.getFullYear();
+  let hours = date.getHours();
+  let minutes = date.getMinutes();
+  let seconds = date.getSeconds();
+  const ampm = hours >= 12 ? "PM" : "AM";
+  hours = hours % 12;
+  hours = hours ? hours : 12;
+  minutes = minutes < 10 ? "0" + minutes : minutes;
+  seconds = seconds < 10 ? "0" + seconds : seconds;
+  const time = hours + ":" + minutes + ":" + seconds + " " + ampm;
+
+  return `${dayOfWeek}, ${dayOfMonth} ${month} ${year}, ${time}`;
+}
 
 const checkoutRender = async (req, res) => {
   try {
@@ -79,17 +123,22 @@ const placeOrder = async (req, res) => {
     const totalAmount = await cartHelper.totalAmount(userId);
     console.log("totalAmount" + totalAmount);
 
+    const orderedDate = orderDate()
+
     if (paymentMethod === "cash on delivery") {
       console.log("payment_method === cash on delivery");
+      console.log(`req.body: ${req.body}, totalAmount: ${totalAmount}, cartItems: ${cartItems}, userId: ${userId}`);
       await orderHelper
-        .forOrderPlacing(req.body, totalAmount, cartItems, userId, coupon)
+        .forOrderPlacing(req.body, totalAmount, cartItems, userId)
         .then(async (response) => {
           console.log("inside placeorder");
           await productHelper.stockDecrease(cartItems);
+          console.log("stockDecrease over");
           await cartHelper.clearTheCart(userId);
+          console.log("clearTheCart over");
 
           // Render a view
-          res.render("userView/orderSuccess-page");
+          res.render("userView/orderSuccess-page", {cartItems, orderedDate:orderedDate});
         });
     }
 
@@ -151,7 +200,53 @@ const placeOrder = async (req, res) => {
   }
 };
 
+const orderDetailsPage = async (req, res) => {
+  try {
+    console.log("orderDetailsPage triggered");
+    const orderId = req.session.userData._id;
+    // console.log(orderId);
+
+    const orderDetails = await Order.aggregate([
+      { $match: { user: new mongoose.Types.ObjectId(orderId) } },
+      {
+        $lookup: {
+          from: "products",
+          localField: "orderedItems.product",
+          foreignField: "_id",
+          as: "orderedProducts",
+        },
+      },
+      {
+        $unwind: "$orderedItems",
+      },
+      {
+        $unwind: "$orderedProducts",
+      },
+      {
+        $project: {
+          _id: 0,
+          orderId: "$_id",
+          productName: "$orderedProducts.productName",
+          quantity: "$orderedItems.quantity",
+          size: "$orderedItems.size",
+          orderDate: "$orderDate",
+          totalAmount: "$totalAmount",
+          paymentMethod: "$paymentMethod",
+          orderStatus: "$orderStatus",
+        },
+      },
+    ]);
+
+    console.log(orderDetails);
+    res.render("userView/orderDetails-page", { orderDetails });
+  } catch (error) {
+    console.error("Error in orderDetails:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
 module.exports = {
   checkoutRender,
   placeOrder,
+  orderDetailsPage,
 };

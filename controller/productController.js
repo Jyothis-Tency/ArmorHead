@@ -29,6 +29,9 @@ const addProducts = async (req, res) => {
       productName: products.productName,
     });
     if (!productExists) {
+      // Calculate total quantity
+      const totalQuantity = smallQuantity + mediumQuantity + largeQuantity;
+
       const productSizes = [
         { size: "Small", quantity: smallQuantity },
         { size: "Medium", quantity: mediumQuantity },
@@ -51,6 +54,7 @@ const addProducts = async (req, res) => {
         regularPrice: products.regularPrice,
         salePrice: products.salePrice,
         productSizes,
+        totalQuantity, // Assign total quantity
         createdOn: new Date(),
         productImage: images,
       });
@@ -65,6 +69,7 @@ const addProducts = async (req, res) => {
     console.log(JSON.stringify(error));
   }
 };
+
 
 const ProductList = async (req, res) => {
   try {
@@ -103,6 +108,8 @@ const editProduct = async (req, res) => {
     const smallQuantity = parseInt(req.body.small_quantity, 10) || 0;
     const mediumQuantity = parseInt(req.body.medium_quantity, 10) || 0;
     const largeQuantity = parseInt(req.body.large_quantity, 10) || 0;
+    const totalQuantity = smallQuantity + mediumQuantity + largeQuantity; // Calculate total quantity
+
     const productSizes = [
       { size: "Small", quantity: smallQuantity },
       { size: "Medium", quantity: mediumQuantity },
@@ -128,6 +135,7 @@ const editProduct = async (req, res) => {
           regularPrice: products.regularPrice,
           salePrice: products.salePrice,
           productSizes,
+          totalQuantity, // Update total quantity
           createdOn: new Date(),
           productImage: images,
         },
@@ -147,6 +155,7 @@ const editProduct = async (req, res) => {
           regularPrice: products.regularPrice,
           salePrice: products.salePrice,
           productSizes,
+          totalQuantity, // Update total quantity
           createdOn: new Date(),
         },
         { new: true }
@@ -158,6 +167,7 @@ const editProduct = async (req, res) => {
     console.log(error.message);
   }
 };
+
 
 const deleteSingleImage = async (req, res) => {
   try {

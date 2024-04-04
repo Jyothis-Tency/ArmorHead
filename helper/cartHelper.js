@@ -14,28 +14,25 @@ const getAllCartItems = async (userId) => {
         $unwind: "$items",
       },
       {
-        $project: {
-          productId: "$items.productId",
-          quantity: "$items.quantity",
-          size: "$items.size",
-          total: "$items.total",
-        },
-      },
-      {
         $lookup: {
           from: "products",
-          localField: "productId",
+          localField: "items.productId",
           foreignField: "_id",
           as: "product",
         },
       },
       {
+        $addFields: {
+          product: { $arrayElemAt: ["$product", 0] }, // Get the first element of the 'product' array
+        },
+      },
+      {
         $project: {
-          productId: 1,
-          quantity: 1,
-          size: 1,
-          product: { $arrayElemAt: ["$product", 0] },
-          total: 1,
+          productId: "$items.productId",
+          quantity: "$items.quantity",
+          size: "$items.size",
+          product: 1, // Include the populated 'product' field
+          total: "$items.total",
         },
       },
     ]);
@@ -332,18 +329,19 @@ const totalAmount = async (userId) => {
   }
 };
 
-  const clearTheCart = async (userId) => {
-    try {
-      const result = await Cart.findOneAndUpdate(
-        { user: userId },
-        { $set: { items: [] } },
-        { new: true }
-      );
-      return result;
-    } catch (error) {
-      throw error;
-    }
-  };
+const clearTheCart = async (userId) => {
+  try {
+    console.log("clearTheCart triggered");
+    const result = await Cart.findOneAndUpdate(
+      { user: userId },
+      { $set: { items: [] } },
+      { new: true }
+    );
+    return result;
+  } catch (error) {
+    throw error;
+  }
+};
 
 module.exports = {
   getAllCartItems,

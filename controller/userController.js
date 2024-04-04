@@ -1,14 +1,17 @@
 const User = require("../model/userModel");
 const Product = require("../model/productModel");
+const Order = require("../model/orderModel")
 const Category = require("../model/categoryModel");
 const bcrypt = require("bcrypt");
 const otpHelper = require("../helper/otpHelper");
 const passwordHelper = require("../helper/passwordHelper");
 const addressHelper = require("../helper/addressHelper")
 const cartHelper = require("../helper/cartHelper")
+const orderHelper = require("../helper/orderHelper")
 const dateFormatHelper = require("../helper/dateFormatHelper")
 const nodemailer = require("nodemailer");
 const email2 = "jyothisgtency@gmail.com";
+const mongoose = require("mongoose");
 
 const renderHome = async (req, res) => {
   try {
@@ -188,6 +191,8 @@ const userProfile = async (req, res) => {
     console.log(userId);
     let userAddress = await addressHelper.findAnAddress(userId);
     console.log(userAddress);
+    let userOrders = await orderHelper.getOrderDetails(userId)
+    console.log(userOrders);
     // let userOrders = await Order.find({ user: userId });
     cartCount = await cartHelper.getCartCount(userId);
     // wishListCount = await wishlistHelper.getWishListCount(userId)
@@ -197,6 +202,7 @@ const userProfile = async (req, res) => {
       loginStatus: req.session.userData,
       allAddress: allAddress,
       userAddress: userAddress,
+      userOrders:userOrders,
       formatDate: dateFormatHelper.formatDate,
     });
   } catch (error) {
@@ -383,6 +389,101 @@ const resendOtp = async (req, res) => {
   }
 };
 
+const cancelOrder = async (req, res) => {
+  try {
+    console.log("inside cancel order");
+    const { orderId } = req.body;
+    console.log("Order ID:", orderId);
+    console.log("Is Order ID valid?", mongoose.Types.ObjectId.isValid(orderId));
+
+    // Find the order by its ObjectId
+    const order = await Order.aggregate([
+      { $match: { _id: new mongoose.Types.ObjectId(orderId) } },
+      {
+        $lookup: {
+          from: "products",
+          localField: "orderedItems.product",
+          foreignField: "_id",
+          as: "orderedProducts",
+        },
+      },
+      {
+        $unwind: "$orderedItems",
+      },
+      {
+        $unwind: "$orderedProducts",
+      },
+      {
+        $project: {
+          _id: 0,
+          orderId: "$_id",
+          productName: "$orderedProducts.productName",
+          quantity: "$orderedItems.quantity",
+          size: "$orderedItems.size",
+          orderDate: "$orderDate",
+          totalAmount: "$totalAmount",
+          paymentMethod: "$paymentMethod",
+          orderStatus: "$orderStatus",
+        },
+      },
+    ]);
+
+    if (!order || order.length === 0) {
+      return res.status(404).json({ error: "Order not found" });
+    }
+
+    console.log(order);
+
+    // Further logic for cancelling the order...
+  } catch (error) {
+    console.error("Error cancelling order:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+
+const returnOrder = async (req, res) => {
+  try {
+    const { orderId } = req.body;
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return res.status(404).json({ error: "Order not found" });
+    }
+    if (order.orderStatus === "delivered") {
+      order.orderStatus = "returned";
+      await order.save();
+      for (const item of order.orderedItems) {
+        const product = await Product.findById(item.product);
+        if (!product) {
+          console.error(`Product not found for item: ${item}`);
+          continue;
+        }
+        if (!product.productSizes || !Array.isArray(product.productSizes)) {
+          console.error(
+            `Product sizes not defined or not an array for product: ${product}`
+          );
+          continue;
+        }
+        const sizeIndex = product.productSizes.findIndex(
+          (size) => size.size === item.size
+        );
+        if (sizeIndex !== -1) {
+          product.productSizes[sizeIndex].quantity += item.quantity;
+          await product.save();
+        } else {
+          console.error(`Size ${item.size} not found for product: ${product}`);
+        }
+      }
+      return res.status(200).json({ message: "Order returned successfully" });
+    } else {
+      return res.status(400).json({ error: "Order cannot be returned" });
+    }
+  } catch (error) {
+    console.error("Error returning order:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
 module.exports = {
   renderHome,
   userSignupGet,
@@ -398,5 +499,7 @@ module.exports = {
   verifyForgotPassOtp,
   postNewPassword,
   resendOtp,
+  cancelOrder,
+  returnOrder,
 };
  
