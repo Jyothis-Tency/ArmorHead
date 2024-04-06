@@ -1,0 +1,90 @@
+<%- include("../partials/userHeader") %>
+
+<div style="display: flex; justify-content: center; height: 100vh; align-items: center; margin-top: -100px;">
+  <div style="width: 50%; height: auto;">
+      <form action="/edit-address" method="POST" style="padding: 20px; border: 1px solid #ccc; border-radius: 5px;">
+          <div style="margin-bottom: 10px;">
+              <label for="firstName" style="display: inline-block; width: 100px;">First Name:</label>
+              <input type="text" id="firstName" name="firstName" value="<%= firstName %>" required style="width: 250px;">
+          </div>
+          <div style="margin-bottom: 10px;">
+              <label for="lastName" style="display: inline-block; width: 100px;">Last Name:</label>
+              <input type="text" id="lastName" name="lastName" value="<%= lastName %>" required style="width: 250px;">
+          </div>
+          <div style="margin-bottom: 10px;">
+              <label for="house" style="display: inline-block; width: 100px;">House:</label>
+              <input type="text" id="house" name="house" value="<%= house %>" required style="width: 250px;">
+          </div>
+          <div style="margin-bottom: 10px;">
+              <label for="locality" style="display: inline-block; width: 100px;">Locality:</label>
+              <input type="text" id="locality" name="locality" value="<%= locality %>" required style="width: 250px;">
+          </div>
+          <div style="margin-bottom: 10px;">
+              <label for="city" style="display: inline-block; width: 100px;">City:</label>
+              <input type="text" id="city" name="city" value="<%= city %>" required style="width: 250px;">
+          </div>
+          <div style="margin-bottom: 10px;">
+              <label for="state" style="display: inline-block; width: 100px;">State:</label>
+              <input type="text" id="state" name="state" value="<%= state %>" required style="width: 250px;">
+          </div>
+          <div style="margin-bottom: 10px;">
+              <label for="pincode" style="display: inline-block; width: 100px;">Pincode:</label>
+              <input type="text" id="pincode" name="pincode" value="<%= pincode %>" required style="width: 250px;">
+          </div>
+          <div style="margin-bottom: 10px;">
+              <label for="country" style="display: inline-block; width: 100px;">Country:</label>
+              <input type="text" id="country" name="country" value="<%= country %>" required style="width: 250px;">
+          </div>
+          <div style="margin-bottom: 10px;">
+              <label for="email" style="display: inline-block; width: 100px;">Email:</label>
+              <input type="email" id="email" name="email" value="<%= email %>" required style="width: 250px;">
+          </div>
+          <div style="margin-bottom: 10px;">
+              <label for="phone" style="display: inline-block; width: 100px;">Phone:</label>
+              <input type="tel" id="phone" name="phone" value="<%= phone %>" required style="width: 250px;">
+          </div>
+          <button type="submit" style="margin-left: 100px;">Submit</button>
+      </form>
+  </div>
+</div>
+
+<%- include("../partials/userFooter") %>
+
+<script>
+  $(document).ready(function() {
+    $('form[action="/edit-address"]').submit(function(event) {
+        event.preventDefault(); // Prevent default form submission
+        
+        // Collect address details from form fields
+        var addressData = {
+            firstName: $('#firstName').val(),
+            lastName: $('#lastName').val(),
+            house: $('#house').val(),
+            locality: $('#locality').val(),
+            city: $('#city').val(),
+            state: $('#state').val(),
+            pincode: $('#pincode').val(),
+            country: $('#country').val(),
+            email: $('#email').val(),
+            phone: $('#phone').val(),
+            userId: $('#userId').val() // Fetch user ID from hidden input field
+        };
+        
+        // Send AJAX request to backend
+        $.ajax({
+            type: 'POST',
+            url: '/edit-address',
+            data: addressData,
+            success: function(response) {
+                console.log('Address edited successfully:', response);
+                // Optionally, you can redirect the user to another page after successful edit
+                window.location.href = '/user-profile'; // Redirect to user profile page
+            },
+            error: function(error) {
+                console.error('Error editing address:', error);
+            }
+        });
+    });
+});
+
+</script>

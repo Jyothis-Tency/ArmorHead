@@ -100,141 +100,109 @@
             <div class="checkbox-form">
               <h3>Billing Details</h3>
               <div class="row">
-                <div class="col-md-12">
-                  <div class="checkout-form-list">
-                    <label for="firstName"
-                      >First Name<span class="required">*</span></label
-                    >
-                    <input
-                      type="text"
-                      id="firstName"
-                      name="firstName"
-                      placeholder=""
-                      value="<%= address.firstName %>"
-                    />
+                <% allAddress.forEach(address => { %>
+                <div class="col-md-4">
+                  <!-- Adjust column size as needed -->
+                  <div class="address-container">
+                    <div class="checkout-form-list">
+                      <label>First Name<span class="required">*</span></label>
+                      <input
+                        type="text"
+                        name="firstName"
+                        value="<%= address.firstName %>"
+                        disabled
+                      />
+                    </div>
+                    <div class="checkout-form-list">
+                      <label>Last Name<span class="required">*</span></label>
+                      <input
+                        type="text"
+                        name="lastName"
+                        value="<%= address.lastName %>"
+                        disabled
+                      />
+                    </div>
+                    <div class="checkout-form-list">
+                      <label>House / Flat<span class="required">*</span></label>
+                      <input
+                        type="text"
+                        name="house"
+                        value="<%= address.house %>"
+                        disabled
+                      />
+                    </div>
+                    <div class="checkout-form-list">
+                      <label>Locality<span class="required">*</span></label>
+                      <input
+                        type="text"
+                        name="locality"
+                        value="<%= address.locality %>"
+                        disabled
+                      />
+                    </div>
+                    <div class="checkout-form-list">
+                      <label>City<span class="required">*</span></label>
+                      <input
+                        type="text"
+                        name="city"
+                        value="<%= address.city %>"
+                        disabled
+                      />
+                    </div>
+                    <div class="checkout-form-list">
+                      <label>State<span class="required">*</span></label>
+                      <input
+                        type="text"
+                        name="state"
+                        value="<%= address.state %>"
+                        disabled
+                      />
+                    </div>
+                    <div class="checkout-form-list">
+                      <label>Pincode<span class="required">*</span></label>
+                      <input
+                        type="text"
+                        name="pincode"
+                        value="<%= address.pincode %>"
+                        disabled
+                      />
+                    </div>
+                    <div class="checkout-form-list">
+                      <label
+                        >Email Address<span class="required">*</span></label
+                      >
+                      <input
+                        type="email"
+                        name="email"
+                        value="<%= address.email %>"
+                        disabled
+                      />
+                    </div>
+                    <div class="checkout-form-list">
+                      <label>Phone<span class="required">*</span></label>
+                      <input
+                        type="text"
+                        name="phone"
+                        value="<%= address.phone %>"
+                        disabled
+                      />
+                    </div>
+                    <div class="select-address">
+                      <input
+                        type="checkbox"
+                        id="selectAddress<%= address._id %>"
+                        name="selectAddress"
+                        value="<%= address._id %>"
+                      />
+                      <label for="selectAddress<%= address._id %>"
+                        >Select This Address</label
+                      >
+                    </div>
                   </div>
                 </div>
-                <div class="col-md-6">
-                  <div class="checkout-form-list">
-                    <label for="lastName"
-                      >Last Name <span class="required">*</span></label
-                    >
-                    <input
-                      type="text"
-                      id="lastName"
-                      name="lastName"
-                      placeholder=""
-                      value="<%= address.lastName %>"
-                    />
-                  </div>
-                </div>
-                <div class="col-md-12">
-                  <div class="checkout-form-list">
-                    <label for="houseFlat"
-                      >House / Flat <span class="required">*</span></label
-                    >
-                    <input
-                      type="text"
-                      id="houseFlat"
-                      name="house"
-                      placeholder="House / Flat"
-                      value="<%= address.house %>"
-                    />
-                  </div>
-                </div>
-                <div class="col-md-12">
-                  <div class="checkout-form-list">
-                    <label for="locality"
-                      >Locality<span class="required">*</span></label
-                    >
-                    <input
-                      type="text"
-                      id="locality"
-                      name="locality"
-                      placeholder="Locality"
-                      value="<%= address.locality %>"
-                    />
-                  </div>
-                </div>
-                <div class="col-md-12">
-                  <div class="checkout-form-list">
-                    <label for="city"
-                      >City <span class="required">*</span></label
-                    >
-                    <input
-                      type="text"
-                      id="city"
-                      name="city"
-                      placeholder="City"
-                      value="<%= address.city %>"
-                    />
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="checkout-form-list">
-                    <label for="state"
-                      >State <span class="required">*</span></label
-                    >
-                    <input
-                      type="text"
-                      id="state"
-                      name="state"
-                      placeholder="State"
-                      value="<%= address.state %>"
-                    />
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="checkout-form-list">
-                    <label for="pincode"
-                      >Pincode <span class="required">*</span></label
-                    >
-                    <input
-                      type="text"
-                      id="pincode"
-                      name="pincode"
-                      placeholder="Pincode"
-                      value="<%= address.pincode %>"
-                    />
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="checkout-form-list">
-                    <label for="email"
-                      >Email Address <span class="required">*</span></label
-                    >
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      placeholder="Email Address"
-                      value="<%= address.email %>"
-                    />
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="checkout-form-list">
-                    <label for="phone"
-                      >Phone <span class="required">*</span></label
-                    >
-                    <input
-                      type="text"
-                      id="phone"
-                      name="phone"
-                      placeholder="Phone"
-                      value="<%= address.phone %>"
-                    />
-                  </div>
-                </div>
-                <div class="col-md-12">
-                  <div class="country-select">
-                    <label for="country"
-                      >Country <span class="required">*</span></label
-                    >
-                    <select id="country" name="country"></select>
-                  </div>
-                </div>
+                <% }); %>
               </div>
+
               <div class="different-address">
                 <div class="ship-different-title">
                   <h3>
@@ -319,10 +287,12 @@
                           type="checkbox"
                           id="cod-checkbox"
                           class="styled-checkbox"
-                          name="payment_method" 
+                          name="payment_method"
                           value="Cash on Delivery"
                         />
-                        <label for="cod-checkbox" class="checkbox-label">Cash on Delivery (COD)</label>
+                        <label for="cod-checkbox" class="checkbox-label"
+                          >Cash on Delivery (COD)</label
+                        >
                       </h5>
                     </div>
 
@@ -354,6 +324,37 @@
 </main>
 
 <%- include("../partials/userFooter") %>
+
+<script>
+    // Wait for the document to be fully loaded
+    document.addEventListener("DOMContentLoaded", function() {
+        // Get all the checkboxes for selecting addresses
+        var checkboxes = document.querySelectorAll('input[name="selectAddress"]');
+        
+        // Add a click event listener to each checkbox
+        checkboxes.forEach(function(checkbox) {
+            checkbox.addEventListener('click', function(event) {
+                // Check if the checkbox is checked
+                if (this.checked) {
+                    // If checked, do something (e.g., highlight the selected address)
+                    var selectedAddressId = this.value; // Get the ID of the selected address
+                    var selectedAddressContainer = document.querySelector('#address_' + selectedAddressId); // Get the container of the selected address
+                    // Example: Add a class to highlight the selected address
+                    selectedAddressContainer.classList.add('selected-address');
+                    
+                    // Optionally, you can also perform additional actions here, such as updating the UI to reflect the selected address
+                } else {
+                    // If unchecked, you can perform some other actions (e.g., remove the highlight)
+                    var selectedAddressId = this.value; // Get the ID of the selected address
+                    var selectedAddressContainer = document.querySelector('#address_' + selectedAddressId); // Get the container of the selected address
+                    // Example: Remove the class to unhighlight the selected address
+                    selectedAddressContainer.classList.remove('selected-address');
+                }
+            });
+        });
+    });
+</script>
+
 
 <script>
   // Function to fetch all countries from the REST Countries API
@@ -483,4 +484,3 @@
     border-bottom: none; /* Remove bottom border from last row */
   }
 </style>
-

@@ -1,70 +1,95 @@
 <%- include("../partials/userHeader") %>
 
 <div class="table-responsive" style="min-height: 500px">
-<table style="width: 100%; border-collapse: collapse">
-  <thead>
-    <tr style="border-bottom: 1px solid #ccc">
-      <th style="padding: 8px; text-align: center">Product</th>
-      <th style="padding: 8px; text-align: center">Quantity</th>
-      <th style="padding: 8px; text-align: center">Size</th>
-      <th style="padding: 8px; text-align: center">Order Date</th>
-      <th style="padding: 8px; text-align: center">Payment Method</th>
-      <th style="padding: 8px; text-align: center">Order Status</th>
-      <th style="padding: 8px; text-align: center">Action</th>
-      <th style="display: none">Order ID</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% for (let i = 0; i < orderDetails.length; i++) { %>
-      <!-- Sample order item -->
-      <% const order = orderDetails[i]; %>
+  <table style="width: 100%; border-collapse: collapse">
+    <thead>
       <tr style="border-bottom: 1px solid #ccc">
+        <th style="padding: 8px; text-align: center">Product Image</th>
+        <th style="padding: 8px; text-align: center">Product</th>
+        <th style="padding: 8px; text-align: center">Quantity</th>
+        <th style="padding: 8px; text-align: center">Size</th>
+        <th style="padding: 8px; text-align: center">Order Date</th>
+        <th style="padding: 8px; text-align: center">Payment Method</th>
+        <!-- Updated from Order Status to Order Stat -->
+        <th style="padding: 8px; text-align: center">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% for (let i = 0; i < orderDetails.length; i++) { %> <% const order =
+      orderDetails[i]; %>
+      <tr style="border-bottom: 1px solid #ccc">
+        <td style="padding: 8px; text-align: center">
+          <img
+            src="/uploads/product-images/<%= order.productImage[1] %>"
+            alt="Product Image"
+            style="max-width: 100px; max-height: 100px"
+          />
+        </td>
         <td style="padding: 8px; text-align: center">
           <%= order.productName %>
         </td>
         <td style="padding: 8px; text-align: center"><%= order.quantity %></td>
         <td style="padding: 8px; text-align: center"><%= order.size %></td>
-        <td style="padding: 8px; text-align: center"><%= order.orderDate %></td>
+        <td style="padding: 8px; text-align: center">
+          <%= order.orderDate ? new
+          Date(order.orderDate).toLocaleString('en-US', { dateStyle: 'medium',
+          timeStyle: 'short' }) : '' %>
+        </td>
         <td style="padding: 8px; text-align: center">
           <%= order.paymentMethod %>
         </td>
+        <!-- Updated from Order Status to Order Stat -->
         <td style="padding: 8px; text-align: center">
-          <%= order.orderStatus %>
+          <% if (order.orderStat === 'cancelled') { %>
+          <span>Cancelled</span>
+          <% } else if (order.orderStat === 'returned') { %>
+          <span>Returned</span>
+          <% } else if (order.orderStat === 'confirmed' || order.orderStat ===
+          'pending') { %>
+          <button
+            class="cancel-btn"
+            data-order-id="<%= order.orderedItemId %>"
+            style="
+              background-color: red;
+              color: white;
+              padding: 5px 10px;
+              border: none;
+              cursor: pointer;
+            "
+            onclick="cancelOrder('<%= order.orderedItemId %>')"
+          >
+            Cancel
+          </button>
+          <% } else if (order.orderStat === 'delivered') { %>
+          <button
+            class="return-btn"
+            data-order-id="<%= order.orderedItemId %>"
+            style="
+              background-color: yellow;
+              color: black;
+              padding: 5px 10px;
+              border: none;
+              cursor: pointer;
+              margin-bottom: 5px;
+            "
+            onclick="returnOrder('<%= order.orderedItemId %>')"
+          >
+            Return
+          </button>
+          <% } %>
         </td>
-<td style="padding: 8px; text-align: center">
-  <% if (order.orderStatus === 'cancelled') { %>
-    <span>Cancelled</span>
-  <% } else if (order.orderStatus === 'returned') { %>
-    <span>Returned</span>
-  <% } else if (order.orderStatus === 'confirmed' || order.orderStatus === 'pending') { %>
-    <!-- Cancel Button -->
-    <button class="cancel-btn" data-order-id="<%= order._id %>" style="background-color: red; color: white; padding: 5px 10px; border: none; cursor: pointer;">Cancel</button>
-  <% } else if (order.orderStatus === 'delivered') { %>
-    <!-- Return Button -->
-    <button class="return-btn" data-order-id="<%= order._id %>" style="background-color: yellow; color: black; padding: 5px 10px; border: none; cursor: pointer; margin-bottom: 5px;">Return</button>
-  <% } %>
-</td>
-
-        <td style="display: none"><%= order.orderId %></td>
       </tr>
-      <!-- Repeat this block for each order item -->
-    <% } %>
-  </tbody>
-</table>
-
-
+      <% } %>
+    </tbody>
+  </table>
 </div>
 
 <%- include("../partials/userFooter") %>
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
-$(document).ready(function () {
-  $(".cancel-btn").click(function () {
-    // Extract orderId from data-order-id attribute
-    let orderId = $(this).data("order-id");
-    console.log(orderId);
-    console.log("orderId:", orderId);
-
+  function cancelOrder(orderId) {
+    console.log("Cancelling order with ID:", orderId);
     // Display confirmation dialog using SweetAlert2
     Swal.fire({
       title: "Are you sure?",
@@ -84,7 +109,11 @@ $(document).ready(function () {
             // Update the button text to "Cancelled" upon successful cancellation
             $('.cancel-btn[data-order-id="' + orderId + '"]').text("Cancelled");
             // Show success message using SweetAlert2
-            Swal.fire("Cancelled!", "Your order has been cancelled.", "success");
+            Swal.fire(
+              "Cancelled!",
+              "Your order has been cancelled.",
+              "success"
+            );
           },
           error: function (err) {
             console.error("Error cancelling order:", err);
@@ -101,49 +130,45 @@ $(document).ready(function () {
         Swal.fire("Cancelled", "Your order is safe :)", "error");
       }
     });
-  });
+  }
 
-  $(document).ready(function () {
-    $(".return-btn").click(function () {
-      let orderId = $(this).data("order-id");
-      console.log("orderId:", orderId);
-      Swal.fire({
-        title: "Are you sure?",
-        text: "Once returned, you will not be able to recover this order!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Yes, return it!",
-        cancelButtonText: "No, keep it",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          // User confirmed the return, make AJAX request
-          $.ajax({
-            url: "/return-order",
-            method: "POST",
-            data: { orderId: orderId },
-            success: function (response) {
-              // Update the button text to "Returned" upon successful return
-              $('.return-btn[data-order-id="' + orderId + '"]').text("Returned");
-              // Show success message using SweetAlert2
-              Swal.fire("Returned!", "Your order has been returned.", "success");
-            },
-            error: function (err) {
-              console.error("Error returning order:", err);
-              // Show error message using SweetAlert2
-              Swal.fire(
-                "Error!",
-                "Failed to return the order. Please try again later.",
-                "error"
-              );
-            },
-          });
-        } else if (result.dismiss === Swal.DismissReason.cancel) {
-          // User clicked "No", keep the order
-          Swal.fire("Cancelled", "Your order is safe :)", "error");
-        }
-      });
+  function returnOrder(orderId) {
+    console.log("Returning order with ID:", orderId);
+    // Display confirmation dialog using SweetAlert2
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Once returned, you will not be able to recover this order!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, return it!",
+      cancelButtonText: "No, keep it",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // User confirmed the return, make AJAX request
+        $.ajax({
+          url: "/return-order",
+          method: "POST",
+          data: { orderId: orderId }, // Include orderId in the data sent to the backend
+          success: function (response) {
+            // Update the button text to "Returned" upon successful return
+            $('.return-btn[data-order-id="' + orderId + '"]').text("Returned");
+            // Show success message using SweetAlert2
+            Swal.fire("Returned!", "Your order has been returned.", "success");
+          },
+          error: function (err) {
+            console.error("Error returning order:", err);
+            // Show error message using SweetAlert2
+            Swal.fire(
+              "Error!",
+              "Failed to return the order. Please try again later.",
+              "error"
+            );
+          },
+        });
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        // User clicked "No", keep the order
+        Swal.fire("Cancelled", "Your order is safe :)", "error");
+      }
     });
-  });
-});
+  }
 </script>
-

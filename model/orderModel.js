@@ -14,6 +14,10 @@ const orderSchema = mongoose.Schema(
     },
     orderedItems: [
       {
+        orderId: {
+          type: mongoose.Schema.Types.ObjectId,
+          default: () => new mongoose.Types.ObjectId(),
+        },
         product: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "products",
@@ -22,9 +26,24 @@ const orderSchema = mongoose.Schema(
         size: {
           type: String,
           default: "Small",
-          enum: ["Small", "Medium", "Large"], // Replace with full names
+          enum: ["Small", "Medium", "Large"],
         },
         discountAvailed: Number,
+        orderStat: {
+          // Add orderStat field inside orderedItems
+          type: String,
+          enum: [
+            "pending",
+            "confirmed",
+            "shipped",
+            "outForDelivery",
+            "delivered",
+            "cancelled",
+            "return pending",
+            "returned",
+          ],
+          default: "confirmed",
+        },
       },
     ],
     address: mongoose.Schema.Types.ObjectId,
@@ -54,13 +73,15 @@ const orderSchema = mongoose.Schema(
     cancellationReason: {
       type: String,
       maxlength: 20,
-      default: null, // Add default value as null
+      default: null,
     },
   },
   {
     timestamps: true,
   }
 );
+
+
 
 // orderSchema.pre("save", async function (next) {
 //   try {

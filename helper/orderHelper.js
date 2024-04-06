@@ -53,17 +53,17 @@ const forOrderPlacing = async (order, totalAmount, cartItems, userId1) => {
 
     let status =
       order.payment_method == "Cash on Delivery" ? "confirmed" : "pending";
-    console.log(status);
+    // console.log(status);
     let date = orderDate();
-    console.log(date);
+    // console.log(date);
     let userId = userId1;
-    console.log(userId);
+    // console.log(userId);
     let paymentMethod = order.payment_method;
-    console.log(paymentMethod);
+    // console.log(paymentMethod);
     let address = await addressHelper.findAnAddress(userId);
-    console.log(address);
+    // console.log(address);
     let itemsOrdered = cartItems;
-    console.log(itemsOrdered);
+    // console.log(itemsOrdered);
     console.log("2");
     let completedOrders = new Order({
       user: userId,
@@ -82,35 +82,34 @@ const forOrderPlacing = async (order, totalAmount, cartItems, userId1) => {
     throw error; // Propagate any errors
   }
 };
+
 const getOrderDetails = async (userId) => {
   try {
     const result = await Order.aggregate([
       { $match: { user: new mongoose.Types.ObjectId(userId) } },
+      { $unwind: "$orderedItems" }, // Unwind orderedItems array
       {
         $lookup: {
           from: "products",
           localField: "orderedItems.product",
           foreignField: "_id",
-          as: "orderedProducts",
+          as: "productDetails", // Renamed to productDetails
         },
-      },
-      {
-        $unwind: "$orderedItems",
-      },
-      {
-        $unwind: "$orderedProducts",
       },
       {
         $project: {
           _id: 0,
           orderId: "$_id",
-          productName: "$orderedProducts.productName",
+          orderedItemId: "$orderedItems.orderId",
+          productName: { $arrayElemAt: ["$productDetails.productName", 0] }, // Extract productName from productDetails array
+          productImage: { $arrayElemAt: ["$productDetails.productImage", 0] }, // Extract productImage from productDetails array
           quantity: "$orderedItems.quantity",
           size: "$orderedItems.size",
           orderDate: "$orderDate",
           totalAmount: "$totalAmount",
           paymentMethod: "$paymentMethod",
           orderStatus: "$orderStatus",
+          orderStat: "$orderedItems.orderStat", // Project the orderStat field
         },
       },
     ]);
@@ -118,9 +117,12 @@ const getOrderDetails = async (userId) => {
     return result;
   } catch (error) {
     console.error("Error finding order details:", error);
-    throw error; // Throw the error for handling
+    throw error;
   }
 };
+
+
+
 
 
 

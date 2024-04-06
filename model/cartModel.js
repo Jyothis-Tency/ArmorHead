@@ -4,13 +4,13 @@ const cartModel = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User", // Replace 'User' with your actual user schema name
+      ref: "User", // Reference the User model
     },
     items: [
       {
         productId: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "Product",
+          ref: "Product", // Reference the Product model
         },
         quantity: {
           type: Number,
@@ -39,4 +39,4 @@ const cartModel = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = new mongoose.model("Cart", cartModel);
+module.exports = mongoose.model("Cart", cartModel);

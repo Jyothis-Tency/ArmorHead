@@ -4,6 +4,7 @@ const adminController = require("../controller/adminController");
 const customerController = require("../controller/customerController");
 const productController = require("../controller/productController")
 const categoryController = require("../controller/categoryController")
+const orderController = require("../controller/orderController")
 
 const {isAdmin}= require("../authentication/authentify")
 
@@ -41,6 +42,11 @@ adminRoute.get("/editProduct", isAdmin, productController.getEditProduct)
 adminRoute.post("/editProduct/:id", isAdmin, upload.array("images", 5), productController.editProduct);
 adminRoute.post("/deleteImage", isAdmin, productController.deleteSingleImage)
 adminRoute.get("/blockProduct",isAdmin,productController.getBlockProduct)
-adminRoute.get("/unBlockProduct",isAdmin,productController.getUnblockProduct)
+adminRoute.get("/unBlockProduct", isAdmin, productController.getUnblockProduct)
+
+// Order Management
+adminRoute.get("/order-list", isAdmin, orderController.getOrderListAdmin);
+adminRoute.get('/orderDetailsAdmin/:orderId', isAdmin, orderController.getOrderDetailsAdmin);
+adminRoute.post('/updateOrderStatus/:orderId', isAdmin, orderController.updateOrderStatus);
 
 module.exports = adminRoute;

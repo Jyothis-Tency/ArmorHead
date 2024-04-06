@@ -31,7 +31,12 @@ const getAllCartItems = async (userId) => {
           productId: "$items.productId",
           quantity: "$items.quantity",
           size: "$items.size",
-          product: 1, // Include the populated 'product' field
+          product: {
+            $mergeObjects: [
+              "$product",
+              { productImage: "$product.productImage" }, // Include productImage field
+            ],
+          },
           total: "$items.total",
         },
       },
@@ -44,12 +49,24 @@ const getAllCartItems = async (userId) => {
   }
 };
 
+
 const getCartCount = async (userId) => {
   try {
-    // Removed unnecessary const count = 0;
-    const cart = await Cart.findOne({ user: userId });
-    // Simplified to directly return the count of cart items
-    return cart ? cart.items.length : 0;
+    const cart = await Cart.findOne({ user: userId }).populate(
+      "items.productId"
+    ); // Populate the productId field in items array
+    if (!cart) {
+      return 0; // Return 0 if cart is not found
+    }
+
+    let itemCount = 0; // Initialize item count
+
+    // Loop through each item in the cart
+    cart.items.forEach((item) => {
+      itemCount += item.quantity; // Add quantity of each item to itemCount
+    });
+
+    return itemCount;
   } catch (error) {
     console.error("Error in getCartCount:", error);
     throw error;
@@ -322,7 +339,11 @@ function currencyFormat(amount) {
 const totalAmount = async (userId) => {
   try {
     const cart = await Cart.findOne({ user: userId });
-    return cart.totalPrice;
+    if (!cart) {
+      return 0; // Return 0 if cart is not found
+    }
+    const totalPricePlus70 = cart.totalPrice + 70;
+    return totalPricePlus70;
   } catch (error) {
     // Handle error if necessary
     throw error;

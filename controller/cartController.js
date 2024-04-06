@@ -35,7 +35,6 @@ const userCart = async (req, res) => {
 
     res.render("userView/cart-page", {
       loginStatus: req.session.userData,
-
       allCartItems,
       cartCount,
       //wishListCount,

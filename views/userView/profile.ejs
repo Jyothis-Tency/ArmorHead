@@ -27,80 +27,120 @@
             </p>
 
             <!-- Recent Orders -->
-<div class="recent-orders">
-  <h3>Recent Orders</h3>
-  <% if (userOrders.length === 0) { %>
-    <table class="order-table">
-      <thead>
-        <tr>
-          <th>Product</th>
-          <th>Quantity</th>
-          <th>Size</th>
-          <th>Order Date</th>
-          <th>Payment Method</th>
-          <th>Order Status</th>
-        </tr>
-      </thead>
-      <tbody id="order-details">
-        <tr>
-          <td colspan="6">No new orders yet !!!!!!</td>
-        </tr>
-      </tbody>
-    </table>
-  <% } else { %>
-    <table class="order-table">
-      <thead>
-        <tr>
-          <th>Product</th>
-          <th>Quantity</th>
-          <th>Size</th>
-          <th>Order Date</th>
-          <th>Payment Method</th>
-          <th>Order Status</th>
-        </tr>
-      </thead>
-      <tbody id="order-details">
-        <% for (let i = 0; i < userOrders.length; i++) { %> 
-          <% const order = userOrders[i]; %>
-          <tr>
-            <td class="product-name">
-              <a href="#"><%= order.productName %></a>
-            </td>
-            <td class="product-quantity"><%= order.quantity %></td>
-            <td class="product-size"><%= order.size %></td>
-            <td class="order-date"><%= order.orderDate %></td>
-            <td class="payment-method"><%= order.paymentMethod %></td>
-            <td class="order-status"><%= order.orderStatus %></td>
-          </tr>
-        <% } %>
-      </tbody>
-    </table>
-  <% } %>
-  <!-- Button to navigate to order details -->
-  <button style="background-color: red; color: white; padding: 10px 20px; border: none; cursor: pointer;" onclick="window.location.href='/order-details'">To Order Details</button>
-</div>
+            <div class="recent-orders">
+              <h3>Recent Orders</h3>
+              <% if (userOrders.length === 0) { %>
+              <table class="order-table">
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>Product Image</th>
+                    <!-- Add new column for product image -->
+                    <th>Quantity</th>
+                    <th>Size</th>
+                    <th>Order Date</th>
+                    <th>Payment Method</th>
+                    <th>Order Status</th>
+                  </tr>
+                </thead>
+                <tbody id="order-details">
+                  <tr>
+                    <td colspan="7">No new orders yet !!!!!!</td>
+                    <!-- Adjust colspan for new column -->
+                  </tr>
+                </tbody>
+              </table>
+              <% } else { %>
+              <table class="order-table">
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>Product Image</th>
+                    <!-- Add new column for product image -->
+                    <th>Quantity</th>
+                    <th>Size</th>
+                    <th>Order Date</th>
+                    <th>Payment Method</th>
+                    <th>Order Status</th>
+                  </tr>
+                </thead>
+                <tbody id="order-details">
+                  <% for (let i = 0; i < userOrders.length; i++) { %> <% const
+                  order = userOrders[i]; %>
+                  <tr>
+                    <td class="product-name"><%= order.productName %></td>
+                    <td class="product-image" style="max-width: 100px">
+                      <!-- Adjust the max-width as per your preference -->
+                      <!-- Add image tag to display the product image -->
+                      <img
+                        src="/uploads/product-images/<%= order.productImage[1] %>"
+                        alt="<%= order.productName %>"
+                        class="product-image"
+                        style="max-width: 100%; height: auto"
+                      />
+                    </td>
 
+                    <td class="product-quantity"><%= order.quantity %></td>
+                    <td class="product-size"><%= order.size %></td>
+                    <td class="order-date">
+                      <%= new Date(order.orderDate).toLocaleString('en-US', {
+                      dateStyle: 'medium', timeStyle: 'short' }) %>
+                    </td>
+                    <td class="payment-method"><%= order.paymentMethod %></td>
+                    <td class="order-status"><%= order.orderStat %></td>
+                  </tr>
+                  <% } %>
+                </tbody>
+              </table>
+              <% } %>
+              <button
+                style="
+                  background-color: red;
+                  color: white;
+                  padding: 10px 20px;
+                  border: none;
+                  cursor: pointer;
+                "
+                onclick="window.location.href='/order-details'"
+              >
+                To Order Details
+              </button>
+            </div>
 
             <!-- Addresses -->
             <div class="addresses">
               <h3>Addresses</h3>
-              <% if (userAddress) { %>
-              <div class="address">
-                <h4>Edit Address</h4>
-                <p>First Name: <%= userAddress.firstName %></p>
-                <p>Last Name: <%= userAddress.lastName %></p>
-                <p>House: <%= userAddress.house %></p>
-                <p>Locality: <%= userAddress.locality %></p>
-                <p>City: <%= userAddress.city %></p>
-                <p>State: <%= userAddress.state %></p>
-                <p>Pincode: <%= userAddress.pincode %></p>
-                <p>Country: <%= userAddress.country %></p>
-                <p>Email: <%= userAddress.email %></p>
-                <p>Phone: <%= userAddress.phone %></p>
-                <button class="edit-address-btn">Edit Address</button>
-              </div>
+              <% if (allAddress.length > 0) { %>
+              <table class="address-table">
+                <tr>
+                  <% allAddress.forEach(address => { %>
+                  <td>
+                    <div class="address">
+                      <h4>Edit Address</h4>
+                      <p>First Name: <%= address.firstName %></p>
+                      <p>Last Name: <%= address.lastName %></p>
+                      <p>House: <%= address.house %></p>
+                      <p>Locality: <%= address.locality %></p>
+                      <p>City: <%= address.city %></p>
+                      <p>State: <%= address.state %></p>
+                      <p>Pincode: <%= address.pincode %></p>
+                      <p>Country: <%= address.country %></p>
+                      <p>Email: <%= address.email %></p>
+                      <p>Phone: <%= address.phone %></p>
+                      <button
+                        class="edit-address-btn"
+                        onclick="editAddress('<%= address._id.toString() %>')"
+                      >
+                        Edit Address
+                      </button>
+                      <button class="delete-address-btn" onclick="deleteAddress('<%= address._id.toString() %>')">Delete Address</button>
+                    </div>
+                  </td>
+                  <% }); %>
+                </tr>
+              </table>
               <% } else { %>
-              <p>No address found</p>
+              <p>No addresses found</p>
               <% } %>
             </div>
 
@@ -108,7 +148,47 @@
             <div class="add-address">
               <h3>Add Address</h3>
               <form class="address-form" action="/add-address" method="post">
-                <!-- Form fields for adding address -->
+                <!-- Address fields -->
+                <label for="firstName">First Name</label>
+                <input type="text" id="firstName" name="firstName" required />
+                <label for="lastName">Last Name</label>
+                <input type="text" id="lastName" name="lastName" required />
+                <label for="house">House</label>
+                <input type="text" id="house" name="house" required />
+                <label for="locality">Locality</label>
+                <input type="text" id="locality" name="locality" required />
+                <label for="city">City</label>
+                <input type="text" id="city" name="city" required />
+                <label for="state">State</label>
+                <input
+                  type="text"
+                  id="state"
+                  name="state"
+                  value="<%= userAddress ? userAddress.state : '' %>"
+                  required
+                />
+                <label for="pincode">Pincode</label>
+                <input
+                  type="number"
+                  id="pincode"
+                  name="pincode"
+                  value="<%= userAddress ? userAddress.pincode : '' %>"
+                  required
+                />
+                <label for="country">Country</label>
+                <input
+                  type="text"
+                  id="country"
+                  name="country"
+                  value="<%= userAddress ? userAddress.country : '' %>"
+                  required
+                />
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required />
+                <label for="phone">Phone</label>
+                <input type="tel" id="phone" name="phone" required />
+                <input type="hidden" id="userId" name="userId" value="userId" />
+                <button type="submit">Submit</button>
               </form>
             </div>
 
@@ -127,6 +207,94 @@
 </main>
 
 <%- include("../partials/userFooter") %>
+
+<script>
+  function editAddress(addressId) {
+    console.log(addressId);
+    $.ajax({
+      url: "/edit-address/" + addressId,
+      method: "GET",
+      // data: { addressId: addressId },
+    });
+  }
+</script>
+
+<script>
+  function deleteAddress(addressId) {
+    console.log(addressId);
+    $.ajax({
+      url: "/delete-address/" + addressId,
+      method: "DELETE",
+      success: function (response) {
+        window.location.reload();
+        // Handle success response if needed
+        console.log("Address deleted successfully:", response);
+        // Reload the page after successful deletion
+        
+      },
+      error: function (xhr, status, error) {
+        // Handle error response if needed
+        console.error("Error deleting address:", error);
+      },
+    });
+  }
+</script>
+
+
+
+<script>
+  async function fetchCountries() {
+    // Fetch countries from API
+  }
+
+  async function populateCountries() {
+    const selectCountry = document.querySelector('input[name="country"]');
+    const selectState = document.querySelector('input[name="state"]');
+    const pincodeInput = document.querySelector('input[name="pincode"]');
+
+    const countries = await fetchCountries();
+
+    countries.sort((a, b) => {
+      if (a.name.common < b.name.common) return -1;
+      if (a.name.common > b.name.common) return 1;
+      return 0;
+    });
+
+    selectCountry.innerHTML = "";
+
+    countries.forEach((country) => {
+      const option = document.createElement("option");
+      option.value = country.name.common;
+      option.textContent = country.name.common;
+      selectCountry.appendChild(option);
+    });
+
+    autoLocateLocation(selectCountry, selectState, pincodeInput);
+  }
+
+  function autoLocateLocation(selectCountry, selectState, pincodeInput) {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(async (position) => {
+        const { latitude, longitude } = position.coords;
+        const location = await reverseGeocode(latitude, longitude);
+        if (location) {
+          const { state, country, pincode } = location;
+          selectCountry.value = country;
+          selectState.value = state;
+          pincodeInput.value = pincode; // Set the value of the pincode input field
+        }
+      });
+    } else {
+      console.error("Geolocation is not supported by this browser.");
+    }
+  }
+
+  async function reverseGeocode(latitude, longitude) {
+    // Reverse geocoding API call
+  }
+
+  document.addEventListener("DOMContentLoaded", populateCountries);
+</script>
 
 <style>
   /* User Profile Page Styles */
