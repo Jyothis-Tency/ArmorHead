@@ -108,12 +108,23 @@
               <div class="product-info-list variant-item">
                 <ul>
                   <li><span>Brands:</span>AXOR</li>
-                  <li><span>Product Code:</span> d12</li>
-                  <li><span>Reward Points:</span> 100</li>
+                  <li><span>Category:</span> <%= category.name %></li>
                   <li>
-                    <span class="<%= data.totalQuantity === 0 ? 'out-of-stock' : 'in-stock' %>">
-        <%= data.totalQuantity === 0 ? 'Out of Stock' : 'In Stock' %>
-      </span>
+                    <div class="product_stock">
+                                <% let outOfStock = false; %>
+                                <% data.productSizes.forEach(size => { %>
+                                    <% console.log('Size:', size.size, 'Quantity:', size.quantity); %>
+                                    <% if (size.quantity <= 0) { %>
+                                        <span class="out_of_stock" style="color: #ff6347;">Out of Stock: <%= size.size %></span>
+                                        <% outOfStock = true; %>
+                                    <% } else { %>
+                                        <span class="stock_amount" style="color: green;"><%= size.size %>: <%= size.quantity %> left</span>
+                                    <% } %>
+                                <% }); %>
+                                <% if (!outOfStock) { %>
+                                    <span class="stock_amount">In Stock</span>
+                                <% } %>
+                            </div>
                   </li>
                 </ul>
               </div>
@@ -125,27 +136,41 @@
                       <div class="variant-name">
                         <span>size</span>
                       </div>
-<ul class="shop-link shop-size">
-  <li class="active" onclick="setSize('Large')">
-    <button id="buttonL" type="button" class="size-button">L</button>
-  </li>
-  <li class="active" onclick="setSize('Medium')">
-    <button id="buttonM" type="button" class="size-button">M</button>
-  </li>
-  <li class="active" onclick="setSize('Small')">
-    <button id="buttonS" type="button" class="size-button">S</button>
-  </li>
-</ul>
+                      <ul class="shop-link shop-size">
+                        <li class="active" onclick="setSize('Large')">
+                          <button
+                            id="buttonL"
+                            type="button"
+                            class="size-button"
+                          >
+                            L
+                          </button>
+                        </li>
+                        <li class="active" onclick="setSize('Medium')">
+                          <button
+                            id="buttonM"
+                            type="button"
+                            class="size-button"
+                          >
+                            M
+                          </button>
+                        </li>
+                        <li class="active" onclick="setSize('Small')">
+                          <button
+                            id="buttonS"
+                            type="button"
+                            class="size-button"
+                          >
+                            S
+                          </button>
+                        </li>
+                      </ul>
                     </div>
-                    <div class="plus-minus">
-                      <div class="cart-plus-minus">
-                        <input
-                          id="quantityInput"
-                          type="text"
-                          name="quantity"
-                          value="1"
-                        />
-                      </div>
+
+                    <div class="number-container">
+                      <button type="button" onclick="decrement()">-</button>
+                      <input type="number" id="quantityInput" value="1" readonly/>
+                      <button type="button" onclick="increment()">+</button>
                     </div>
                     <button class="details-action-icon" type="submit">
                       <i class="fas fa-heart"></i>
@@ -358,25 +383,25 @@
       <div class="row">
         <div class="col-xl-12">
           <div class="area-title text-center mb-50">
-            <h2>Releted Products</h2>
+            <h2>Related Products</h2>
             <p>Browse the huge variety of our products</p>
           </div>
         </div>
       </div>
       <div class="product-slider-2 owl-carousel">
+        <% products.forEach(product => { %>
         <div class="pro-item">
           <div class="product-wrapper">
             <div class="product-img mb-25">
-              <a href="product-details.html">
-                <img src="/user-assets/img/product/pro5.jpg" alt="" />
+              <a href="/productDetails/<%= product._id %>">
                 <img
-                  class="secondary-img"
-                  src="/user-assets/img/product/pro6.jpg"
-                  alt=""
+                  src="/uploads/product-images/<%= product.productImage[0] %>"
+                  alt="<%= product.productName %>"
                 />
+                <!-- Assuming product has a productImage array with at least one image -->
               </a>
               <div class="product-action text-center">
-                <a href="#" title="Shoppingb Cart">
+                <a href="#" title="Shopping Cart">
                   <i class="flaticon-shopping-cart"></i>
                 </a>
                 <a href="#" title="Quick View">
@@ -391,252 +416,197 @@
                   <i class="flaticon-compare"></i>
                 </a>
               </div>
-              <div class="sale-tag">
-                <span class="new">new</span>
-                <span class="sale">sale</span>
-              </div>
+              <!-- Add sale tag logic here if needed -->
             </div>
             <div class="product-content">
               <div class="pro-cat mb-10">
-                <a href="shop.html">decor, </a>
-                <a href="shop.html">furniture</a>
+                <a href="shop.html"><%= product.category.name %></a>
+                <!-- Assuming product has a category property that references a Category model -->
               </div>
               <h4>
-                <a href="product-details.html">Raglan Baseball Style shirt</a>
+                <a href="product-details.html"><%= product.productName %></a>
               </h4>
+              <!-- Assuming product has a productName property -->
               <div class="product-meta">
                 <div class="pro-price">
-                  <span>$119.00 USD</span>
-                  <span class="old-price">$230.00 USD</span>
+                  <span><%= product.salePrice %> USD</span>
+                  <!-- Assuming product has a salePrice property -->
+                  <% if (product.regularPrice) { %>
+                  <span class="old-price"><%= product.regularPrice %> USD</span>
+                  <!-- Assuming regularPrice is optional -->
+                  <% } %>
                 </div>
               </div>
-              <div class="product-wishlist">
-                <a href="#"><i class="far fa-heart" title="Wishlist"></i></a>
-              </div>
+              <!-- Add wishlist button logic here if needed -->
             </div>
           </div>
         </div>
-        <div class="pro-item">
-          <div class="product-wrapper">
-            <div class="product-img mb-25">
-              <a href="product-details.html">
-                <img src="/user-assets/img/product/pro7.jpg" alt="" />
-                <img
-                  class="secondary-img"
-                  src="/user-assets/img/product/pro8.jpg"
-                  alt=""
-                />
-              </a>
-              <div class="product-action text-center">
-                <a href="#" title="Shoppingb Cart">
-                  <i class="flaticon-shopping-cart"></i>
-                </a>
-                <a href="#" title="Quick View">
-                  <i class="flaticon-eye"></i>
-                </a>
-                <a
-                  href="#"
-                  data-toggle="tooltip"
-                  data-placement="right"
-                  title="Compare"
-                >
-                  <i class="flaticon-compare"></i>
-                </a>
-              </div>
-            </div>
-            <div class="product-content">
-              <div class="pro-cat mb-10">
-                <a href="shop.html">decor, </a>
-                <a href="shop.html">furniture</a>
-              </div>
-              <h4>
-                <a href="product-details.html">Raglan Baseball Style shirt</a>
-              </h4>
-              <div class="product-meta">
-                <div class="pro-price">
-                  <span>$119.00 USD</span>
-                  <span class="old-price">$230.00 USD</span>
-                </div>
-              </div>
-              <div class="product-wishlist">
-                <a href="#"><i class="far fa-heart" title="Wishlist"></i></a>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="pro-item">
-          <div class="product-wrapper">
-            <div class="product-img mb-25">
-              <a href="product-details.html">
-                <img src="/user-assets/img/product/pro9.jpg" alt="" />
-                <img
-                  class="secondary-img"
-                  src="/user-assets/img/product/pro10.jpg"
-                  alt=""
-                />
-              </a>
-              <div class="product-action text-center">
-                <a href="#" title="Shoppingb Cart">
-                  <i class="flaticon-shopping-cart"></i>
-                </a>
-                <a href="#" title="Quick View">
-                  <i class="flaticon-eye"></i>
-                </a>
-                <a
-                  href="#"
-                  data-toggle="tooltip"
-                  data-placement="right"
-                  title="Compare"
-                >
-                  <i class="flaticon-compare"></i>
-                </a>
-              </div>
-              <div class="sale-tag">
-                <span class="new">new</span>
-                <span class="sale">sale</span>
-              </div>
-            </div>
-            <div class="product-content">
-              <div class="pro-cat mb-10">
-                <a href="shop.html">decor, </a>
-                <a href="shop.html">furniture</a>
-              </div>
-              <h4>
-                <a href="product-details.html">Raglan Baseball Style shirt</a>
-              </h4>
-              <div class="product-meta">
-                <div class="pro-price">
-                  <span>$119.00 USD</span>
-                  <span class="old-price">$230.00 USD</span>
-                </div>
-              </div>
-              <div class="product-wishlist">
-                <a href="#"><i class="far fa-heart" title="Wishlist"></i></a>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="pro-item">
-          <div class="product-wrapper">
-            <div class="product-img mb-25">
-              <a href="product-details.html">
-                <img src="/user-assets/img/product/pro1.jpg" alt="" />
-                <img
-                  class="secondary-img"
-                  src="/user-assets/img/product/pro11.jpg"
-                  alt=""
-                />
-              </a>
-              <div class="product-action text-center">
-                <a href="#" title="Shoppingb Cart">
-                  <i class="flaticon-shopping-cart"></i>
-                </a>
-                <a href="#" title="Quick View">
-                  <i class="flaticon-eye"></i>
-                </a>
-                <a
-                  href="#"
-                  data-toggle="tooltip"
-                  data-placement="right"
-                  title="Compare"
-                >
-                  <i class="flaticon-compare"></i>
-                </a>
-              </div>
-              <div class="sale-tag">
-                <span class="new">new</span>
-                <span class="sale">sale</span>
-              </div>
-            </div>
-            <div class="product-content">
-              <div class="pro-cat mb-10">
-                <a href="shop.html">decor, </a>
-                <a href="shop.html">furniture</a>
-              </div>
-              <h4>
-                <a href="product-details.html">Raglan Baseball Style shirt</a>
-              </h4>
-              <div class="product-meta">
-                <div class="pro-price">
-                  <span>$119.00 USD</span>
-                  <span class="old-price">$230.00 USD</span>
-                </div>
-              </div>
-              <div class="product-wishlist">
-                <a href="#"><i class="far fa-heart" title="Wishlist"></i></a>
-              </div>
-            </div>
-          </div>
-        </div>
+        <% }) %>
       </div>
     </div>
   </section>
+
   <!-- product-area end -->
 </main>
 
 <%- include("../partials/userFooter") %>
-<script>
 
-  function addToCart(prodId) {
-    try {
-      alert("hi");
-      // Get the quantity from the plus-minus input
-      var quantity = $("#quantityInput").val();
-      console.log(`this is quantity ${quantity}`);
-      // Get the selected size
-      console.log(`this is size ${size}`);
-      console.log(`this is prodId ${prodId}`);
-      $.ajax({
-        type: "POST",
-        url: "/addToCart", // Adjust the URL if needed
-        data: {
-          size: size,
-          quantity: quantity,
-          prodId: prodId,
-        },
-        success: function (response) {
-          if (response.status === "true") {
-            alert("Product added to cart successfully");
-          } else {
-            alert("Failed to add product to cart");
-          }
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-          console.error("Error in addToCart AJAX request:", errorThrown);
-          alert("Error occurred while adding product to cart");
-        },
-      });
-    } catch (error) {
-      console.error("Error in addToCart function:", error);
+<script>
+  function increment() {
+    var numberInput = document.getElementById("quantityInput");
+    var currentValue = parseInt(numberInput.value);
+    if (currentValue < 5) {
+      numberInput.value = currentValue + 1;
+    } else if (currentValue === 5) {
+      showToast("You can't add above 5 quantity per product", "warning");
+    // Reload the page after showing the toast
+    setTimeout(function() {
+      location.reload();
+    }, 1000);
+    }
+  }
+
+  function decrement() {
+    var numberInput = document.getElementById("quantityInput");
+    var currentValue = parseInt(numberInput.value);
+    if (currentValue > 1) {
+      numberInput.value = currentValue - 1;
+    } else if (currentValue === 1) {
+      showToast("There should be at least one product", "warning");
+    // Reload the page after showing the toast
+    setTimeout(function() {
+      location.reload();
+    }, 1000);
     }
   }
 </script>
 
 <script>
+  function addToCart(prodId) {
+  try {
+    // Get the quantity from the plus-minus input
+    var quantity = $("#quantityInput").val();
+    console.log(`this is quantity ${quantity}`);
+    // Get the selected size
+    console.log(`this is size ${size}`);
+    console.log(`this is prodId ${prodId}`);
+    $.ajax({
+      type: "POST",
+      url: "/addToCart", // Adjust the URL if needed
+      data: {
+        size: size,
+        quantity: quantity,
+        prodId: prodId,
+      },
+      success: function (response) {
+        if (response.status === "true") {
+          // Show success message using Toastify
+          Toastify({
+            text: "Product added to cart successfully",
+            duration: 3000, // Duration in milliseconds
+            close: true, // Show close button
+            gravity: "top", // Display position: 'top', 'bottom', 'left', 'right'
+            position: "center", // Alignment of position: 'left', 'right', 'center'
+            backgroundColor: "green", // Background color
+          }).showToast();
+        } else if(response.message) {
+          // Show error message using Toastify
+          Toastify({
+            text: response.message,
+            duration: 3000, // Duration in milliseconds
+            close: true, // Show close button
+            gravity: "top", // Display position: 'top', 'bottom', 'left', 'right'
+            position: "center", // Alignment of position: 'left', 'right', 'center'
+            backgroundColor: "red", // Background color
+          }).showToast();
+        }
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+        console.error("Error in addToCart AJAX request:", errorThrown);
+        // Show error message using Toastify
+        Toastify({
+          text: "Error occurred while adding product to cart",
+          duration: 3000, // Duration in milliseconds
+          close: true, // Show close button
+          gravity: "top", // Display position: 'top', 'bottom', 'left', 'right'
+          position: "center", // Alignment of position: 'left', 'right', 'center'
+          backgroundColor: "red", // Background color
+        }).showToast();
+      },
+    });
+  } catch (error) {
+    console.error("Error in addToCart function:", error);
+  }
+}
+
+</script>
+
+<script>
   // Get all buttons with the size-button class
-  var buttons = document.querySelectorAll('.size-button');
+  var buttons = document.querySelectorAll(".size-button");
 
   // Add event listener to each button
-  buttons.forEach(function(button) {
-    button.addEventListener('click', function() {
+  buttons.forEach(function (button) {
+    button.addEventListener("click", function () {
       // Remove 'clicked' class from all buttons
-      buttons.forEach(function(btn) {
-        btn.classList.remove('clicked');
+      buttons.forEach(function (btn) {
+        btn.classList.remove("clicked");
       });
       // Add 'clicked' class to the clicked button
-      button.classList.add('clicked');
+      button.classList.add("clicked");
     });
   });
 
   // Function to set size
-var size = ''; // Variable to store the size value
+  var size = "Small"; // Variable to store the size value
 
-function setSize(value) {
-  size = value; // Update the size variable with the value passed to the function
-  console.log('Selected size:', size); // Log the selected size (for demonstration)
-}
+  function setSize(value) {
+    size = value; // Update the size variable with the value passed to the function
+    console.log("Selected size:", size); // Log the selected size (for demonstration)
+  }
 
+  function showToast(message, type) {
+    // Use your preferred toast library to display the message
+    // For example, using the 'toastify-js' library
+    Toastify({
+      text: message,
+      duration: 3000,
+      backgroundColor: type === "error" ? "#ff6347" : "#32CD32", // Red for error, green for success
+    }).showToast();
+  }
+
+  
 </script>
+
+<style>
+  .number-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 200px;
+    height: 40px;
+    border: 2px solid #3498db;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  .number-container button {
+    width: 50px;
+    height: 100%;
+    border: none;
+    background-color: #3498db;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+  }
+  .number-container input[type="number"] {
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+    border: none;
+    outline: none;
+    font-size: 16px;
+  }
+</style>
 
 <style>
   .size-button {
@@ -653,8 +623,98 @@ function setSize(value) {
   }
 
   .out-of-stock {
-  color: red; /* Change text color for out of stock */
-  font-weight: bold; /* Optionally, make it bold */
-}
+    color: red; /* Change text color for out of stock */
+    font-weight: bold; /* Optionally, make it bold */
+  }
+</style>
 
+<style>
+  /* Global Styles */
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f8f8;
+    font-size: 13px; /* Reduce global font size */
+  }
+
+  /* Container Styles */
+  .container {
+    max-width: 1000px; /* Further reduce max-width */
+    margin: 15px auto; /* Further reduce margin */
+    padding: 0 5px; /* Further reduce horizontal padding */
+  }
+
+  /* Product Details Section Styles */
+  .product-details-area {
+    background-color: #fff;
+    border-radius: 6px; /* Further reduce border radius */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Reduce shadow intensity */
+    padding: 10px; /* Further reduce padding */
+    margin-bottom: 15px; /* Further reduce margin */
+  }
+
+  .product-details-area h2 {
+    font-size: 18px; /* Further reduce heading font size */
+    color: #333;
+    margin-bottom: 10px; /* Further reduce margin */
+  }
+
+  .product-details-area p {
+    color: #666;
+    line-height: 1.4;
+    margin-bottom: 10px; /* Further reduce margin */
+  }
+
+  /* Product Image Styles */
+  .product-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px; /* Further reduce border radius */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Reduce shadow intensity */
+  }
+
+  /* Product Description Styles */
+  .product-description {
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 6px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Reduce shadow intensity */
+    margin-top: 10px; /* Further reduce margin */
+  }
+
+  .product-description h3 {
+    font-size: 16px; /* Further reduce heading font size */
+    color: #333;
+    margin-bottom: 10px; /* Further reduce margin */
+  }
+
+  .product-description p {
+    color: #666;
+    line-height: 1.4;
+    margin-bottom: 10px; /* Further reduce margin */
+  }
+
+  /* Add to Cart Button Styles */
+  .add-to-cart-button {
+    background-color: #ff6347;
+    color: #fff;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 6px; /* Further reduce border radius */
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 10px; /* Further reduce margin */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Reduce shadow intensity */
+  }
+
+  .add-to-cart-button:hover {
+    background-color: #e74c3c;
+  }
+
+  /* Shop Details Area Styles */
+  .shop-details-area {
+    padding-top: 50px; /* Reduce the top padding */
+    padding-bottom: 100px; /* Keep the bottom padding as it is */
+  }
 </style>

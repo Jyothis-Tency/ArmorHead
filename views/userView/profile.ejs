@@ -12,7 +12,7 @@
               <li><a href="#">Account Details</a></li>
               <li><a href="#">Addresses</a></li>
               <li><a href="#">My Orders</a></li>
-              <li><a href="#">Sign Out</a></li>
+              <li><a href="/logout">Sign Out</a></li>
             </ul>
           </div>
         </div>
@@ -25,6 +25,12 @@
               manage your shipping and billing addresses, and edit your password
               and account details.
             </p>
+            <!-- account details -->
+            <div class="account-details">
+              <h3>Account Details</h3>
+              <p>Your Name : <%= loginStatus.username %></p>
+              <p>Email : <%= loginStatus.email %></p>
+            </div>
 
             <!-- Recent Orders -->
             <div class="recent-orders">
@@ -69,14 +75,13 @@
                   order = userOrders[i]; %>
                   <tr>
                     <td class="product-name"><%= order.productName %></td>
-                    <td class="product-image" style="max-width: 100px">
+                    <td class="product-image">
                       <!-- Adjust the max-width as per your preference -->
                       <!-- Add image tag to display the product image -->
                       <img
                         src="/uploads/product-images/<%= order.productImage[1] %>"
                         alt="<%= order.productName %>"
                         class="product-image"
-                        style="max-width: 100%; height: auto"
                       />
                     </td>
 
@@ -93,16 +98,7 @@
                 </tbody>
               </table>
               <% } %>
-              <button
-                style="
-                  background-color: red;
-                  color: white;
-                  padding: 10px 20px;
-                  border: none;
-                  cursor: pointer;
-                "
-                onclick="window.location.href='/order-details'"
-              >
+              <button onclick="window.location.href='/order-details'">
                 To Order Details
               </button>
             </div>
@@ -110,6 +106,7 @@
             <!-- Addresses -->
             <div class="addresses">
               <h3>Addresses</h3>
+              <button id="openAddAddressModalBtn">Add Address</button>
               <% if (allAddress.length > 0) { %>
               <table class="address-table">
                 <tr>
@@ -127,13 +124,12 @@
                       <p>Country: <%= address.country %></p>
                       <p>Email: <%= address.email %></p>
                       <p>Phone: <%= address.phone %></p>
-                      <button
-                        class="edit-address-btn"
-                        onclick="editAddress('<%= address._id.toString() %>')"
-                      >
+                      <button class="edit-address-btn" data-address="<%= JSON.stringify(address) %>">
                         Edit Address
                       </button>
-                      <button class="delete-address-btn" onclick="deleteAddress('<%= address._id.toString() %>')">Delete Address</button>
+                      <button onclick="deleteAddress('<%= address._id.toString() %>')" class="delete-address-btn">
+                        Delete Address
+                      </button>
                     </div>
                   </td>
                   <% }); %>
@@ -144,52 +140,80 @@
               <% } %>
             </div>
 
-            <!-- Add Address -->
-            <div class="add-address">
-              <h3>Add Address</h3>
-              <form class="address-form" action="/add-address" method="post">
-                <!-- Address fields -->
-                <label for="firstName">First Name</label>
-                <input type="text" id="firstName" name="firstName" required />
-                <label for="lastName">Last Name</label>
-                <input type="text" id="lastName" name="lastName" required />
-                <label for="house">House</label>
-                <input type="text" id="house" name="house" required />
-                <label for="locality">Locality</label>
-                <input type="text" id="locality" name="locality" required />
-                <label for="city">City</label>
-                <input type="text" id="city" name="city" required />
-                <label for="state">State</label>
-                <input
-                  type="text"
-                  id="state"
-                  name="state"
-                  value="<%= userAddress ? userAddress.state : '' %>"
-                  required
-                />
-                <label for="pincode">Pincode</label>
-                <input
-                  type="number"
-                  id="pincode"
-                  name="pincode"
-                  value="<%= userAddress ? userAddress.pincode : '' %>"
-                  required
-                />
-                <label for="country">Country</label>
-                <input
-                  type="text"
-                  id="country"
-                  name="country"
-                  value="<%= userAddress ? userAddress.country : '' %>"
-                  required
-                />
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" required />
-                <label for="phone">Phone</label>
-                <input type="tel" id="phone" name="phone" required />
-                <input type="hidden" id="userId" name="userId" value="userId" />
-                <button type="submit">Submit</button>
+            <!-- Edit Address -->
+            <div id="editAddressModal" class="modal">
+              <form id="editAddressForm" action="/updateAddress" method="POST">
+                <div class="modal-content">
+                  <h2>Edit Address</h2>
+                  <!-- Address inputs -->
+                  <div class="address-form">
+                    <input type="hidden" id="editAddressId" name="_id" value="" />
+                    <label for="editFirstName">First Name:</label>
+                    <input type="text" id="editFirstName" name="firstName" placeholder="First Name" />
+                    <label for="editLastName">Last Name:</label>
+                    <input type="text" id="editLastName" name="lastName" placeholder="Last Name" />
+                    <label for="editHouse">House:</label>
+                    <input type="text" id="editHouse" name="house" placeholder="House" />
+                    <label for="editLocality">Locality:</label>
+                    <input type="text" id="editLocality" name="locality" placeholder="Locality" />
+                    <label for="editCity">City:</label>
+                    <input type="text" id="editCity" name="city" placeholder="City" />
+                    <label for="editState">State:</label>
+                    <input type="text" id="editState" name="state" placeholder="State" />
+                    <label for="editPincode">Pincode:</label>
+                    <input type="text" id="editPincode" name="pincode" placeholder="Pincode" />
+                    <label for="editCountry">Country:</label>
+                    <input type="text" id="editCountry" name="country" placeholder="Country" />
+                    <label for="editEmail">Email:</label>
+                    <input type="text" id="editEmail" name="email" placeholder="Email" />
+                    <label for="editPhone">Phone:</label>
+                    <input type="text" id="editPhone" name="phone" placeholder="Phone" />
+                  </div>
+                  <!-- Buttons -->
+                  <div class="modal-buttons">
+                    <button type="button" id="cancelEdit" onclick="closeModal()">Cancel</button>
+                    <button id="submitEditAddress" type="submit">Submit</button>
+                  </div>
+                </div>
               </form>
+            </div>
+
+            <!-- Add Address Modal -->
+            <div id="addAddressModal" class="modal">
+              <div class="modal-content">
+                <h2>Add Address</h2>
+                <form id="addAddressForm" class="address-form" action="/add-address" method="post">
+                  <!-- Address inputs -->
+                  <div class="address-form">
+                    <input type="hidden" id="addAddressId" name="_id" value="" />
+                    <label for="addFirstName">First Name:</label>
+                    <input type="text" id="addFirstName" name="firstName" placeholder="First Name" />
+                    <label for="addLastName">Last Name:</label>
+                    <input type="text" id="addLastName" name="lastName" placeholder="Last Name" />
+                    <label for="addHouse">House:</label>
+                    <input type="text" id="addHouse" name="house" placeholder="House" />
+                    <label for="addLocality">Locality:</label>
+                    <input type="text" id="addLocality" name="locality" placeholder="Locality" />
+                    <label for="addCity">City:</label>
+                    <input type="text" id="addCity" name="city" placeholder="City" />
+                    <label for="addState">State:</label>
+                    <input type="text" id="addState" name="state" placeholder="State" />
+                    <label for="addPincode">Pincode:</label>
+                    <input type="text" id="addPincode" name="pincode" placeholder="Pincode" />
+                    <label for="addCountry">Country:</label>
+                    <input type="text" id="addCountry" name="country" placeholder="Country" />
+                    <label for="addEmail">Email:</label>
+                    <input type="text" id="addEmail" name="email" placeholder="Email" />
+                    <label for="addPhone">Phone:</label>
+                    <input type="text" id="addPhone" name="phone" placeholder="Phone" />
+                  </div>
+                  <!-- Buttons -->
+                  <div class="modal-buttons">
+                    <button type="button" id="cancelAdd" onclick="closeAddAddressModal()">Cancel</button>
+                    <button type="submit">Submit</button>
+                  </div>
+                </form>
+              </div>
             </div>
 
             <!-- Change Password -->
@@ -208,39 +232,221 @@
 
 <%- include("../partials/userFooter") %>
 
-<script>
-  function editAddress(addressId) {
-    console.log(addressId);
-    $.ajax({
-      url: "/edit-address/" + addressId,
-      method: "GET",
-      // data: { addressId: addressId },
-    });
-  }
-</script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
 <script>
+  $(".edit-address-btn").click(function () {
+    var addressData = $(this).data("address");
+    $("#editAddressId").val(addressData._id);
+    $("#editFirstName").val(addressData.firstName);
+    $("#editLastName").val(addressData.lastName);
+    $("#editHouse").val(addressData.house);
+    $("#editLocality").val(addressData.locality);
+    $("#editCity").val(addressData.city);
+    $("#editState").val(addressData.state);
+    $("#editPincode").val(addressData.pincode);
+    $("#editCountry").val(addressData.country);
+    $("#editEmail").val(addressData.email);
+    $("#editPhone").val(addressData.phone);
+
+    $("#editAddressModal").show();
+  });
+
+  function closeModal() {
+  var modal = document.getElementById("editAddressModal");
+  modal.style.display = "none"; // Hide the modal
+}
+
+
+  // Function to close the add address modal
+  function closeAddAddressModal() {
+    var addAddressModal = document.getElementById("addAddressModal");
+    addAddressModal.style.display = "none";
+  }
+
+  // Handle form submission
+  document.addEventListener("DOMContentLoaded", function () {
+    // Select the edit address form
+    const editAddressForm = document.getElementById("editAddressForm");
+
+    // Attach an event listener to the form submission
+    editAddressForm.addEventListener("submit", async function (event) {
+      event.preventDefault(); // Prevent the default form submission
+
+      // Serialize form data into JSON object
+      const formData = new FormData(this);
+      const addressData = {};
+      for (const [key, value] of formData.entries()) {
+        addressData[key] = value;
+      }
+
+      // Send a POST request to update the address
+      fetch("/updateAddress", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(addressData),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            // Display SweetAlert success message with an "Okay" button
+            swal
+              .fire({
+                title: "Success",
+                text: data.message,
+                icon: "success",
+                showCancelButton: false,
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "Okay",
+              })
+              .then((result) => {
+                // Handle the "Okay" button click if needed
+                window.location.reload(); // Reload the page after successful update
+              });
+          } else {
+            // Display SweetAlert error message with an "Okay" button
+            swal
+              .fire({
+                title: "Error",
+                text: data.message,
+                icon: "error",
+                showCancelButton: false,
+                confirmButtonColor: "#d33",
+                confirmButtonText: "Okay",
+              })
+              .then((result) => {
+                // Handle the "Okay" button click if needed
+              });
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          // Display SweetAlert error message if there is an error in the fetch request
+          swal
+            .fire({
+              title: "Error",
+              text: "Failed to communicate with the server",
+              icon: "error",
+              showCancelButton: false,
+              confirmButtonColor: "#d33",
+              confirmButtonText: "Okay",
+            })
+            .then((result) => {
+              // Handle the "Okay" button click if needed
+            });
+        });
+    });
+  });
+
   function deleteAddress(addressId) {
-    console.log(addressId);
-    $.ajax({
-      url: "/delete-address/" + addressId,
+    // Send a DELETE request to delete the address
+    fetch("/delete-address/" + addressId, {
       method: "DELETE",
-      success: function (response) {
-        window.location.reload();
-        // Handle success response if needed
-        console.log("Address deleted successfully:", response);
-        // Reload the page after successful deletion
-        
-      },
-      error: function (xhr, status, error) {
-        // Handle error response if needed
-        console.error("Error deleting address:", error);
-      },
-    });
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        // Display SweetAlert success message with an "Okay" button
+        swal
+          .fire({
+            title: "Success",
+            text: data.message,
+            icon: "success",
+            showCancelButton: false,
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "Okay",
+          })
+          .then((result) => {
+            // Handle the "Okay" button click if needed
+            window.location.reload(); // Reload the page after successful deletion
+          });
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        // Display SweetAlert error message if there is an error in the fetch request
+        swal
+          .fire({
+            title: "Error",
+            text: "Failed to communicate with the server",
+            icon: "error",
+            showCancelButton: false,
+            confirmButtonColor: "#d33",
+            confirmButtonText: "Okay",
+          })
+          .then((result) => {
+            // Handle the "Okay" button click if needed
+          });
+      });
   }
+
+  document
+    .getElementById("addAddressForm")
+    .addEventListener("submit", function (event) {
+      event.preventDefault(); // Prevent the default form submission
+
+      // Collect form data
+      const formData = new FormData(this);
+
+      // Convert form data to JSON object
+      const addressData = {};
+      formData.forEach((value, key) => {
+        addressData[key] = value;
+      });
+
+      // Make a POST request to add the address
+      fetch("/add-address", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(addressData),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            // Display Swal fire success message
+            swal
+              .fire({
+                title: "Success",
+                text: data.message,
+                icon: "success",
+                showCancelButton: false,
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "Okay",
+              })
+              .then((result) => {
+                // Redirect to the home page after successful addition
+                window.location.href = "/user-profile";
+              });
+          } else {
+            // Display Swal fire error message
+            swal.fire({
+              title: "Error",
+              text: data.message,
+              icon: "error",
+              showCancelButton: false,
+              confirmButtonColor: "#d33",
+              confirmButtonText: "Okay",
+            });
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          // Display Swal fire error message for communication failure
+          swal.fire({
+            title: "Error",
+            text: "Failed to communicate with the server",
+            icon: "error",
+            showCancelButton: false,
+            confirmButtonColor: "#d33",
+            confirmButtonText: "Okay",
+          });
+        });
+    });
 </script>
-
-
 
 <script>
   async function fetchCountries() {
@@ -296,102 +502,328 @@
   document.addEventListener("DOMContentLoaded", populateCountries);
 </script>
 
+<script>
+  // Get the modal
+  const addAddressModal = document.getElementById("addAddressModal");
+
+  // Get the button that opens the modal
+  const openAddAddressModalBtn = document.getElementById(
+    "openAddAddressModalBtn"
+  );
+
+  // Get the <span> element that closes the modal
+  const closeAddAddressModalSpan = document.getElementsByClassName("close")[0];
+
+  // When the user clicks the button, open the modal
+  openAddAddressModalBtn.onclick = function () {
+    addAddressModal.style.display = "block";
+  };
+
+  // When the user clicks on <span> (x), close the modal
+  closeAddAddressModalSpan.onclick = function () {
+    addAddressModal.style.display = "none";
+  };
+
+  // When the user clicks anywhere outside of the modal, close it
+  window.onclick = function (event) {
+    if (event.target == addAddressModal) {
+      addAddressModal.style.display = "none";
+    }
+  };
+</script>
+
 <style>
-  /* User Profile Page Styles */
+  /* Global Styles */
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f8f8;
+  }
+
+  /* Container Styles */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+  }
+
+  /* User Profile Section Styles */
   .user-profile-area {
-    padding-top: 100px;
-    padding-bottom: 100px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 30px;
+  }
+
+  /* User Profile Sidebar Styles */
+  .user-profile-sidebar {
+    background-color: #f2f2f2;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
   }
 
   .user-profile-menu {
-    list-style: none;
+    list-style-type: none;
     padding: 0;
+    margin: 0;
   }
 
   .user-profile-menu li {
     margin-bottom: 10px;
   }
 
-  .user-profile-menu a {
-    text-decoration: none;
+  .user-profile-menu li a {
     color: #333;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s;
+  }
+
+  .user-profile-menu li a:hover {
+    color: #ff6347;
+  }
+
+  /* User Profile Content Styles */
+  .user-profile-content {
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
   }
 
   .user-profile-content h2 {
+    color: #333;
     margin-bottom: 20px;
   }
 
   .user-profile-content p {
-    margin-bottom: 30px;
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 20px;
   }
+
+  /* Recent Orders Styles */
+  .recent-orders h3 {
+    color: #333;
+    margin-bottom: 20px;
+  }
+  /* To Order Details Button Styles */
+.recent-orders button {
+  background-color: #ff6347;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: 20px; /* Adjust margin-top as needed */
+}
+
+.recent-orders button:hover {
+  background-color: #e74c3c;
+}
+
 
   .order-table {
     width: 100%;
     border-collapse: collapse;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
   }
 
   .order-table th,
   .order-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
+    padding: 15px;
     text-align: left;
+    border-bottom: 1px solid #ddd;
   }
 
   .order-table th {
     background-color: #f2f2f2;
+    font-weight: bold;
+    color: #333;
   }
 
-  .address {
+  .order-table td.product-image img {
+    max-width: 100px;
+    height: auto;
+    border-radius: 5px;
+  }
+
+  /* Add Address Button Styles */
+  .addresses button#openAddAddressModalBtn {
+    background-color: #ff6347;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-bottom: 20px;
+  }
+
+  .addresses button#openAddAddressModalBtn:hover {
+    background-color: #e74c3c;
+  }
+
+  /* Addresses Styles */
+  .addresses {
     margin-bottom: 30px;
+  }
+
+  .address-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .address-table td {
+    padding: 20px;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .address-table td:first-child {
+    border-left: 1px solid #ddd;
+  }
+
+  .address-table td:last-child {
+    border-right: 1px solid #ddd;
+  }
+
+  .address-table .address {
     padding: 20px;
     border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #f9f9f9;
   }
 
-  .address h4 {
+  .address-table .address h4 {
+    color: #333;
     margin-bottom: 10px;
   }
 
-  .address p {
+  .address-table .address p {
+    color: #666;
     margin-bottom: 5px;
   }
 
-  .address-form label {
-    display: block;
-    margin-bottom: 10px;
-  }
-
-  .address-form input[type="text"] {
-    width: 100%;
-    padding: 8px;
-    margin-bottom: 10px;
-    border: 1px solid #ddd;
-  }
-
-  .address-form button {
-    padding: 10px 20px;
-    background-color: #333;
+  .address-table .address button {
+    background-color: #ff6347;
     color: #fff;
     border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
     cursor: pointer;
+    transition: background-color 0.3s;
   }
 
-  .password-form label {
-    display: block;
-    margin-bottom: 10px;
+  .address-table .address button.edit-address-btn {
+    margin-right: 10px;
   }
 
-  .password-form input[type="password"] {
-    width: 100%;
-    padding: 8px;
-    margin-bottom: 10px;
+  .address-table .address button.edit-address-btn:hover,
+  .address-table .address button.delete-address-btn:hover {
+    background-color: #e74c3c;
+  }
+
+  /* Edit Address Modal */
+  #editAddressModal {
+    display: none;
+    background-color: #f2f2f2;
+    padding: 20px;
+    border-radius: 10px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 600px;
+    width: 90%;
+    max-height: 80%;
+    height: 800px;
+    overflow-y: auto;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  }
+
+   /* Add Address Modal */
+  #addAddressModal {
+    display: none;
+    background-color: #f2f2f2;
+    padding: 20px;
+    border-radius: 10px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 600px;
+    width: 90%;
+    max-height: 90%; /* Increase the maximum height */
+    height: 90%; /* Increase the height */
+    overflow-y: auto;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Form Field Styles */
+  .modal-content input[type="text"],
+  .modal-content input[type="hidden"] {
+    padding: 10px;
     border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 100%;
+    margin-bottom: 15px;
   }
 
-  .password-form button {
-    padding: 10px 20px;
-    background-color: #333;
+  /* Button Styles */
+  .button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+
+  .button-container button {
+    background-color: #ff6347;
     color: #fff;
     border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
     cursor: pointer;
+    transition: background-color 0.3s;
+    margin-right: 10px;
   }
+
+  .button-container button:last-child {
+    margin-right: 0;
+  }
+
+  .button-container button:hover {
+    background-color: #e74c3c;
+  }
+
+/* Modal Button Styles */
+.modal-buttons button {
+  background-color: #ff6347;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-right: 10px; /* Adjust margin-right as needed */
+}
+
+.modal-buttons button:last-child {
+  margin-right: 0;
+}
+
+.modal-buttons button:hover {
+  background-color: #e74c3c;
+}
 </style>
+

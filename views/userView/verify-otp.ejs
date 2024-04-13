@@ -2,10 +2,7 @@
 
 <main>
   <!-- breadcrumb-area-start -->
-  <section
-    class="breadcrumb-area"
-    data-background="/user-assets/img/bg/page-title.png"
-  >
+  <section class="breadcrumb-area" data-background="/user-assets/img/bg/page-title.png">
     <div class="container">
       <div class="row">
         <div class="col-xl-12">
@@ -27,19 +24,15 @@
             <h3 class="text-center mb-60">Enter OTP to Verify</h3>
             <form action="/verify-otp" method="post">
               <label for="otp">Enter OTP <span>**</span></label>
-              <input id="otp" name="otp" type="text" placeholder="Enter OTP..." />
-
-              
+              <input id="otp" name="otp" type="text" placeholder="Enter OTP..." class="form-control" />
 
               <button class="btn theme-btn-2 w-100">Verify OTP</button>
-
             </form>
             <div class="login-action mb-20 fix">
-                <span class="forgot-login f-right">
-                  <a href="#" id="resendOtpLink">Resend OTP</a>
-                </span>
-              </div>
-            
+              <span class="forgot-login f-right">
+                <a href="#" id="resendOtpLink" class="resend-link">Resend OTP</a>
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -49,26 +42,6 @@
 </main>
 
 <%- include("../partials/userFooter") %>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-  $(document).ready(function() {
-    $('#resendOtpLink').click(function(event) {
-      event.preventDefault(); // Prevent the default action of the link
-      
-      // Perform a POST request using AJAX
-      $.ajax({
-        url: '/resendOtp', // URL to send the POST request
-        type: 'POST', // Method type
-        success: function(response) {
-          // Handle success response here
-          console.log('Resend OTP request sent successfully');
-          // You can handle the response as needed
-        },
-        error: function(xhr, status, error) {
-          // Handle error response here
-          console.error('Error occurred while sending resend OTP request:', error);
-        }
-      });
-    });
-  });
-</script>
+
+
+

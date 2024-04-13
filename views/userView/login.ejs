@@ -2,10 +2,7 @@
 
 <main>
   <!-- breadcrumb-area-start -->
-  <section
-    class="breadcrumb-area"
-    data-background="/user-assets/img/bg/page-title.png"
-  >
+  <section class="breadcrumb-area" data-background="/user-assets/img/bg/page-title.png">
     <div class="container">
       <div class="row">
         <div class="col-xl-12">
@@ -29,38 +26,18 @@
         <div class="col-lg-8 offset-lg-2">
           <div class="basic-login">
             <h3 class="text-center mb-60">Login From Here</h3>
-            <form
-              action="/login"
-              method="post"
-              onsubmit="return validateForm()"
-            >
+            <form action="/login" method="post" onsubmit="return validateForm()">
               <label for="name">Email Address <span>**</span></label>
-              <input
-                id="name"
-                name="email"
-                type="email"
-                placeholder="Enter Email address..."
-                oninput="validateEmail()"
-              />
+              <input id="name" name="email" type="email" placeholder="Enter Email address..." oninput="validateEmail()" />
               <span id="email-error" class="error"></span>
               <!-- Error message container -->
 
               <label for="pass">Password <span>**</span></label>
-              <input
-                id="pass"
-                name="password"
-                type="password"
-                placeholder="Enter password..."
-                oninput="validatePassword()"
-              />
+              <input id="pass" name="password" type="password" placeholder="Enter password..." oninput="validatePassword()" />
               <span id="password-error" class="error"></span>
               <!-- Error message container -->
 
               <div class="login-action mb-20 fix">
-                <span class="log-rem f-left">
-                  <input id="remember" type="checkbox" />
-                  <label for="remember">Remember me!</label>
-                </span>
                 <span class="forgot-login f-right">
                   <a href="/forgotPassword">Lost your password?</a>
                 </span>
@@ -76,8 +53,79 @@
     </div>
   </section>
   <!-- login Area End-->
-  <%- include("../partials/userFooter") %>
-  <script>
+</main>
+
+<%- include("../partials/userFooter") %>
+
+<style>
+  /* Global Styles */
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f8f8;
+  }
+
+  /* Container Styles */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+  }
+
+  /* Forgot Password Section Styles */
+  .forgot-password-area {
+    padding-top: 100px;
+    padding-bottom: 100px;
+  }
+
+  .basic-login {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+  }
+
+  .basic-login h3 {
+    text-align: center;
+    margin-bottom: 60px;
+  }
+
+  .basic-login label {
+    font-weight: bold;
+  }
+
+  .basic-login input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+
+  .basic-login button {
+    background-color: #ff6347;
+    color: #fff;
+    border: none;
+    padding: 15px;
+    width: 100%;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .basic-login button:hover {
+    background-color: #e74c3c;
+  }
+
+  /* Error Message Styles */
+  .error {
+    color: #e74c3c;
+    font-size: 14px;
+  }
+</style>
+
+<script>
   // Function to validate the form
   function validateForm() {
     console.log("login button");
@@ -124,4 +172,3 @@
     }
   }
 </script>
-</main>

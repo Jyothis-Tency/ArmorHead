@@ -1,0 +1,42 @@
+<%- include("../partials/adminHeader") %>
+
+<div class="content-header">
+  <div>
+    <h2 class="content-title card-title">Stock</h2>
+  </div>
+</div>
+
+<div class="right mt-5">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th scope="col"><b>Product name</b></th>
+        <th scope="col"><b>Small</b></th>
+        <th scope="col"><b>Medium</b></th>
+        <th scope="col"><b>Large</b></th>
+        <th scope="col"><b>Total</b></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% for(let i = 0; i < data.length; i++) { %>
+      <tr>
+        <td><%= data[i].productName %></td>
+        <% let smallQty = 0, mediumQty = 0, largeQty = 0; %> <% for(let j = 0; j
+        < data[i].productSizes.length; j++) { %> <% if
+        (data[i].productSizes[j].size === 'Small') { %> <% smallQty =
+        data[i].productSizes[j].quantity; %> <% } else if
+        (data[i].productSizes[j].size === 'Medium') { %> <% mediumQty =
+        data[i].productSizes[j].quantity; %> <% } else if
+        (data[i].productSizes[j].size === 'Large') { %> <% largeQty =
+        data[i].productSizes[j].quantity; %> <% } %> <% } %>
+        <td><%= smallQty %></td>
+        <td><%= mediumQty %></td>
+        <td><%= largeQty %></td>
+        <td><%= data[i].totalQuantity %></td>
+      </tr>
+      <% } %>
+    </tbody>
+  </table>
+</div>
+
+<%- include("../partials/adminFooter") %>

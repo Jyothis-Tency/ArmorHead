@@ -1,90 +1,124 @@
 <%- include("../partials/userHeader") %>
 
-<div class="table-responsive" style="min-height: 500px">
-  <table style="width: 100%; border-collapse: collapse">
-    <thead>
-      <tr style="border-bottom: 1px solid #ccc">
-        <th style="padding: 8px; text-align: center">Product Image</th>
-        <th style="padding: 8px; text-align: center">Product</th>
-        <th style="padding: 8px; text-align: center">Quantity</th>
-        <th style="padding: 8px; text-align: center">Size</th>
-        <th style="padding: 8px; text-align: center">Order Date</th>
-        <th style="padding: 8px; text-align: center">Payment Method</th>
-        <!-- Updated from Order Status to Order Stat -->
-        <th style="padding: 8px; text-align: center">Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% for (let i = 0; i < orderDetails.length; i++) { %> <% const order =
-      orderDetails[i]; %>
-      <tr style="border-bottom: 1px solid #ccc">
-        <td style="padding: 8px; text-align: center">
-          <img
-            src="/uploads/product-images/<%= order.productImage[1] %>"
-            alt="Product Image"
-            style="max-width: 100px; max-height: 100px"
-          />
-        </td>
-        <td style="padding: 8px; text-align: center">
-          <%= order.productName %>
-        </td>
-        <td style="padding: 8px; text-align: center"><%= order.quantity %></td>
-        <td style="padding: 8px; text-align: center"><%= order.size %></td>
-        <td style="padding: 8px; text-align: center">
-          <%= order.orderDate ? new
-          Date(order.orderDate).toLocaleString('en-US', { dateStyle: 'medium',
-          timeStyle: 'short' }) : '' %>
-        </td>
-        <td style="padding: 8px; text-align: center">
-          <%= order.paymentMethod %>
-        </td>
-        <!-- Updated from Order Status to Order Stat -->
-        <td style="padding: 8px; text-align: center">
-          <% if (order.orderStat === 'cancelled') { %>
-          <span>Cancelled</span>
-          <% } else if (order.orderStat === 'returned') { %>
-          <span>Returned</span>
-          <% } else if (order.orderStat === 'confirmed' || order.orderStat ===
-          'pending') { %>
-          <button
-            class="cancel-btn"
-            data-order-id="<%= order.orderedItemId %>"
-            style="
-              background-color: red;
-              color: white;
-              padding: 5px 10px;
-              border: none;
-              cursor: pointer;
-            "
-            onclick="cancelOrder('<%= order.orderedItemId %>')"
-          >
-            Cancel
-          </button>
-          <% } else if (order.orderStat === 'delivered') { %>
-          <button
-            class="return-btn"
-            data-order-id="<%= order.orderedItemId %>"
-            style="
-              background-color: yellow;
-              color: black;
-              padding: 5px 10px;
-              border: none;
-              cursor: pointer;
-              margin-bottom: 5px;
-            "
-            onclick="returnOrder('<%= order.orderedItemId %>')"
-          >
-            Return
-          </button>
-          <% } %>
-        </td>
-      </tr>
-      <% } %>
-    </tbody>
-  </table>
-</div>
+<main>
+  <div class="table-responsive" style="min-height: 500px">
+    <table class="order-table">
+      <thead>
+        <tr>
+          <th>Product Image</th>
+          <th>Product</th>
+          <th>Quantity</th>
+          <th>Size</th>
+          <th>Order Date</th>
+          <th>Payment Method</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% for (let i = 0; i < orderDetails.length; i++) { %> <% const order = orderDetails[i]; %>
+        <tr>
+          <td class="product-image"><img src="/uploads/product-images/<%= order.productImage[1] %>" alt="Product Image" /></td>
+          <td><%= order.productName %></td>
+          <td><%= order.quantity %></td>
+          <td><%= order.size %></td>
+          <td><%= order.orderDate ? new Date(order.orderDate).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) : '' %></td>
+          <td><%= order.paymentMethod %></td>
+          <td>
+            <% if (order.orderStat === 'cancelled') { %>
+            <span>Cancelled</span>
+            <% } else if (order.orderStat === 'returned') { %>
+            <span>Returned</span>
+            <% } else if (order.orderStat === 'confirmed' || order.orderStat === 'pending') { %>
+            <button class="cancel-btn" data-order-id="<%= order.orderedItemId %>" onclick="cancelOrder('<%= order.orderedItemId %>')">Cancel</button>
+            <% } else if (order.orderStat === 'delivered') { %>
+            <button class="return-btn" data-order-id="<%= order.orderedItemId %>" onclick="returnOrder('<%= order.orderedItemId %>')">Return</button>
+            <% } %>
+          </td>
+        </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</main>
 
 <%- include("../partials/userFooter") %>
+
+<style>
+  /* Global Styles */
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f8f8;
+  }
+
+  /* Container Styles */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+  }
+
+  /* Table Styles */
+  .table-responsive {
+    min-height: 500px;
+    overflow: auto;
+  }
+
+  .order-table {
+    max-width: 800px; /* Adjust the maximum width as needed */
+    width: 100%;
+    margin: 20px auto 0; /* Center the table horizontally and add margin to the top */
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .order-table th,
+  .order-table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .order-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+    color: #333;
+  }
+
+  .order-table td.product-image img {
+    max-width: 100px;
+    height: auto;
+    border-radius: 5px;
+  }
+
+  /* Button Styles */
+  .cancel-btn,
+  .return-btn {
+    background-color: red;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .return-btn {
+    background-color: yellow;
+    color: black;
+  }
+
+  .cancel-btn:hover,
+  .return-btn:hover {
+    background-color: #c82333;
+  }
+</style>
+
+
+
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>

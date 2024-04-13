@@ -1,9 +1,7 @@
 const User = require("../model/userModel");
 
-
 const getCustomersInfo = async (req, res) => {
   try {
-    console.log("getCustomersInfo triggered");
     let search = "";
     if (req.query.search) {
       search = req.query.search;
@@ -21,8 +19,8 @@ const getCustomersInfo = async (req, res) => {
       ],
     })
       .limit(limit * 1)
-      .skip((page - 1) * limit) 
-      .exec();  
+      .skip((page - 1) * limit)
+      .exec();
 
     const count = await User.find({
       isAdmin: "0",
@@ -42,10 +40,8 @@ const getCustomersInfo = async (req, res) => {
   }
 };
 
-
 const getCustomerBlocked = async (req, res) => {
   try {
-    console.log("getCustomerBlocked triggered");
     let id = req.query.id;
     await User.updateOne({ _id: id }, { $set: { isBlocked: true } });
     res.redirect("/admin/users");
@@ -54,10 +50,8 @@ const getCustomerBlocked = async (req, res) => {
   }
 };
 
-
 const getCustomerUnblocked = async (req, res) => {
   try {
-    console.log("getCustomerUnblocked triggered");
     let id = req.query.id;
     await User.updateOne({ _id: id }, { $set: { isBlocked: false } });
     res.redirect("/admin/users");

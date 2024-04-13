@@ -1,14 +1,10 @@
 const Address = require("../model/addressModel");
 const ObjectId = require("mongoose").Types.ObjectId;
 
-const addAddress = async (addressDetails,userData) => {
+const addAddress = async (addressDetails, userData) => {
   try {
-    console.log("addAddress triggered");
-    // Convert userId string to ObjectId
-    const userId = userData._id
-    console.log(userId);
+    const userId = userData._id;
 
-    // Create a new address document
     const newAddress = new Address({
       userId: userId,
       firstName: addressDetails.firstName,
@@ -23,7 +19,6 @@ const addAddress = async (addressDetails,userData) => {
       phone: addressDetails.phone,
     });
 
-    // Save the new address document
     const updatedAddress = await newAddress.save();
 
     return updatedAddress;
@@ -33,10 +28,9 @@ const addAddress = async (addressDetails,userData) => {
   }
 };
 
-
-const findAnAddress = async (userId) => {
+const findAnAddress = async (_id) => {
   try {
-    const result = await Address.findOne({ userId: userId });
+    const result = await Address.findOne({ _id: _id });
     return result;
   } catch (error) {
     throw error;
@@ -46,11 +40,49 @@ const findAnAddress = async (userId) => {
 const findAllAddress = async (userId) => {
   try {
     const result = await Address.find({ userId: userId });
-    // console.log(result);
     return result;
   } catch (error) {
     console.error("Error finding addresses:", error);
-    throw error; // Throw the error for handling
+    throw error;
+  }
+};
+
+const editAddress = async (addressDetails) => {
+  try {
+    console.log("editAddress triggered");
+    // Convert userId string to ObjectId
+    const addressId = String(addressDetails._id);
+    console.log(addressId);
+
+    // Check if an address document with the given userId exists
+    const existingAddress = await Address.findById(addressId);
+    console.log(existingAddress);
+
+    if (existingAddress) {
+      // If an existing address is found, update its fields
+      existingAddress.firstName = addressDetails.firstName;
+      existingAddress.lastName = addressDetails.lastName;
+      existingAddress.house = addressDetails.house;
+      existingAddress.locality = addressDetails.locality;
+      existingAddress.city = addressDetails.city;
+      existingAddress.state = addressDetails.state;
+      existingAddress.pincode = addressDetails.pincode;
+      existingAddress.country = addressDetails.country;
+      existingAddress.email = addressDetails.email;
+      existingAddress.phone = addressDetails.phone;
+
+      // Save the updated address document
+      const updatedAddress = await existingAddress.save();
+
+      return updatedAddress;
+      
+
+    } else {
+       throw new Error("Address not found");
+    }
+  } catch (error) {
+    console.error("Error adding address:", error);
+    throw error;
   }
 };
 
@@ -58,4 +90,5 @@ module.exports = {
   addAddress,
   findAnAddress,
   findAllAddress,
+  editAddress,
 };

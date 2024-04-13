@@ -1,8 +1,5 @@
 const User = require("../model/userModel");
-// const Coupon = require("../model/couponSchema");
 const bcrypt = require("bcrypt");
-// const Order = require("../models/orderSchema");
-
 const PDFDocument = require("pdfkit");
 
 const renderAdmin = async (req, res) => {
@@ -30,7 +27,6 @@ const verifyLogin = async (req, res) => {
     console.log(email);
 
     const findAdmin = await User.findOne({ email, isAdmin: "1" });
-    // console.log("admin data : ", findAdmin);
 
     if (findAdmin) {
       const passwordMatch = await bcrypt.compare(password, findAdmin.password);

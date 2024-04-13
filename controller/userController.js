@@ -18,6 +18,7 @@ const renderHome = async (req, res) => {
   try {
     console.log("renderHome triggered");
     const userNow = req.session.userData;
+    console.log(req.session.userData);
     const products = await Product.find();
     res.render("userView/index-main", { user: userNow, products });
   } catch (err) {
@@ -41,8 +42,9 @@ const userSignupPost = async (req, res) => {
     console.log(req.body);
     const { username, email, phone, password } = req.body;
     req.session.userData = { username, email, phone, password };
-    // let email = req.body.email;
-    const findUser = await User.findOne({ email });
+    console.log(req.session.userData);
+    const findUser = await User.findOne({email});
+    console.log(findUser);
     if (!findUser) {
       var otp = await otpHelper.generateOtp();
       req.session.userOtp = otp;
@@ -57,30 +59,27 @@ const userSignupPost = async (req, res) => {
         },
       });
       console.log("1");
-
       const info = await transporter.sendMail({
         from: process.env.EMAIL_USER,
         to: [email, email2],
         subject: "Sending Email using Node.js",
         text: `Your OTP is ${otp}`,
       });
-
       if (info) {
         req.session.userOtp = otp;
-        // req.session.userData = req.body;
         console.log("inside info");
-        res.render("userView/verify-otp", { email });
-        console.log("Email sent", info.messageId);
-        // const newUser = await User.create(req.body);
+        res.status(200).json({ success: true });
       } else {
-        res.json("email-error");
+        res.status(500).json({ message: "Failed to send OTP" }); // Send JSON error response
       }
     } else {
-      res.redirect("/login");
-      console.log("User already exist");
+      // If user already exists, send a response to the front end
+      res.status(409).json({ message: "User already exists" }); // Send JSON response with 409 status code
+      console.log("User already exists");
     }
   } catch (error) {
     console.log(error);
+    res.status(500).json({ message: "An error occurred" }); // Send JSON error response
   }
 };
 
@@ -90,7 +89,6 @@ const otpVerifyGet = async (req, res) => {
     res.render("userView/verify-otp");
   } catch (err) {
     console.error(err);
-    //  res.status(500).render("error", { err, layout: false });
   }
 };
 
@@ -184,20 +182,32 @@ const userLoginPost = async (req, res) => {
   }
 };
 
+const userLogout = async (req, res) => {
+  try {
+    req.session.destroy((err) => {
+      if (err) {
+        console.log(err.message);
+      }
+      console.log("Logged out");
+      res.redirect("/login");
+    });
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
 const userProfile = async (req, res) => {
   try {
     console.log("userProfile triggered");
+    console.log(req.session.userData);
     let userId = req.session.userData._id;
     console.log(userId);
     let userAddress = await addressHelper.findAnAddress(userId);
     console.log(userAddress);
     let userOrders = await orderHelper.getOrderDetails(userId);
     console.log(userOrders);
-    // let userOrders = await Order.find({ user: userId });
-    // cartCount = await cartHelper.getCartCount(userId);
-    // wishListCount = await wishlistHelper.getWishListCount(userId)
-    // let walletDetails = await walletHelper.getWalletAmount(userId)
     let allAddress = await addressHelper.findAllAddress(userId);
+    console.log(allAddress);
     res.render("userView/profile", {
       loginStatus: req.session.userData,
       allAddress: allAddress,
@@ -207,20 +217,21 @@ const userProfile = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    // res.status(500).render('user/404');
   }
 };
 
 const addAddress = async (req, res) => {
   try {
-    // console.log('1');
-    // console.log(req.body);
-    addressHelper.addAddress(req.body, req.session.userData).then((result) => {
-      res.status(202).json({ message: "address added successfully" });
-    });
-    // console.log('4');
+    const result = await addressHelper.addAddress(
+      req.body,
+      req.session.userData
+    );
+    res
+      .status(202)
+      .json({ success: true, message: "Address added successfully" });
   } catch (error) {
-    res.status(500).render("user/404");
+    console.error(error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
 
@@ -396,7 +407,6 @@ const cancelOrder = async (req, res) => {
     console.log("Order ID:", orderId);
     console.log("Is Order ID valid?", mongoose.Types.ObjectId.isValid(orderId));
 
-    // Find the order where any orderedItem has the specified orderId
     const order = await Order.findOne({
       "orderedItems.orderId": new mongoose.Types.ObjectId(orderId),
     });
@@ -407,23 +417,16 @@ const cancelOrder = async (req, res) => {
         .json({ error: "No order found with the specified orderId" });
     }
 
-    // Find the index of the ordered item with the specified orderId
     const orderedItemIndex = order.orderedItems.findIndex((item) =>
       item.orderId.equals(orderId)
     );
 
-    // Check if the ordered item exists and its order status is "confirmed"
     if (
       orderedItemIndex !== -1 &&
       order.orderedItems[orderedItemIndex].orderStat === "confirmed"
     ) {
-      // Update the order status to "cancelled"
       order.orderedItems[orderedItemIndex].orderStat = "cancelled";
-
-      // Save the updated order
       await order.save();
-
-      // Send success message to front end AJAX
       return res
         .status(200)
         .json({ message: "Order cancelled successfully", order });
@@ -454,18 +457,12 @@ const returnOrder = async (req, res) => {
 
     console.log(orderedItemIndex);
 
-    // Check if the ordered item exists and its order status is "confirmed"
     if (
       orderedItemIndex !== -1 &&
       order.orderedItems[orderedItemIndex].orderStat === "delivered"
     ) {
-      // Update the order status to "cancelled"
       order.orderedItems[orderedItemIndex].orderStat = "returned";
-
-      // Save the updated order
       await order.save();
-
-      // Iterate through ordered items and update product quantities
       for (const item of order.orderedItems) {
         const product = await Product.findById(item.product);
         if (!product) {
@@ -482,15 +479,13 @@ const returnOrder = async (req, res) => {
           (size) => size.size === item.size
         );
         if (sizeIndex !== -1) {
-          // Increase product quantity by the returned item quantity
           product.productSizes[sizeIndex].quantity += item.quantity;
-          product.totalQuantity += item.quantity; // Update total quantity
+          product.totalQuantity += item.quantity;
           await product.save();
         } else {
           console.error(`Size ${item.size} not found for product: ${product}`);
         }
       }
-
       return res.status(200).json({ message: "Order returned successfully" });
     } else {
       return res.status(400).json({ error: "Order cannot be returned" });
@@ -501,65 +496,73 @@ const returnOrder = async (req, res) => {
   }
 };
 
-const editAddressPage = async (req, res) => {
+const updateAddress = async (req, res) => {
   try {
-    console.log("editAddressPage triggered");
-    const userId = req.session.userData._id;
-    const addressId = req.params.addressId; // Get addressId from req.body
+    console.log("updateAddress triggered");
+    let userId = req.session.userData._id;
+    console.log(req.body);
+    // Update the address with the data received from the form
+    await addressHelper.editAddress(req.body);
 
-    console.log(addressId);
-    // Define and execute the findAnAddress function to fetch the user's address details
-    const {
-      firstName,
-      lastName,
-      house,
-      locality,
-      city,
-      state,
-      pincode,
-      country,
-      email,
-      phone,
-    } = await Address.findOne({ _id: addressId }); // Use _id for matching
+    // Fetch updated address details
+    let addressId = req.body._id;
+    let userAddress = await addressHelper.findAnAddress(addressId);
 
-    console.log(firstName); // Check if destructuring worked
+    let userOrders = await orderHelper.getOrderDetails(userId);
 
-    res.render("userView/editAddress-page", {
-      // Pass the destructured variables as an object to the render function
-      firstName,
-      lastName,
-      house,
-      locality,
-      city,
-      state,
-      pincode,
-      country,
-      email,
-      phone,
-    });
+    // Fetch all addresses
+    let allAddress = await addressHelper.findAllAddress(userId);
+
+    // res.render("userView/profile", {
+    //   loginStatus: req.session.userData,
+    //   allAddress: allAddress,
+    //   userAddress: userAddress,
+    //   userOrders: userOrders,
+    // });
+
+    console.log("updateAddress successful");
+    res
+      .status(200)
+      .json({ success: true, message: "Address updated successfully" });
   } catch (error) {
-    console.error(error);
-    res.status(500).render("user/404");
+    console.error("Error updating address:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to update address" });
   }
 };
 
 const deleteAddress = async (req, res) => {
   try {
-    const addressId = req.params.addressId; // Get addressId from request params
-
-    // Delete the address using MongoDB's deleteOne method
+    const addressId = req.params.addressId;
     await Address.deleteOne({ _id: addressId });
-
-    // Send a success response if the deletion was successful
-    console.log("address deleted successfully");
+    console.log("Address deleted successfully");
+    // Send a success response
+    res
+      .status(200)
+      .json({ success: true, message: "Address deleted successfully" });
   } catch (error) {
-    // Handle errors if any
     console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
+    // Send an error response
+    res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
 
+const filterPrice = async (req, res) => {
+  try {
+    const { minPrice, maxPrice } = req.body; // Retrieve values from req.body
+    const filteredProducts = await Product.find({
+      salePrice: { $gte: minPrice, $lte: maxPrice },
+    });
 
+    res.json({ success: true, products: filteredProducts }); // Corrected the key to 'products'
+  } catch (error) {
+    console.error("Error filtering products:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+module.exports = { filterPrice }; // Export the function
 
 module.exports = {
   renderHome,
@@ -569,6 +572,7 @@ module.exports = {
   otpVerifyPost,
   userLoginGet,
   userLoginPost,
+  userLogout,
   userProfile,
   addAddress,
   getForgotPassPage,
@@ -578,6 +582,7 @@ module.exports = {
   resendOtp,
   cancelOrder,
   returnOrder,
-  editAddressPage,
+  updateAddress,
   deleteAddress,
+  filterPrice,
 };

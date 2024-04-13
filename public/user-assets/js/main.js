@@ -615,58 +615,58 @@
 
   /* Price filter active */
 
-  if ($("#slider-range").length) {
-    $("#slider-range").slider({
-      range: true,
+  // if ($("#slider-range").length) {
+  //   $("#slider-range").slider({
+  //     range: true,
 
-      min: 0,
+  //     min: 0,
 
-      max: 500,
+  //     max: 500,
 
-      values: [75, 300],
+  //     values: [75, 300],
 
-      slide: function (event, ui) {
-        $("#amount").val("$" + ui.values[0] + " - $" + ui.values[1]);
-      },
-    });
+  //     slide: function (event, ui) {
+  //       $("#amount").val("$" + ui.values[0] + " - $" + ui.values[1]);
+  //     },
+  //   });
 
-    $("#amount").val(
-      "$" +
-        $("#slider-range").slider("values", 0) +
-        " - $" +
-        $("#slider-range").slider("values", 1)
-    );
+  //   $("#amount").val(
+  //     "$" +
+  //       $("#slider-range").slider("values", 0) +
+  //       " - $" +
+  //       $("#slider-range").slider("values", 1)
+  //   );
 
-    $("#filter-btn").on("click", function () {
-      $(".filter-widget").slideToggle(1000);
-    });
-  }
+  //   $("#filter-btn").on("click", function () {
+  //     $(".filter-widget").slideToggle(1000);
+  //   });
+  // }
 
-  /*----- cart-plus-minus-button -----*/
+  // /*----- cart-plus-minus-button -----*/
 
-  $(".cart-plus-minus").append(
-    '<div class="dec qtybutton">-</div><div class="inc qtybutton">+</div>'
-  );
+  // $(".cart-plus-minus").append(
+  //   '<div class="dec qtybutton">-</div><div class="inc qtybutton">+</div>'
+  // );
 
-  $(".qtybutton").on("click", function () {
-    var $button = $(this);
+  // $(".qtybutton").on("click", function () {
+  //   var $button = $(this);
 
-    var oldValue = $button.parent().find("input").val();
+  //   var oldValue = $button.parent().find("input").val();
 
-    if ($button.text() == "+") {
-      var newVal = parseFloat(oldValue) + 1;
-    } else {
-      // Don't allow decrementing below zero
+  //   if ($button.text() == "+") {
+  //     var newVal = parseFloat(oldValue) + 1;
+  //   } else {
+  //     // Don't allow decrementing below zero
 
-      if (oldValue > 0) {
-        var newVal = parseFloat(oldValue) - 1;
-      } else {
-        newVal = 0;
-      }
-    }
+  //     if (oldValue > 0) {
+  //       var newVal = parseFloat(oldValue) - 1;
+  //     } else {
+  //       newVal = 0;
+  //     }
+  //   }
 
-    $button.parent().find("input").val(newVal);
-  });
+  //   $button.parent().find("input").val(newVal);
+  // });
 
   /*-------------------------
 

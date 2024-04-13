@@ -4,6 +4,7 @@ const addressHelper = require("../helper/addressHelper");
 const orderHelper = require("../helper/orderHelper");
 const productHelper = require("../helper/productHelper");
 const mongoose = require("mongoose");
+
 function orderDate() {
   const date = new Date();
   const months = [
@@ -39,19 +40,14 @@ function orderDate() {
 
 const checkoutRender = async (req, res) => {
   try {
-    console.log("checkoutRender triggered");
     const user = req.session.userData;
     cartCount = await cartHelper.getCartCount(user._id);
-    // wishListCount = await wishlistHelper.getWishListCount(user._id)
     let cartItems = await cartHelper.getAllCartItems(user._id);
     let totalAmount = await cartHelper.totalSubtotal(user._id, cartItems);
     req.session.oldTotal = totalAmount;
-    // let walletBalance = await walletHelper.getWalletAmount(user._id)
-    // walletBalance = currencyFormat(walletBalance);
     if (req.session.updatedTotal) {
       totalAmount = req.session.updatedTotal;
     }
-    // const coupons = await couponHelper.findAllCoupons();
     const userAddress = await addressHelper.findAnAddress(user._id);
     let allAddress = await addressHelper.findAllAddress(user._id);
     res.render("userView/checkout-page", {
@@ -60,7 +56,7 @@ const checkoutRender = async (req, res) => {
       cartItems,
       totalAmount: totalAmount,
       address: userAddress,
-      allAddress:allAddress,
+      allAddress: allAddress,
       cartCount,
       currencyFormat: cartHelper.currencyFormat,
     });
@@ -72,10 +68,8 @@ const checkoutRender = async (req, res) => {
 
 const placeOrder = async (req, res) => {
   try {
-    console.log("placeOrder triggered");
     let userId = req.session.userData._id;
     paymentMethod = req.body.payment_method.trim().toLowerCase();
-    console.log("paymentMethod" + paymentMethod);
     const address = {
       firstName: req.body.firstName,
       lastName: req.body.lastName,
@@ -85,122 +79,45 @@ const placeOrder = async (req, res) => {
       state: req.body.state,
       pincode: req.body.pincode,
     };
-    console.log(address);
 
     let cartItems = await cartHelper.getAllCartItems(userId);
-    console.log(cartItems, "cartitemsssssssssssssssssss");
 
     if (!cartItems.length) {
-      console.log("No cartItems.length");
       return res.json({
         error: true,
         message: "Please add items to cart before checkout",
       });
-    } else {
-      console.log("there is cartItems.length");
     }
 
     if (address === undefined) {
-      console.log("is address === undefined");
       return res.json({
         error: true,
         message: "Please Select any Address before checkout",
       });
-    } else {
-      console.log("not address === undefined");
     }
 
     if (req.body.payment_method === undefined) {
-      console.log("is payment_methods===undefined");
       return res.json({
         error: true,
         message: "Please Select any Payment Method before checkout",
       });
-    } else {
-      console.log("no payment_methods === undefined");
     }
 
     const totalAmount = await cartHelper.totalAmount(userId);
-    console.log("totalAmount : " + totalAmount);
-
     const orderedDate = orderDate();
-    console.log("orderedDate : " + orderedDate);
 
     if (paymentMethod === "cash on delivery") {
-      console.log("payment_method === cash on delivery");
-      console.log(
-        `req.body: ${req.body}, totalAmount: ${totalAmount}, cartItems: ${cartItems}, userId: ${userId}`
-      );
       await orderHelper
         .forOrderPlacing(req.body, totalAmount, cartItems, userId)
         .then(async (response) => {
-          console.log("inside placeorder");
           await productHelper.stockDecrease(cartItems);
-          console.log("stockDecrease over");
           await cartHelper.clearTheCart(userId);
-          console.log("clearTheCart over");
-
-          // Render a view
           res.render("userView/orderSuccess-page", {
             cartItems,
             orderedDate: orderedDate,
           });
         });
     }
-
-    // else if (req.body.payment_method === "razorpay") {
-    //   await orderHelper
-    //     .forOrderPlacing(req.body, totalAmount, cartItems, userId)
-    //     .then(async (orderDetails) => {
-    //       await razorpay
-    //         .razorpayOrderCreate(orderDetails._id, orderDetails.totalAmount)
-    //         .then(async (razorpayOrderDetails) => {
-    //           await orderHelper.changeOrderStatus(
-    //             orderDetails._id,
-    //             "confirmed",
-    //             req.body.payment_method
-    //           );
-    //           await productHelper.stockDecrease(cartItems);
-    //           await cartHelper.clearTheCart(userId);
-    //           res.json({
-    //             paymentMethod: "razorpay",
-    //             orderDetails,
-    //             razorpayOrderDetails,
-    //             razorpaykeyId: process.env.razorpay_key_id,
-    //           });
-    //         });
-    //     });
-    // }
-    // else if (req.body.payment_method === "wallet") {
-    //   let isPaymentDone = await walletHelper.payUsingWallet(
-    //     userId,
-    //     totalAmount
-    //   );
-    //   if (isPaymentDone) {
-    //     await orderHelper
-    //       .forOrderPlacing(req.body, totalAmount, cartItems, userId, coupon)
-    //       .then(async (orderDetails) => {
-    //         await orderHelper.changeOrderStatus(
-    //           orderDetails._id,
-    //           "confirmed",
-    //           req.body.payment_method
-    //         );
-    //         await productHelper.stockDecrease(cartItems);
-    //         await cartHelper.clearTheCart(userId);
-    //         res
-    //           .status(202)
-    //           .json({ paymentMethod: "wallet", message: "Purchase Done" });
-    //       });
-    //   }
-    //   else {
-    //     res
-    //       .status(200)
-    //       .json({
-    //         paymentMethod: "wallet",
-    //         message: "Balance Insufficient in Wallet",
-    //       });
-    //   }
-    // }
   } catch (error) {
     console.log(error);
   }
@@ -208,13 +125,8 @@ const placeOrder = async (req, res) => {
 
 const orderDetailsPage = async (req, res) => {
   try {
-    console.log("orderDetailsPage triggered");
-    const userId = req.session.userData._id; // Get the user ID from the session
-
-    // Fetch order details using getOrderDetails function from orderHelper
+    const userId = req.session.userData._id;
     const orderDetails = await orderHelper.getOrderDetails(userId);
-
-    console.log(orderDetails);
     res.render("userView/orderDetails-page", { orderDetails });
   } catch (error) {
     console.error("Error in orderDetails:", error);
@@ -224,16 +136,14 @@ const orderDetailsPage = async (req, res) => {
 
 const getOrderListAdmin = async (req, res) => {
   try {
-    // console.log('1');
-    // Fetch all order details using aggregation
     const allOrderDetails = await Order.aggregate([
-      { $unwind: "$orderedItems" }, // Unwind orderedItems array
+      { $unwind: "$orderedItems" },
       {
         $lookup: {
           from: "products",
           localField: "orderedItems.product",
           foreignField: "_id",
-          as: "productDetails", // Renamed to productDetails
+          as: "productDetails",
         },
       },
       {
@@ -250,23 +160,19 @@ const getOrderListAdmin = async (req, res) => {
           orderId: "$_id",
           userDetails: 1,
           orderedItemId: "$orderedItems.orderId",
-          productName: { $arrayElemAt: ["$productDetails.productName", 0] }, // Extract productName from productDetails array
-          productImage: { $arrayElemAt: ["$productDetails.productImage", 0] }, // Extract productImage from productDetails array
+          productName: { $arrayElemAt: ["$productDetails.productName", 0] },
+          productImage: { $arrayElemAt: ["$productDetails.productImage", 0] },
           quantity: "$orderedItems.quantity",
           size: "$orderedItems.size",
           orderDate: "$orderDate",
           totalAmount: "$totalAmount",
           paymentMethod: "$paymentMethod",
           orderStatus: "$orderStatus",
-          orderStat: "$orderedItems.orderStat", // Project the orderStat field
+          orderStat: "$orderedItems.orderStat",
         },
       },
     ]);
 
-    // console.log(allOrderDetails[0].userDetails);
-    // console.log(allOrderDetails);
-
-    // Send the order details as the response
     res.render("adminView/order-list", { allOrderDetails });
   } catch (error) {
     console.error("Error fetching order details:", error);
@@ -276,17 +182,10 @@ const getOrderListAdmin = async (req, res) => {
 
 const getOrderDetailsAdmin = async (req, res) => {
   try {
-    // console.log('1');
     const orderId = req.params.orderId;
-    // console.log(orderId);
-
     const orderDetails = await Order.aggregate([
-      {
-        $match: { _id: new mongoose.Types.ObjectId(orderId) },
-      },
-      {
-        $unwind: "$orderedItems",
-      },
+      { $match: { _id: new mongoose.Types.ObjectId(orderId) } },
+      { $unwind: "$orderedItems" },
       {
         $lookup: {
           from: "products",
@@ -323,7 +222,6 @@ const getOrderDetailsAdmin = async (req, res) => {
       },
     ]);
 
-    console.log(orderDetails);
     res.render("adminView/order-details", { orderDetails });
   } catch (error) {
     console.error("Error in orderDetails:", error);
@@ -333,26 +231,21 @@ const getOrderDetailsAdmin = async (req, res) => {
 
 const updateOrderStatus = async (req, res) => {
   try {
-    console.log("updateOrderStatus triggered");
     const { orderId } = req.params;
     const { newStatus } = req.body;
-    console.log(orderId + " " + newStatus);
 
-    // Find the order with matching orderId
     const order = await Order.findOne({ "orderedItems.orderId": orderId });
 
     if (!order) {
       return res.status(404).json({ error: "Order not found" });
     }
 
-    // Update the orderStat field for the matching orderId
     order.orderedItems.forEach((item) => {
       if (item.orderId.toString() === orderId) {
         item.orderStat = newStatus;
       }
     });
 
-    // Save the updated order
     const updatedOrder = await order.save();
 
     res.json({ success: true, order: updatedOrder });
@@ -361,7 +254,6 @@ const updateOrderStatus = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
 
 module.exports = {
   checkoutRender,

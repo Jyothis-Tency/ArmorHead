@@ -6,6 +6,7 @@ const ObjectId = require("mongoose").Types.ObjectId;
 
 const getAllCartItems = async (userId) => {
   try {
+    console.log("getAllCartItems triggered");
     const userCartItems = await Cart.aggregate([
       {
         $match: { user: new mongoose.Types.ObjectId(userId) },
@@ -23,7 +24,7 @@ const getAllCartItems = async (userId) => {
       },
       {
         $addFields: {
-          product: { $arrayElemAt: ["$product", 0] }, // Get the first element of the 'product' array
+          product: { $arrayElemAt: ["$product", 0] },
         },
       },
       {
@@ -34,14 +35,14 @@ const getAllCartItems = async (userId) => {
           product: {
             $mergeObjects: [
               "$product",
-              { productImage: "$product.productImage" }, // Include productImage field
+              { productImage: "$product.productImage" },
             ],
           },
           total: "$items.total",
         },
       },
     ]);
-
+    console.log(userCartItems);
     return userCartItems;
   } catch (error) {
     console.error("Error in getAllCartItems:", error);
@@ -49,21 +50,20 @@ const getAllCartItems = async (userId) => {
   }
 };
 
-
 const getCartCount = async (userId) => {
   try {
     const cart = await Cart.findOne({ user: userId }).populate(
       "items.productId"
-    ); // Populate the productId field in items array
+    );
+
     if (!cart) {
-      return 0; // Return 0 if cart is not found
+      return 0;
     }
 
-    let itemCount = 0; // Initialize item count
+    let itemCount = 0;
 
-    // Loop through each item in the cart
     cart.items.forEach((item) => {
-      itemCount += item.quantity; // Add quantity of each item to itemCount
+      itemCount += item.quantity;
     });
 
     return itemCount;
@@ -76,7 +76,7 @@ const getCartCount = async (userId) => {
 const totalSubtotal = async (userId, cartItems) => {
   try {
     let total = 0;
-    // Refactored loop for better readability
+
     for (const cartItem of cartItems) {
       total += cartItem.quantity * cartItem.product.salePrice;
     }
@@ -85,7 +85,7 @@ const totalSubtotal = async (userId, cartItems) => {
       cart.totalPrice = total;
       await cart.save();
     }
-    console.log(total);
+
     return total;
   } catch (error) {
     console.error("Error in totalSubtotal:", error);
@@ -119,7 +119,7 @@ const addToUserCart = async (userId, productId, quantity, size = "Small") => {
         productId: productId,
         quantity: quantity,
         size: size,
-        total: totalPrice, // Default size if not specified
+        total: totalPrice,
       });
     } else {
       let existingItem = cart.items.find(
@@ -168,7 +168,7 @@ const addToUserCart = async (userId, productId, quantity, size = "Small") => {
           productId: productId,
           quantity: quantity,
           size: size,
-          total: totalPrice, // Default size if not specified
+          total: totalPrice,
         });
       }
     }
@@ -201,19 +201,17 @@ const getMaxQuantityForUser = async (
 ) => {
   try {
     console.log("inside getMaxQuantityForUser");
-    // Fetch the user from the database
+
     const user = await User.findById(userId);
-    // Check if the user exists
     if (!user) {
       throw new Error("User not found");
     }
-    // Retrieve the user's cart
+
     const cart = await Cart.findOne({ user: userId });
-    // If the user doesn't have a cart yet, return the default maximum quantity
     if (!cart) {
-      return { quantity: 5, existingQuantity: 0 }; // Default maximum quantity
+      return { quantity: 5, existingQuantity: 0 };
     }
-    // Find the item in the cart with the specified productId and selectedSize
+
     const matchingItem = cart.items.find(
       (item) =>
         item.productId.toString() === productId && item.size === selectedSize
@@ -224,11 +222,10 @@ const getMaxQuantityForUser = async (
       quantity -= existingQuantity;
     }
 
-    // If the matching item is found, check if the sum of the quantity passed and the item's quantity is less than or equal to 5
     if (matchingItem && quantity + existingQuantity <= 5) {
-      return { quantity, existingQuantity }; // Return the quantities if they're valid
+      return { quantity, existingQuantity };
     } else {
-      return { quantity: 0, existingQuantity }; // Return 0 quantity if the condition is not met or if no matching item is found
+      return { quantity: 0, existingQuantity };
     }
   } catch (error) {
     console.error("Error fetching maximum quantity for user:", error);
@@ -250,6 +247,7 @@ const incDecProductQuantity = async (
       (item) =>
         item.productId.toString() === productId && item.size === selectedSize
     );
+    console.log("item =");
     console.log(item);
     let itemQuantity = item.quantity;
     if (!item) {
@@ -259,21 +257,28 @@ const incDecProductQuantity = async (
     const sizeInfo = product.productSizes.find(
       (size) => size.size === selectedSize
     );
+    console.log("sizeInfo = ");
     console.log(sizeInfo);
     if (!sizeInfo) {
       throw new Error("Size information not found for the product");
     }
     let newQuantity = parseInt(quantity);
+    console.log("newQuantity = ");
     console.log(newQuantity);
     item.quantity = newQuantity;
     if (item.quantity > sizeInfo.quantity) {
       item.quantity = itemQuantity;
-      throw new error("stock exceeded");
+      console.log("stock exceeded");
+      throw new Error("Stock exceeded for this product"); // Corrected
     }
     await cart.save();
     return newQuantity;
   } catch (error) {
-    throw error;
+     if (error.message === "Stock exceeded for this product") {
+       throw new Error("Stock exceeded for this product");
+     } else {
+       throw error;
+     }
   }
 };
 
@@ -284,14 +289,12 @@ const updateCartItemTotal = async (
   selectedSize
 ) => {
   try {
-    // Find the cart by ID
     const cart = await Cart.findById(cartId);
 
     if (!cart) {
       throw new Error("Cart not found");
     }
 
-    // Find the item in the cart items array
     const cartItem = cart.items.find(
       (item) =>
         String(item.productId) === String(productId) &&
@@ -302,23 +305,16 @@ const updateCartItemTotal = async (
       throw new Error("Item not found in the cart");
     }
 
-    // Find the product by ID
     const product = await Product.findById(productId);
 
     if (!product || product.isBlocked) {
       throw new Error("Product not found or blocked");
     }
 
-    // Calculate the total for the item
     const totalPrice = product.salePrice * quantity;
 
-    // Update the total for the item in the cart
     cartItem.total = totalPrice;
 
-    // Recalculate total price for the cart
-    // cart.totalPrice = cart.items.reduce((acc, item) => acc + (item.total || 0), 0);
-
-    // Save the updated cart
     await cart.save();
 
     return cart;
@@ -340,12 +336,11 @@ const totalAmount = async (userId) => {
   try {
     const cart = await Cart.findOne({ user: userId });
     if (!cart) {
-      return 0; // Return 0 if cart is not found
+      return 0;
     }
     const totalPricePlus70 = cart.totalPrice + 70;
     return totalPricePlus70;
   } catch (error) {
-    // Handle error if necessary
     throw error;
   }
 };

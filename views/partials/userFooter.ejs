@@ -103,6 +103,35 @@
 
 
 		<!-- JS here -->
+    <!-- Include SweetAlert library using CDN -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.4/nouislider.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/wnumb/1.2.0/wNumb.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.11.0/toastify.min.js"></script>
+<script>
+  $(document).ready(function() {
+    $('#resendOtpLink').click(function(event) {
+      event.preventDefault(); // Prevent the default action of the link
+      
+      // Perform a POST request using AJAX
+      $.ajax({
+        url: '/resendOtp', // URL to send the POST request
+        type: 'POST', // Method type
+        success: function(response) {
+          // Handle success response here
+          console.log('Resend OTP request sent successfully');
+          // You can handle the response as needed
+        },
+        error: function(xhr, status, error) {
+          // Handle error response here
+          console.error('Error occurred while sending resend OTP request:', error);
+        }
+      });
+    });
+  });
+</script>
         <script>
   // Function to validate the form
   function validateForm() {

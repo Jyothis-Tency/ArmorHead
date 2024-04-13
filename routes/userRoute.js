@@ -15,6 +15,7 @@ userRoute.post("/verify-otp", userController.otpVerifyPost);
 userRoute.post("/resendOtp", userController.resendOtp);
 userRoute.get("/login", userController.userLoginGet);
 userRoute.post("/login", userController.userLoginPost);
+userRoute.get("/logout", userController.userLogout);
 userRoute.get("/profile", isLoggedIn, userController.userProfile);
 userRoute.get("/forgotPassword", userController.getForgotPassPage);
 userRoute.post("/forgotPassword", userController.postVerifyEmail);
@@ -26,21 +27,21 @@ userRoute.get("/user-profile", isLoggedIn, userController.userProfile);
 userRoute.post("/add-address", isLoggedIn, userController.addAddress);
 userRoute.post("/cancel-order", isLoggedIn, userController.cancelOrder);
 userRoute.post("/return-order", isLoggedIn, userController.returnOrder);
-userRoute.get("/edit-address/:addressId", isLoggedIn, userController.editAddressPage);
+userRoute.post("/updateAddress", isLoggedIn, userController.updateAddress);
 userRoute.delete("/delete-address/:addressId", isLoggedIn, userController.deleteAddress);
 
 // Products Routes
 userRoute.get("/productDetails/:id", productController.getProductDetailsPage);
-userRoute.get("/shopPage/:sortValue", productController.getShopPage);
+userRoute.get("/shopPage", productController.getShopPage);
+userRoute.get("/search-product", productController.searchProduct);
+userRoute.post("/filter-price", userController.filterPrice);
+userRoute.get("/filter", productController.filterProduct);
+
 
 // Cart Routes
 userRoute.get("/cart", isLoggedIn, cartController.userCart);
 userRoute.post("/addToCart", isLoggedIn, cartController.addToCart);
-userRoute.post(
-  "/remove-cart-item/:id",
-  isLoggedIn,
-  cartController.removeFromCart
-);
+userRoute.post("/remove-cart-item/:id",isLoggedIn,cartController.removeFromCart);
 userRoute.post("/quantity-change", isLoggedIn, cartController.incDecQuantity);
 userRoute.post("/clear-cart", isLoggedIn, cartController.clearCart);
 

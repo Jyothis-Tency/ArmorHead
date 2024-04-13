@@ -1,4 +1,9 @@
 <%- include("../partials/userHeader") %>
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"
+/>
 <main>
   <!-- breadcrumb-area-start -->
   <section
@@ -28,22 +33,17 @@
         <div class="col-lg-8 offset-lg-2">
           <div class="basic-login">
             <h3 class="text-center mb-60">Signup From Here</h3>
-            <form
-              action="/signup"
-              method="post"
-              autocomplete="off"
-              onsubmit="return validateForm()"
-            >
+            <form id="signupForm" autocomplete="off" >
               <label for="username">User Name <span>**</span></label>
               <input
-                id="name"
+                id="username"
                 name="username"
                 type="text"
                 placeholder="Enter First Name and Last Name..."
                 oninput="validateName()"
+                required
               />
               <span id="name-error" class="error"></span>
-              <!-- Error message container -->
 
               <label for="email-id">Email Address <span>**</span></label>
               <input
@@ -52,9 +52,9 @@
                 type="email"
                 placeholder="Enter Email address..."
                 oninput="validateEmail()"
+                required
               />
               <span id="email-error" class="error"></span>
-              <!-- Error message container -->
 
               <label for="phone">Phone Number <span>**</span></label>
               <input
@@ -63,9 +63,9 @@
                 type="text"
                 placeholder="Enter Phone number..."
                 oninput="validatePhone()"
+                required
               />
               <span id="phone-error" class="error"></span>
-              <!-- Error message container -->
 
               <label for="pass">Password <span>**</span></label>
               <input
@@ -74,9 +74,9 @@
                 type="password"
                 placeholder="Enter password..."
                 oninput="validatePassword()"
+                required
               />
               <span id="password-error" class="error"></span>
-              <!-- Error message container -->
 
               <label for="repass">Re-enter Password <span>**</span></label>
               <input
@@ -85,14 +85,21 @@
                 type="password"
                 placeholder="Re-enter password..."
                 oninput="validateRePassword()"
+                required
               />
               <span id="repassword-error" class="error"></span>
-              <!-- Error message container -->
 
               <div class="mt-10"></div>
-              <button class="btn theme-btn-2 w-100">Register Now</button>
+              <button type="submit" class="btn theme-btn-2 w-100">
+                Register Now
+              </button>
               <div class="or-divide"><span>or</span></div>
-              <button class="btn theme-btn w-100" onclick="window.location.href='/login'">Login Now</button>
+              <button
+                class="btn theme-btn w-100"
+                onclick="window.location.href='/login'"
+              >
+                Login Now
+              </button>
             </form>
           </div>
         </div>
@@ -103,3 +110,111 @@
 
   <%- include("../partials/userFooter") %>
 </main>
+<script
+  type="text/javascript"
+  src="https://cdn.jsdelivr.net/npm/toastify-js"
+></script>
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.11.0/toastify.min.js"></script>
+<script>
+ $(document).ready(function () {
+  $("#signupForm").on("submit", function (event) {
+    event.preventDefault(); // Prevent the default form submission behavior
+    // Collect form data
+    var formData = $(this).serialize();
+    $.ajax({
+      type: "POST",
+      url: "/signup",
+      data: formData,
+      dataType: "json",
+      success: function (response) {
+        // If the backend sends a success response, redirect to the OTP page
+        window.location.href = "/verify-otp";
+      },
+      error: function (xhr, status, error) {
+        // Check if the error response has a message
+        if (xhr.responseJSON && xhr.responseJSON.message) {
+          // Display SweetAlert message with the message from the backend
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: xhr.responseJSON.message,
+          });
+        } else {
+          // Handle other error cases
+          console.error(xhr.responseText);
+        }
+      },
+    });
+  });
+});
+</script>
+
+<style>
+  /* Global Styles */
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f8f8;
+  }
+
+  /* Container Styles */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+  }
+
+  /* Forgot Password Section Styles */
+  .forgot-password-area {
+    padding-top: 100px;
+    padding-bottom: 100px;
+  }
+
+  .basic-login {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+  }
+
+  .basic-login h3 {
+    text-align: center;
+    margin-bottom: 60px;
+  }
+
+  .basic-login label {
+    font-weight: bold;
+  }
+
+  .basic-login input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+
+  .basic-login button {
+    background-color: #ff6347;
+    color: #fff;
+    border: none;
+    padding: 15px;
+    width: 100%;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .basic-login button:hover {
+    background-color: #e74c3c;
+  }
+
+  /* Error Message Styles */
+  .error {
+    color: #e74c3c;
+    font-size: 14px;
+  }
+</style>

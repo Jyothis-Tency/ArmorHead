@@ -41,20 +41,66 @@
                   <% for (let i = 0; i < allCartItems.length; i++) { %>
                   <tr>
                     <td class="product-thumbnail">
-                      <a href="#"><img src="/uploads/product-images/<%=allCartItems[i].product.productImage[1] %>" alt=""></a>
+                      <a href="#"
+                        ><img
+                          src="/uploads/product-images/<%=allCartItems[i].product.productImage[1] %>"
+                          alt=""
+                      /></a>
                     </td>
                     <td class="product-name">
                       <a href="#"><%= allCartItems[i].product.productName %></a>
                     </td>
-                    <td class="product-price">₹<%= allCartItems[i].product.salePrice %></td>
+                    <td class="product-price">
+                      ₹<%= allCartItems[i].product.salePrice %>
+                    </td>
                     <td class="product-size"><%= allCartItems[i].size %></td>
                     <td class="product-quantity">
-                      <input id="quantity<%= allCartItems[i].product._id %>" min="1" max="5" value="<%= allCartItems[i].quantity %>" type="number" onchange="updateQuantityAndMax('<%= allCartItems[i].product._id %>', '<%= allCartItems[i]._id %>', this.value, '<%= allCartItems[i].size %>', '<%= allCartItems[i].product.salePrice %>')">
+                      <div class="number-container">
+                        <button
+                          type="button"
+                          onclick="decrement('<%= allCartItems[i].product._id %>', '<%= allCartItems[i]._id %>', '<%= allCartItems[i].quantity %>', '<%= allCartItems[i].size %>', '<%= allCartItems[i].product.salePrice %>')"
+                        >
+                          -
+                        </button>
+                        <input
+                          id="quantity<%= allCartItems[i].product._id %>"
+                          min="1"
+                          max="5"
+                          value="<%= allCartItems[i].quantity %>"
+                          type="number"
+                          readonly
+                        />
+                        <button
+                          type="button"
+                          onclick="increment('<%= allCartItems[i].product._id %>', '<%= allCartItems[i]._id %>', '<%= allCartItems[i].quantity %>', '<%= allCartItems[i].size %>', '<%= allCartItems[i].product.salePrice %>')"
+                        >
+                          +
+                        </button>
+                      </div>
                     </td>
-                    <td id="productSubtotal<%= allCartItems[i].product._id %>" class="product-subtotal">₹<%= (allCartItems[i].product.salePrice * allCartItems[i].quantity) %></td>
+                    <td
+                      id="productSubtotal<%= allCartItems[i].product._id %>"
+                      class="product-subtotal"
+                    >
+                      ₹<%= (allCartItems[i].product.salePrice *
+                      allCartItems[i].quantity) %>
+                    </td>
                     <td class="product-remove">
-                      <button style="background-color: red; border: none; color: white; padding: 5px 10px; border-radius: 50%; cursor: pointer;" onclick="productRemove('<%= allCartItems[i].product._id %>', '<%= allCartItems[i]._id %>', '<%= allCartItems[i].size %>')">
-                        <i class="fa fa-times" style="color: white; font-size: 14px"></i>
+                      <button
+                        style="
+                          background-color: red;
+                          border: none;
+                          color: white;
+                          padding: 5px 10px;
+                          border-radius: 50%;
+                          cursor: pointer;
+                        "
+                        onclick="productRemove('<%= allCartItems[i].product._id %>', '<%= allCartItems[i]._id %>', '<%= allCartItems[i].size %>')"
+                      >
+                        <i
+                          class="fa fa-times"
+                          style="color: white; font-size: 14px"
+                        ></i>
                       </button>
                     </td>
                   </tr>
@@ -66,11 +112,29 @@
               <div class="col-12">
                 <div class="coupon-all">
                   <div class="coupon">
-                    <input id="coupon_code" class="input-text" name="coupon_code" value="" placeholder="Coupon code" type="text">
-                    <button class="btn theme-btn-2" name="apply_coupon" type="submit">Apply coupon</button>
+                    <input
+                      id="coupon_code"
+                      class="input-text"
+                      name="coupon_code"
+                      value=""
+                      placeholder="Coupon code"
+                      type="text"
+                    />
+                    <button
+                      class="btn theme-btn-2"
+                      name="apply_coupon"
+                      type="submit"
+                    >
+                      Apply coupon
+                    </button>
                   </div>
                   <div class="coupon2" id="clearCartButton">
-                    <input class="btn theme-btn" name="update_cart" value="Clear Cart" type="submit">
+                    <input
+                      class="btn theme-btn"
+                      name="update_cart"
+                      value="Clear Cart"
+                      type="submit"
+                    />
                   </div>
                 </div>
               </div>
@@ -84,7 +148,9 @@
                       <p>Total</p>
                       <p class="cart_amount">₹<%= totalAmount %></p>
                     </div>
-                    <a class="btn theme-btn" href="/checkoutPage">Proceed to checkout</a>
+                    <a class="btn theme-btn" href="/checkoutPage"
+                      >Proceed to checkout</a
+                    >
                   </div>
                 </div>
               </div>
@@ -99,6 +165,41 @@
 <%- include("../partials/userFooter") %>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+  function increment(itemId,cartId,newQuantity,selectedSize,price) {
+    var numberInput = document.getElementById("quantity" + itemId);
+    var currentValue = parseInt(numberInput.value);
+    if (currentValue < 5) {
+      numberInput.value = currentValue + 1;
+      numInput = numberInput.value
+       updateQuantityAndMax(itemId,cartId,numInput,selectedSize,price);
+    } else if (currentValue === 5)  {
+    // Show toast notification
+    showToast("You can't add above 5 quantity per product", "warning");
+    // Reload the page after showing the toast
+    setTimeout(function() {
+      location.reload();
+    }, 1000);
+  }
+  }
+
+  function decrement(itemId,cartId,newQuantity,selectedSize,price) {
+    var numberInput = document.getElementById("quantity" + itemId);
+    var currentValue = parseInt(numberInput.value);
+    if (currentValue > 1) {
+      numberInput.value = currentValue - 1;
+      numInput = numberInput.value
+      updateQuantityAndMax(itemId,cartId,numInput,selectedSize,price);
+    } else if (currentValue === 1) {
+      showToast("There should be at least one product", "warning");
+    // Reload the page after showing the toast
+    setTimeout(function() {
+      location.reload();
+    }, 1000);
+    }
+  }
+</script>
 
 <script>
   function productRemove(productId, cartId, size) {
@@ -179,45 +280,353 @@
     });
   });
 
-function updateQuantityAndMax(itemId, cartId, newQuantity, selectedSize, price) {
-    console.log(itemId + " " + cartId + " " + newQuantity + " " + selectedSize + " " + price);
-
+  function updateQuantityAndMax(
+    itemId,
+    cartId,
+    newQuantity,
+    selectedSize,
+    price
+  ) {
+    console.log(
+      itemId +
+        " " +
+        cartId +
+        " " +
+        newQuantity +
+        " " +
+        selectedSize +
+        " " +
+        price
+    );
     // Make an AJAX request to update the quantity and obtain the new subtotal
     $.ajax({
-        url: "/quantity-change",
-        type: "POST",
-        data: {
-            productId: itemId,
-            cartId: cartId,
-            quantity: newQuantity,
-            selectedSize: selectedSize
-        },
-        success: function(response) {
-            if (response) {
-                const { quantity, totalAmount, totSinglePro } = response;
+      url: "/quantity-change",
+      type: "POST",
+      data: {
+        productId: itemId,
+        cartId: cartId,
+        quantity: newQuantity,
+        selectedSize: selectedSize,
+        price: price,
+      },
+      success: function (response) {
+        if (response) {
+          const { quantity, totalAmount, totSinglePro } = response;
 
-                // Update the quantity displayed in the UI
-                document.getElementById("quantity" + itemId).value = quantity;
+          // Update the quantity displayed in the UI
+          document.getElementById("quantity" + itemId).value = quantity;
 
-                // Update the total amount displayed in the UI
-                document.getElementById("totalAmount").innerHTML = totalAmount;
+          // Update the total amount displayed in the UI
+          document.getElementById("totalAmount").innerHTML = totalAmount;
 
-                var newTotal = quantity * price;
-                console.log(newTotal);
-                // Construct the ID of the total <td> element
-                var totalTdId = 'productSubtotal' + itemId;
+          const newTotal = quantity * price;
+          console.log(newTotal);
+          // Construct the ID of the total <td> element
+          const totalTdId = "productSubtotal" + itemId;
 
-                // Target the total <td> element by its ID and update its content with the new total
-                var totalTdElement = document.getElementById(totalTdId);
-                if (totalTdElement) {
-                    totalTdElement.innerHTML = '₹' + newTotal;
-                }
-            }
-        },
-        error: function(error) {
-            console.error("Error updating quantity:", error);
+          // Target the total <td> element by its ID and update its content with the new total
+          const totalTdElement = document.getElementById(totalTdId);
+          if (totalTdElement) {
+            totalTdElement.innerHTML = "₹" + newTotal;
+          }
         }
+      },
+      error: function (error) {
+        console.error("Error updating quantity:", error);
+        if (error.responseJSON && error.responseJSON.message === "Stock exceeded for this product") {
+        // Show toast notification for stock exceeding
+        showToast("Stock exceeded for this product", "error");
+        setTimeout(function() {
+            window.location.reload();
+          }, 1000);
+      } else {
+        // Show a generic error toast notification
+        showToast("Error updating quantity. Please try again later.", "error");
+      }
+      },
     });
+  }
+
+  function showToast(message, type) {
+  // Use your preferred toast library to display the message
+  // For example, using the 'toastify-js' library
+  Toastify({
+    text: message,
+    duration: 3000,
+    position:"center",
+    backgroundColor: type === "error" ? "#ff6347" : "#32CD32", // Red for error, green for success
+  }).showToast();
 }
 
 </script>
+
+<style>
+  .number-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 200px;
+    height: 40px;
+    border: 2px solid #3498db;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  .number-container button {
+    width: 50px;
+    height: 100%;
+    border: none;
+    background-color: #3498db;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+  }
+  .number-container input[type="number"] {
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+    border: none;
+    outline: none;
+    font-size: 16px;
+  }
+</style>
+
+<style>
+  /* Global Styles */
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f8f8;
+  }
+
+  /* Container Styles */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+  }
+
+  /* Breadcrumb Styles */
+  .breadcrumb-area {
+    height: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .breadcrumb-text {
+    text-align: center;
+  }
+
+  .breadcrumb-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .breadcrumb-menu li {
+    display: inline;
+    margin-right: 5px;
+  }
+
+  .breadcrumb-menu li:last-child {
+    font-weight: bold;
+  }
+
+  /* Cart Area Styles */
+  .cart-area {
+    padding-top: 100px;
+    padding-bottom: 100px;
+  }
+
+  /* Table Styles */
+  .table-content {
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .table th,
+  .table td {
+    padding: 15px;
+    text-align: center; /* Centering table content */
+    border-bottom: 1px solid #ddd;
+  }
+
+  .table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+    color: #333;
+  }
+
+  .table td.product-image img {
+    display: block;
+    margin: 0 auto; /* Centering images */
+    max-width: 100px;
+    height: auto;
+    border-radius: 5px;
+  }
+
+  /* Add Address Button Styles */
+  .addresses button#openAddAddressModalBtn {
+    background-color: #ff6347;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-bottom: 20px;
+  }
+
+  .addresses button#openAddAddressModalBtn:hover {
+    background-color: #e74c3c;
+  }
+
+  /* Addresses Styles */
+  .addresses {
+    margin-bottom: 30px;
+  }
+
+  .address-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .address-table td {
+    padding: 20px;
+    border-bottom: 1px solid #ddd;
+    text-align: center; /* Centering table content */
+  }
+
+  .address-table td:first-child {
+    border-left: 1px solid #ddd;
+  }
+
+  .address-table td:last-child {
+    border-right: 1px solid #ddd;
+  }
+
+  .address-table .address {
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+  }
+
+  .address-table .address h4 {
+    color: #333;
+    margin-bottom: 10px;
+  }
+
+  .address-table .address p {
+    color: #666;
+    margin-bottom: 5px;
+  }
+
+  .address-table .address button {
+    background-color: #ff6347;
+    color: #fff;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .address-table .address button.edit-address-btn {
+    margin-right: 10px;
+  }
+
+  .address-table .address button.edit-address-btn:hover,
+  .address-table .address button.delete-address-btn:hover {
+    background-color: #e74c3c;
+  }
+
+  /* Coupon and Clear Cart Buttons Styles */
+  .coupon-all {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+  }
+
+  .coupon {
+    display: flex;
+    align-items: center;
+  }
+
+  .coupon input[type="text"] {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px 0 0 5px;
+  }
+
+  .coupon button {
+    background-color: #ff6347;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 0 5px 5px 0;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .coupon button:hover {
+    background-color: #e74c3c;
+  }
+
+  .coupon2 input[type="submit"] {
+    background-color: #ff6347;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .coupon2 input[type="submit"]:hover {
+    background-color: #e74c3c;
+  }
+
+  /* Cart Page Total Styles */
+  .cart-page-total {
+    margin-top: 30px;
+  }
+
+  .cart-page-total h2 {
+    color: #333;
+  }
+
+  .cart_subtotal {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+
+  .cart_amount {
+    font-weight: bold;
+  }
+
+  .cart-page-total a {
+    background-color: #ff6347;
+    color: #fff;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .cart-page-total a:hover {
+    background-color: #e74c3c;
+  }
+</style>

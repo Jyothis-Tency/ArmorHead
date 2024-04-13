@@ -45,6 +45,8 @@ app.use("/admin", adminRoute);
 
 // server listening
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(
+    `Server is running on http://localhost:${PORT} and http://localhost:${PORT}/admin/login`
+  );
 });
 

@@ -10,7 +10,7 @@
             <p>Your order has been successfully placed. Thank you for shopping with us!</p>
             <div class="order-details">
               <h3>Order Details</h3>
-              <table>
+              <table class="order-table"> <!-- Added class "order-table" -->
                 <thead>
                   <tr>
                     <th>Product Image</th>
@@ -22,7 +22,7 @@
                 <tbody>
                   <% cartItems.forEach(item => { %>
                     <tr>
-                      <td><img src="/uploads/product-images/<%= item.product.productImage[0] %>" alt="Product Image" style="width: 100px;"></td> <!-- Assuming productImage is an array, adjust the index accordingly -->
+                      <td class="product-image"><img src="/uploads/product-images/<%= item.product.productImage[0] %>" alt="Product Image" style="width: 100px;"></td> <!-- Added class "product-image" -->
                       <td><%= item.product.productName %></td>
                       <td><%= item.quantity %></td>
                       <td>₹<%= item.total %></td>
@@ -41,7 +41,7 @@
           </div>
         </div>
       </div>
-      <a href="/" style="background-color: red; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none;">Back to Home</a>
+      <a href="/" style="background-color: red; color: white; padding: 15px 30px; border-radius: 5px; text-decoration: none;">Back to Home</a>
     </div>
   </section>
 </main>
@@ -64,12 +64,26 @@
 .order-details table {
   width: 100%;
   border-collapse: collapse;
-  border: 2px solid #000; /* Thicker border */
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
 }
 
 .order-details th, .order-details td {
-  padding: 8px; /* Compact padding */
-  border: 2px solid #000; /* Thicker border */
+  padding: 15px; /* Applied padding */
+  text-align: left;
+}
+
+.order-details th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+  color: #333;
+}
+
+.order-details td.product-image img {
+  max-width: 100px;
+  height: auto;
+  border-radius: 5px;
 }
 
 .delivery-details {
@@ -83,17 +97,12 @@
 /* Styles for the back to home button */
 .back-to-home {
   display: block;
-  margin-top: 700px;
 }
 
 .back-to-home a {
   display: inline-block;
-  background-color: red;
-  color: white;
-  padding: 15px 30px; /* Increased padding */
-  border-radius: 5px;
-  text-decoration: none;
-  margin-top: 100px; /* Added margin top */
+  margin-top: 50px; /* Added margin top */
 }
 
 </style>
+
