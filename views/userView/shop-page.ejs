@@ -89,60 +89,43 @@
               role="tabpanel"
               aria-labelledby="home-tab"
             >
-              <div class="row">
-                <% for (let i = 0; i < products.length; i++) { %> <% const
-                product = products[i]; %>
-                <div class="col-xl-4 col-lg-6 col-md-6">
-                  <div class="product-wrapper mb-50">
-                    <div class="product-img mb-25">
-                      <a href="/productDetails/<%= product._id %>">
-                        <img
-                          src="/uploads/product-images/<%= product.productImage[1] %>"
-                          alt="<%= product.productName %>"
-                        />
-                        <input
-                          type="hidden"
-                          id="productId"
-                          value="<%= product._id %>"
-                        />
-                      </a>
-                      <!-- <div class="product-action text-center">
-                        <a href="#" title="Shopping Cart"
-                          ><i class="flaticon-shopping-cart"></i
-                        ></a>
-                        <a href="#" title="Quick View"
-                          ><i class="flaticon-eye"></i
-                        ></a>
-                        <a
-                          href="#"
-                          data-toggle="tooltip"
-                          data-placement="right"
-                          title="Compare"
-                          ><i class="flaticon-compare"></i
-                        ></a>
-                      </div> -->
-                    </div>
-                    <div class="product-content pr-0">
-                      <h4>
-                        <a href="/productDetails/<%= product._id %>"
-                          ><%= product.productName %></a
-                        >
-                      </h4>
-                      <div class="product-meta">
-                        <div class="pro-price">
-                          <span>₹<%= product.salePrice %></span>
-                          <% if (product.regularPrice) { %>
-                          <span class="old-price"
-                            >₹<%= product.regularPrice %></span
-                          >
-                          <% } %>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <% } %>
-              </div>
+<div class="row">
+  <% for (let i = 0; i < products.length; i++) { %> <% const product =
+  products[i]; %>
+  <div class="col-xl-4 col-lg-6 col-md-6">
+    <div class="product-wrapper mb-50">
+      <div class="product-img mb-25">
+        <a href="/productDetails/<%= product._id %>">
+          <img
+            src="/uploads/product-images/<%= product.productImage[1] %>"
+            alt="<%= product.productName %>"
+          />
+          <input type="hidden" id="productId" value="<%= product._id %>" />
+        </a>
+        <!-- <div class="product-action text-center"> <a href="#" title="Shopping Cart" ><i class="flaticon-shopping-cart"></i ></a> <a href="#" title="Quick View" ><i class="flaticon-eye"></i ></a> <a href="#" data-toggle="tooltip" data-placement="right" title="Compare" ><i class="flaticon-compare"></i ></a> </div> -->
+      </div>
+      <div class="product-content pr-0">
+        <h4>
+          <a href="/productDetails/<%= product._id %>"
+            ><%= product.productName %></a
+          >
+        </h4>
+        <div class="product-meta">
+          <div class="pro-price">
+            <% if (product.totalQuantity === 0) { %>
+            <span style="font-size: larger; color: red;">Out of stock!!!!</span>
+            <% } else { %>
+            <span style="font-size: larger; font-weight: bold; color: goldenrod;">₹<%= product.salePrice %></span>
+            <% if (product.regularPrice) { %>
+            <span class="old-price">₹<%= product.regularPrice %></span>
+            <% } %> <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <% } %>
+</div>
             </div>
             <div
               class="tab-pane fade"
@@ -203,14 +186,14 @@
               </div>
             </div>
 
-            <div class="shop-widget">
+            <!-- <div class="shop-widget">
               <h3 class="shop-title">Filter selection</h3>
               <div class="price-filter">
                 <div id="slider-range"></div>
                 <input type="text" id="amount" />
               </div>
-              <!-- <button id="range-button">Apply Range</button> -->
-            </div>
+              <button id="range-button">Apply Range</button>
+            </div> -->
             <button id="change-button" hidden>Apply Change</button>
           </div>
         </div>

@@ -105,7 +105,7 @@
                 <%= data.productDescription %>
               </div>
 
-              <div class="product-info-list variant-item">
+              <div class="product-info-list variant-item" style="width: 500px;">
                 <ul>
                   <li><span>Brands:</span>AXOR</li>
                   <li><span>Category:</span> <%= category.name %></li>
@@ -115,7 +115,7 @@
                                 <% data.productSizes.forEach(size => { %>
                                     <% console.log('Size:', size.size, 'Quantity:', size.quantity); %>
                                     <% if (size.quantity <= 0) { %>
-                                        <span class="out_of_stock" style="color: #ff6347;">Out of Stock: <%= size.size %></span>
+                                        <span class="out_of_stock" style="color: #ff6347; width: 90px; height: 20px;">Out of Stock: <%= size.size %></span>
                                         <% outOfStock = true; %>
                                     <% } else { %>
                                         <span class="stock_amount" style="color: green;"><%= size.size %>: <%= size.quantity %> left</span>
@@ -509,6 +509,9 @@
             position: "center", // Alignment of position: 'left', 'right', 'center'
             backgroundColor: "green", // Background color
           }).showToast();
+          setTimeout(()=>{
+            window.location.href = "/cart";
+          },3000)
         } else if(response.message) {
           // Show error message using Toastify
           Toastify({

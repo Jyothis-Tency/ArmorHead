@@ -29,6 +29,7 @@ userRoute.post("/cancel-order", isLoggedIn, userController.cancelOrder);
 userRoute.post("/return-order", isLoggedIn, userController.returnOrder);
 userRoute.post("/updateAddress", isLoggedIn, userController.updateAddress);
 userRoute.delete("/delete-address/:addressId", isLoggedIn, userController.deleteAddress);
+userRoute.post("/change-password",isLoggedIn,userController.updatePassword);
 
 // Products Routes
 userRoute.get("/productDetails/:id", productController.getProductDetailsPage);

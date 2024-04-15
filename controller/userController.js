@@ -562,6 +562,39 @@ const filterPrice = async (req, res) => {
   }
 };
 
+const updatePassword = async (req, res) => {
+  try {
+    console.log("updatePassword triggered");
+    const { currentPassword, newPassword } = req.body;
+    console.log(currentPassword);
+    console.log(newPassword);
+
+    // Retrieve the user from the database
+    const user = await User.findById(req.session.userData._id); // Assuming you have implemented authentication middleware to set req.user
+
+    // Verify if the current password matches the one stored in the database
+    const isPasswordValid = await bcrypt.compare(
+      currentPassword,
+      user.password
+    );
+    if (!isPasswordValid) {
+      return res.status(400).json({ error: "Invalid current password" });
+    }
+
+    const hashedPassword = await passwordHelper.securePassword(newPassword);
+
+    // Update the user's password in the database
+    user.password = hashedPassword;
+    await user.save();
+    console.log("2");
+    // Send a success response
+    res.json({ message: "Password updated successfully" });
+  } catch (error) {
+    console.error("Error updating password:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
 module.exports = { filterPrice }; // Export the function
 
 module.exports = {
@@ -585,4 +618,5 @@ module.exports = {
   updateAddress,
   deleteAddress,
   filterPrice,
+  updatePassword,
 };

@@ -7,36 +7,52 @@
 </div>
 
 <div class="right mt-5">
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th scope="col"><b>Product name</b></th>
-        <th scope="col"><b>Small</b></th>
-        <th scope="col"><b>Medium</b></th>
-        <th scope="col"><b>Large</b></th>
-        <th scope="col"><b>Total</b></th>
-      </tr>
-    </thead>
-    <tbody>
-      <% for(let i = 0; i < data.length; i++) { %>
-      <tr>
-        <td><%= data[i].productName %></td>
-        <% let smallQty = 0, mediumQty = 0, largeQty = 0; %> <% for(let j = 0; j
-        < data[i].productSizes.length; j++) { %> <% if
-        (data[i].productSizes[j].size === 'Small') { %> <% smallQty =
-        data[i].productSizes[j].quantity; %> <% } else if
-        (data[i].productSizes[j].size === 'Medium') { %> <% mediumQty =
-        data[i].productSizes[j].quantity; %> <% } else if
-        (data[i].productSizes[j].size === 'Large') { %> <% largeQty =
-        data[i].productSizes[j].quantity; %> <% } %> <% } %>
-        <td><%= smallQty %></td>
-        <td><%= mediumQty %></td>
-        <td><%= largeQty %></td>
-        <td><%= data[i].totalQuantity %></td>
-      </tr>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col"><b>Product name</b></th>
+      <th scope="col"><b>Small</b></th>
+      <th scope="col"><b>Medium</b></th>
+      <th scope="col"><b>Large</b></th>
+      <th scope="col"><b>Total</b></th>
+      <th scope="col"><b>Action</b></th> <!-- New column for submit button -->
+    </tr>
+  </thead>
+  <tbody>
+    <% for(let i = 0; i < data.length; i++) { %>
+    <tr>
+      <td><%= data[i].productName %></td>
+      <% let smallQty = 0, mediumQty = 0, largeQty = 0; %> 
+      <% for(let j = 0; j < data[i].productSizes.length; j++) { %> 
+        <% if (data[i].productSizes[j].size === 'Small') { %> 
+          <% smallQty = data[i].productSizes[j].quantity; %> 
+        <% } else if (data[i].productSizes[j].size === 'Medium') { %> 
+          <% mediumQty = data[i].productSizes[j].quantity; %> 
+        <% } else if (data[i].productSizes[j].size === 'Large') { %> 
+          <% largeQty = data[i].productSizes[j].quantity; %> 
+        <% } %> 
       <% } %>
-    </tbody>
-  </table>
+      <td>
+        <form action="/admin/update-quantity" method="POST">
+          <input type="hidden" name="productId" value="<%= data[i]._id %>">
+          <input type="number" name="smallQty" value="<%= smallQty %>" required>
+      </td>
+      <td>
+        <input type="number" name="mediumQty" value="<%= mediumQty %>" required>
+      </td>
+      <td>
+        <input type="number" name="largeQty" value="<%= largeQty %>" required>
+      </td>
+      <td><%= data[i].totalQuantity %></td>
+      <td>
+        <button type="submit" style="background-color: rgb(112, 112, 255); color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">Update</button>
+        </form>
+      </td>
+    </tr>
+    <% } %>
+  </tbody>
+</table>
+
 </div>
 
 <%- include("../partials/adminFooter") %>

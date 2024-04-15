@@ -7,14 +7,6 @@
       <div class="row">
         <div class="col-xl-3">
           <!-- User Profile Sidebar -->
-          <div class="user-profile-sidebar">
-            <ul class="user-profile-menu">
-              <li><a href="#">Account Details</a></li>
-              <li><a href="#">Addresses</a></li>
-              <li><a href="#">My Orders</a></li>
-              <li><a href="/logout">Sign Out</a></li>
-            </ul>
-          </div>
         </div>
         <div class="col-xl-9">
           <!-- User Profile Content -->
@@ -30,6 +22,33 @@
               <h3>Account Details</h3>
               <p>Your Name : <%= loginStatus.username %></p>
               <p>Email : <%= loginStatus.email %></p>
+              <button
+                style="
+                  width: 110px;
+                  background-color: red;
+                  color: white;
+                  border-radius: 5px;
+                  padding: 10px;
+                "
+              >
+                <a href="/logout" style="text-decoration: none; color: white"
+                  >Sign Out</a
+                >
+              </button>
+              <button
+                id="changePasswordBtn"
+                style="
+                  width: 150px;
+                  background-color: red;
+                  color: white;
+                  border-radius: 5px;
+                  padding: 10px;
+                  margin-left: 10px;
+                "
+              >
+                Change Password
+              </button>
+            </div>
             </div>
 
             <!-- Recent Orders -->
@@ -124,10 +143,16 @@
                       <p>Country: <%= address.country %></p>
                       <p>Email: <%= address.email %></p>
                       <p>Phone: <%= address.phone %></p>
-                      <button class="edit-address-btn" data-address="<%= JSON.stringify(address) %>">
+                      <button
+                        class="edit-address-btn"
+                        data-address="<%= JSON.stringify(address) %>"
+                      >
                         Edit Address
                       </button>
-                      <button onclick="deleteAddress('<%= address._id.toString() %>')" class="delete-address-btn">
+                      <button
+                        onclick="deleteAddress('<%= address._id.toString() %>')"
+                        class="delete-address-btn"
+                      >
                         Delete Address
                       </button>
                     </div>
@@ -147,31 +172,92 @@
                   <h2>Edit Address</h2>
                   <!-- Address inputs -->
                   <div class="address-form">
-                    <input type="hidden" id="editAddressId" name="_id" value="" />
+                    <input
+                      type="hidden"
+                      id="editAddressId"
+                      name="_id"
+                      value=""
+                    />
                     <label for="editFirstName">First Name:</label>
-                    <input type="text" id="editFirstName" name="firstName" placeholder="First Name" />
+                    <input
+                      type="text"
+                      id="editFirstName"
+                      name="firstName"
+                      placeholder="First Name"
+                    />
                     <label for="editLastName">Last Name:</label>
-                    <input type="text" id="editLastName" name="lastName" placeholder="Last Name" />
+                    <input
+                      type="text"
+                      id="editLastName"
+                      name="lastName"
+                      placeholder="Last Name"
+                    />
                     <label for="editHouse">House:</label>
-                    <input type="text" id="editHouse" name="house" placeholder="House" />
+                    <input
+                      type="text"
+                      id="editHouse"
+                      name="house"
+                      placeholder="House"
+                    />
                     <label for="editLocality">Locality:</label>
-                    <input type="text" id="editLocality" name="locality" placeholder="Locality" />
+                    <input
+                      type="text"
+                      id="editLocality"
+                      name="locality"
+                      placeholder="Locality"
+                    />
                     <label for="editCity">City:</label>
-                    <input type="text" id="editCity" name="city" placeholder="City" />
+                    <input
+                      type="text"
+                      id="editCity"
+                      name="city"
+                      placeholder="City"
+                    />
                     <label for="editState">State:</label>
-                    <input type="text" id="editState" name="state" placeholder="State" />
+                    <input
+                      type="text"
+                      id="editState"
+                      name="state"
+                      placeholder="State"
+                    />
                     <label for="editPincode">Pincode:</label>
-                    <input type="text" id="editPincode" name="pincode" placeholder="Pincode" />
+                    <input
+                      type="text"
+                      id="editPincode"
+                      name="pincode"
+                      placeholder="Pincode"
+                    />
                     <label for="editCountry">Country:</label>
-                    <input type="text" id="editCountry" name="country" placeholder="Country" />
+                    <input
+                      type="text"
+                      id="editCountry"
+                      name="country"
+                      placeholder="Country"
+                    />
                     <label for="editEmail">Email:</label>
-                    <input type="text" id="editEmail" name="email" placeholder="Email" />
+                    <input
+                      type="text"
+                      id="editEmail"
+                      name="email"
+                      placeholder="Email"
+                    />
                     <label for="editPhone">Phone:</label>
-                    <input type="text" id="editPhone" name="phone" placeholder="Phone" />
+                    <input
+                      type="text"
+                      id="editPhone"
+                      name="phone"
+                      placeholder="Phone"
+                    />
                   </div>
                   <!-- Buttons -->
                   <div class="modal-buttons">
-                    <button type="button" id="cancelEdit" onclick="closeModal()">Cancel</button>
+                    <button
+                      type="button"
+                      id="cancelEdit"
+                      onclick="closeModal()"
+                    >
+                      Cancel
+                    </button>
                     <button id="submitEditAddress" type="submit">Submit</button>
                   </div>
                 </div>
@@ -182,34 +268,100 @@
             <div id="addAddressModal" class="modal">
               <div class="modal-content">
                 <h2>Add Address</h2>
-                <form id="addAddressForm" class="address-form" action="/add-address" method="post">
+                <form
+                  id="addAddressForm"
+                  class="address-form"
+                  action="/add-address"
+                  method="post"
+                >
                   <!-- Address inputs -->
                   <div class="address-form">
-                    <input type="hidden" id="addAddressId" name="_id" value="" />
+                    <input
+                      type="hidden"
+                      id="addAddressId"
+                      name="_id"
+                      value=""
+                    />
                     <label for="addFirstName">First Name:</label>
-                    <input type="text" id="addFirstName" name="firstName" placeholder="First Name" />
+                    <input
+                      type="text"
+                      id="addFirstName"
+                      name="firstName"
+                      placeholder="First Name"
+                    />
                     <label for="addLastName">Last Name:</label>
-                    <input type="text" id="addLastName" name="lastName" placeholder="Last Name" />
+                    <input
+                      type="text"
+                      id="addLastName"
+                      name="lastName"
+                      placeholder="Last Name"
+                    />
                     <label for="addHouse">House:</label>
-                    <input type="text" id="addHouse" name="house" placeholder="House" />
+                    <input
+                      type="text"
+                      id="addHouse"
+                      name="house"
+                      placeholder="House"
+                    />
                     <label for="addLocality">Locality:</label>
-                    <input type="text" id="addLocality" name="locality" placeholder="Locality" />
+                    <input
+                      type="text"
+                      id="addLocality"
+                      name="locality"
+                      placeholder="Locality"
+                    />
                     <label for="addCity">City:</label>
-                    <input type="text" id="addCity" name="city" placeholder="City" />
+                    <input
+                      type="text"
+                      id="addCity"
+                      name="city"
+                      placeholder="City"
+                    />
                     <label for="addState">State:</label>
-                    <input type="text" id="addState" name="state" placeholder="State" />
+                    <input
+                      type="text"
+                      id="addState"
+                      name="state"
+                      placeholder="State"
+                    />
                     <label for="addPincode">Pincode:</label>
-                    <input type="text" id="addPincode" name="pincode" placeholder="Pincode" />
+                    <input
+                      type="text"
+                      id="addPincode"
+                      name="pincode"
+                      placeholder="Pincode"
+                    />
                     <label for="addCountry">Country:</label>
-                    <input type="text" id="addCountry" name="country" placeholder="Country" />
+                    <input
+                      type="text"
+                      id="addCountry"
+                      name="country"
+                      placeholder="Country"
+                    />
                     <label for="addEmail">Email:</label>
-                    <input type="text" id="addEmail" name="email" placeholder="Email" />
+                    <input
+                      type="text"
+                      id="addEmail"
+                      name="email"
+                      placeholder="Email"
+                    />
                     <label for="addPhone">Phone:</label>
-                    <input type="text" id="addPhone" name="phone" placeholder="Phone" />
+                    <input
+                      type="text"
+                      id="addPhone"
+                      name="phone"
+                      placeholder="Phone"
+                    />
                   </div>
                   <!-- Buttons -->
                   <div class="modal-buttons">
-                    <button type="button" id="cancelAdd" onclick="closeAddAddressModal()">Cancel</button>
+                    <button
+                      type="button"
+                      id="cancelAdd"
+                      onclick="closeAddAddressModal()"
+                    >
+                      Cancel
+                    </button>
                     <button type="submit">Submit</button>
                   </div>
                 </form>
@@ -229,12 +381,136 @@
     </div>
   </section>
 </main>
+<div id="changePasswordModal" class="modal" style="display: flex; justify-content: center; align-items: center; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5);">
+  <div class="modal-content" style="background-color: #fff; padding: 20px; border-radius: 8px; max-width: 400px;">
+    <h2 style="margin-bottom: 20px;">Change Password</h2>
+    <form id="changePasswordForm" action="/change-password" method="POST">
+      <div class="form-group">
+        <label for="currentPassword">Current Password:</label>
+        <input
+          type="text"
+          id="currentPassword"
+          name="currentPassword"
+          placeholder="Enter your current password"
+          required
+          style="width: 100%; padding: 10px; margin-bottom: 10px;"
+        />
+      </div>
+      <div class="form-group">
+        <label for="newPassword">New Password:</label>
+        <input
+          type="text"
+          id="newPassword"
+          name="newPassword"
+          placeholder="Enter your new password"
+          required
+          style="width: 100%; padding: 10px; margin-bottom: 10px;"
+        />
+      </div>
+      <div class="modal-buttons" style="display: flex; justify-content: space-between; margin-top: 20px;">
+        <button type="button" id="cancelChangePassword" onclick="closeModall()" style="padding: 10px 20px; background-color: #dc0000; border: none; border-radius: 4px; cursor: pointer;">Cancel</button>
+        <button type="submit" style="padding: 10px 20px; background-color: #3085d6; color: #fff; border: none; border-radius: 4px; cursor: pointer;">Submit</button>
+      </div>
+    </form>
+  </div>
+</div>
 
 <%- include("../partials/userFooter") %>
 
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+<script>
+  // Get the change password button and modal
+  const changePasswordBtn = document.getElementById("changePasswordBtn");
+  const changePasswordModal = document.getElementById("changePasswordModal");
+
+  // Open the change password modal when the button is clicked
+  changePasswordBtn.addEventListener("click", function () {
+    changePasswordModal.style.display = "block";
+     window.location.reload();
+  });
+
+  // Close the change password modal
+  function closeModall() {
+    var modal = document.getElementById("changePasswordModal");
+    modal.style.display = "none";
+  }
+
+  // Handle form submission
+ // Handle form submission
+document.addEventListener("DOMContentLoaded", function () {
+  const changePasswordForm = document.getElementById("changePasswordForm");
+
+  changePasswordForm.addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    // Get current and new password values
+      const currentPassword = document.getElementById("currentPassword").value;
+      const newPassword = document.getElementById("newPassword").value;
+
+      // Create a data object to send in the request body
+      const data = {
+        currentPassword: currentPassword,
+        newPassword: newPassword
+      };
+
+    fetch("/change-password", {
+      method: "POST",
+      headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data) // Pass the data object as JSON in the request body
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          swal
+            .fire({
+              title: "Successful",
+              text: data.message,
+              icon: "success",
+              showCancelButton: false,
+              confirmButtonColor: "#3085d6",
+              confirmButtonText: "Okay",
+            })
+            .then((result) => {
+             closeModall()
+            });
+        } else {
+          swal
+            .fire({
+              title: "Error",
+              text: data.message,
+              icon: "error",
+              showCancelButton: false,
+              confirmButtonColor: "#d33",
+              confirmButtonText: "Okay",
+            })
+            .then((result) => {
+              // Handle the "Okay" button click if needed
+            });
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        swal
+          .fire({
+            title: "Error",
+            text: "Failed to communicate with the server",
+            icon: "error",
+            showCancelButton: false,
+            confirmButtonColor: "#d33",
+            confirmButtonText: "Okay",
+          })
+          .then((result) => {
+            // Handle the "Okay" button click if needed
+          });
+      });
+  });
+});
+</script>
 
 <script>
   $(".edit-address-btn").click(function () {
@@ -255,10 +531,9 @@
   });
 
   function closeModal() {
-  var modal = document.getElementById("editAddressModal");
-  modal.style.display = "none"; // Hide the modal
-}
-
+    var modal = document.getElementById("editAddressModal");
+    modal.style.display = "none"; // Hide the modal
+  }
 
   // Function to close the add address modal
   function closeAddAddressModal() {
@@ -612,21 +887,20 @@
     margin-bottom: 20px;
   }
   /* To Order Details Button Styles */
-.recent-orders button {
-  background-color: #ff6347;
-  color: #fff;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  margin-top: 20px; /* Adjust margin-top as needed */
-}
+  .recent-orders button {
+    background-color: #ff6347;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 20px; /* Adjust margin-top as needed */
+  }
 
-.recent-orders button:hover {
-  background-color: #e74c3c;
-}
-
+  .recent-orders button:hover {
+    background-color: #e74c3c;
+  }
 
   .order-table {
     width: 100%;
@@ -752,7 +1026,7 @@
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
   }
 
-   /* Add Address Modal */
+  /* Add Address Modal */
   #addAddressModal {
     display: none;
     background-color: #f2f2f2;
@@ -806,24 +1080,23 @@
     background-color: #e74c3c;
   }
 
-/* Modal Button Styles */
-.modal-buttons button {
-  background-color: #ff6347;
-  color: #fff;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  margin-right: 10px; /* Adjust margin-right as needed */
-}
+  /* Modal Button Styles */
+  .modal-buttons button {
+    background-color: #ff6347;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-right: 10px; /* Adjust margin-right as needed */
+  }
 
-.modal-buttons button:last-child {
-  margin-right: 0;
-}
+  .modal-buttons button:last-child {
+    margin-right: 0;
+  }
 
-.modal-buttons button:hover {
-  background-color: #e74c3c;
-}
+  .modal-buttons button:hover {
+    background-color: #e74c3c;
+  }
 </style>
-
