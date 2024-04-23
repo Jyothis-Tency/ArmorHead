@@ -5,6 +5,8 @@ const customerController = require("../controller/customerController");
 const productController = require("../controller/productController")
 const categoryController = require("../controller/categoryController")
 const orderController = require("../controller/orderController")
+const offerController = require("../controller/offerController")
+const couponController = require("../controller/couponController")
 
 const {isAdmin}= require("../authentication/authentify")
 
@@ -50,5 +52,24 @@ adminRoute.post("/update-quantity",isAdmin,productController.updateStock);
 adminRoute.get("/order-list", isAdmin, orderController.getOrderListAdmin);
 adminRoute.get('/orderDetailsAdmin/:orderId', isAdmin, orderController.getOrderDetailsAdmin);
 adminRoute.post('/updateOrderStatus/:orderId', isAdmin, orderController.updateOrderStatus);
+
+// Offer Management 
+adminRoute.get("/productOffer", isAdmin, offerController.getAllProductOffers);
+adminRoute.post("/add-ProdOffer", isAdmin, offerController.addProductOffer);
+adminRoute.post("/edit-ProdOffer", isAdmin, offerController.editProductOffer);
+adminRoute.post("/delete-ProdOffer/:offerId", isAdmin, offerController.deleteProductOffer);
+adminRoute.get("/categoryOffer", isAdmin, offerController.allCategoryOffer);
+adminRoute.post("/add-catOffer", isAdmin, offerController.addCategoryOffer);
+adminRoute.post("/edit-catOffer", isAdmin, offerController.editCategoryOffer);
+adminRoute.post("/delete-catOffer/:offerId", isAdmin, offerController.deleteCategoryOffer);
+
+// Coupon Management
+adminRoute.get("/coupon", isAdmin, couponController.getCouponPage)
+adminRoute.post("/add-coupon", isAdmin, couponController.addCoupon);
+adminRoute.post("/deleteCoupon/:id", isAdmin, couponController.deleteCoupon);
+
+//Sales Report Management
+adminRoute.get("/sales-report-page", isAdmin, adminController.salesReportPage);
+adminRoute.post("/sales-report", isAdmin, adminController.salesReport);
 
 module.exports = adminRoute;

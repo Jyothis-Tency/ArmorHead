@@ -55,17 +55,13 @@ const getCartCount = async (userId) => {
     const cart = await Cart.findOne({ user: userId }).populate(
       "items.productId"
     );
-
     if (!cart) {
       return 0;
     }
-
     let itemCount = 0;
-
     cart.items.forEach((item) => {
       itemCount += item.quantity;
     });
-
     return itemCount;
   } catch (error) {
     console.error("Error in getCartCount:", error);
@@ -96,6 +92,7 @@ const totalSubtotal = async (userId, cartItems) => {
 const addToUserCart = async (userId, productId, quantity, size = "Small") => {
   try {
     console.log("inside addToUserCart");
+    console.log(quantity);
     const maxProduct = 5;
     let cart = await Cart.findOne({ user: userId });
 
@@ -274,11 +271,11 @@ const incDecProductQuantity = async (
     await cart.save();
     return newQuantity;
   } catch (error) {
-     if (error.message === "Stock exceeded for this product") {
-       throw new Error("Stock exceeded for this product");
-     } else {
-       throw error;
-     }
+    if (error.message === "Stock exceeded for this product") {
+      throw new Error("Stock exceeded for this product");
+    } else {
+      throw error;
+    }
   }
 };
 
@@ -359,6 +356,19 @@ const clearTheCart = async (userId) => {
   }
 };
 
+const isAProductInCart = async (userId, productId) => {
+  try {
+    const cart = await Cart.findOne({
+      user: userId,
+      "items.productId": productId, // Search within the items array for productId
+    });
+    return !!cart; // Return true if cart is found, false otherwise
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
 module.exports = {
   getAllCartItems,
   addToUserCart,
@@ -371,4 +381,5 @@ module.exports = {
   currencyFormat,
   totalAmount,
   clearTheCart,
+  isAProductInCart,
 };

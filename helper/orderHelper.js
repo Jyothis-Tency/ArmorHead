@@ -121,15 +121,96 @@ const getOrderDetails = async (userId) => {
   }
 };
 
+const getAllDeliveredOrders = async () => {
+  try {
+    console.log("getAllDeliveredOrders");
+
+    // Determine the start of the current month
+    const currentMonthStart = new Date(
+      new Date().getFullYear(),
+      new Date().getMonth(),
+      1
+    );
+
+    // Aggregation pipeline
+    const result = await Order.aggregate([
+      // Match orders that are delivered and created after the start of the current month
+      {
+        $match: {
+          createdAt: { $gte: currentMonthStart },
+        },
+      },
+      // Unwind the orderedItems to deal with them individually
+      {
+        $unwind: "$orderedItems",
+      },
+      // Match only the delivered items within orderedItems
+      {
+        $match: {
+          "orderedItems.orderStat": "delivered",
+        },
+      },
+      // Lookup user details for each order
+      {
+        $lookup: {
+          from: "users",
+          localField: "user",
+          foreignField: "_id",
+          as: "userDetails",
+        },
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "orderedItems.product",
+          foreignField: "_id",
+          as: "productDetails",
+        },
+      },
+    ]);
+
+    result.forEach((order) => {
+      console.log("Product Details:", order.productDetails);
+    });
+
+    return result; // Return the results from the aggregation
+  } catch (error) {
+    throw error; // Catch and throw errors
+  }
+};
 
 
+const getAllDeliveredOrdersByDate = async (startDate, endDate) => {
+  try {
+    console.log("getAllDeliveredOrdersByDate triggered");
+    const result = await Order.aggregate([
+      // Unwind the orderedItems to deal with them individually
+      {
+        $unwind: "$orderedItems",
+      },
+      // Match delivered orders within the specified date range
+      {
+        $match: {
+          "orderedItems.orderStat": "delivered",
+          orderDate: {
+            $gte: startDate,
+            $lt: new Date(endDate.getTime() + 86400000), // Include the end date
+          },
+        },
+      },
+    ]); // Use lean() to get plain JavaScript objects
 
-
-
-
+    console.log(result);
+    return result;
+  } catch (error) {
+    throw error; // Handle any errors
+  }
+};
 
 
 module.exports = {
   forOrderPlacing,
   getOrderDetails,
+  getAllDeliveredOrders,
+  getAllDeliveredOrdersByDate,
 };

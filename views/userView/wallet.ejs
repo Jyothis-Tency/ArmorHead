@@ -1,0 +1,42 @@
+<%- include("../partials/userHeader") %>
+
+  <!-- breadcrumb-area-start -->
+  <section
+    class="breadcrumb-area"
+    data-background="/user-assets/img/bg/page-title.png"
+  >
+    <div class="container">
+      <div class="row">
+        <div class="col-xl-12">
+          <div class="breadcrumb-text text-center">
+            <h1>Wallet</h1>
+            <ul class="breadcrumb-menu">
+              <li><a href="/">home</a></li>
+              <li><span>Wallet</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- breadcrumb-area-end -->
+
+<div class="wallet_details_area" style="margin-top: 50px; margin-bottom: 100px;">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 offset-lg-2">
+        <div class="wallet_details" style="background-color: #e3f2fd; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
+          <h2 style="margin-bottom: 20px; text-align: center; color: #000000;">Wallet Details</h2>
+          <% if (walletDetails) { %>
+            <p style="font-size: 18px; margin-bottom: 10px;"><strong>Wallet Balance:</strong> ₹<%= walletDetails %></p>
+            <!-- Additional wallet information can be added here -->
+          <% } else { %>
+            <p style="font-size: 18px; margin-bottom: 10px;">No wallet balance available.</p>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include("../partials/userFooter") %>

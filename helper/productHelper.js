@@ -96,8 +96,39 @@ const stockDecrease = async (cartItems) => {
   }
 };
 
+const stockStatus = async (productId, size) => {
+  try {
+    // Find the product by productId
+    const product = await Product.findById(productId);
+
+    if (!product) {
+      throw new Error("Product not found");
+    }
+
+    // Find the product size object with the specified size
+    const productSize = product.productSizes.find(
+      (sizeObj) => sizeObj.size === size
+    );
+
+    if (!productSize) {
+      return "Out of Stock";
+    }
+
+    // Check if the quantity of the product size is greater than 0
+    if (productSize.quantity > 0) {
+      return "In Stock";
+    } else {
+      return "Out of Stock";
+    }
+  } catch (error) {
+    console.error("Error in stockStatus:", error);
+    throw new Error("Failed to check stock status");
+  }
+};
+
 module.exports = {
   getAllProducts,
   getAllUnblockedProducts,
   stockDecrease,
+  stockStatus,
 };

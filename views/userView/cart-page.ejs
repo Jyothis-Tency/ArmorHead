@@ -1,4 +1,16 @@
 <%- include("../partials/userHeader") %>
+<style>
+  .message {
+    color: green;
+    margin-top: 10px;
+    font-weight: bold;
+  }
+  .error-message {
+    color: red;
+    margin-top: 10px;
+    font-weight: bold;
+  }
+</style>
 <main>
   <!-- breadcrumb-area-start -->
   <section class="breadcrumb-area" data-background="img/bg/page-title.png">
@@ -17,7 +29,7 @@
     </div>
   </section>
   <!-- breadcrumb-area-end -->
-  
+
   <!-- Cart Area Start-->
   <section class="cart-area pt-100 pb-100">
     <div class="container">
@@ -116,18 +128,21 @@
                       id="coupon_code"
                       class="input-text"
                       name="coupon_code"
-                      value=""
                       placeholder="Coupon code"
                       type="text"
                     />
                     <button
                       class="btn theme-btn-2"
                       name="apply_coupon"
-                      type="submit"
+                      type="button"
+                      id="apply_coupon_button"
                     >
                       Apply coupon
                     </button>
+                    <div id="coupon_message"></div>
+                    <!-- Display success or error messages here -->
                   </div>
+
                   <div class="coupon2" id="clearCartButton">
                     <input
                       class="btn theme-btn"
@@ -167,36 +182,77 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
-  function increment(itemId,cartId,newQuantity,selectedSize,price) {
+$(document).ready(function() {
+    $('#apply_coupon_button').click(function() {
+        var couponCode = $('#coupon_code').val();
+
+        if (!couponCode) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Please enter a coupon code before applying'
+            });
+            return;
+        }
+
+        $.ajax({
+            url: '/applyOrRemoveCoupon',  // Adjust as needed
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ couponCode: couponCode }),  // Data to send
+            success: function(response) {
+                var messageBox = $('#coupon_message');
+                if (response.success) {
+                    if (response.message === "Coupon applied successfully") {
+                        $('#apply_coupon_button').text('Remove coupon');
+                        messageBox.text(response.message).removeClass('error-message').addClass('message');
+                    } else if (response.message === "Coupon removed successfully") {
+                        $('#apply_coupon_button').text('Apply coupon');
+                        messageBox.text(response.message).removeClass('error-message').addClass('message');
+                    }
+                } else {
+                    messageBox.text(response.message).addClass('error-message').removeClass('message');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error applying or removing coupon:', error);
+                $('#coupon_message').text('An error occurred. Please try again.').addClass('error-message').removeClass('message');
+            }
+        });
+    });
+});
+</script>
+
+<script>
+  function increment(itemId, cartId, newQuantity, selectedSize, price) {
     var numberInput = document.getElementById("quantity" + itemId);
     var currentValue = parseInt(numberInput.value);
     if (currentValue < 5) {
       numberInput.value = currentValue + 1;
-      numInput = numberInput.value
-       updateQuantityAndMax(itemId,cartId,numInput,selectedSize,price);
-    } else if (currentValue === 5)  {
-    // Show toast notification
-    showToast("You can't add above 5 quantity per product", "warning");
-    // Reload the page after showing the toast
-    setTimeout(function() {
-      location.reload();
-    }, 1000);
-  }
+      numInput = numberInput.value;
+      updateQuantityAndMax(itemId, cartId, numInput, selectedSize, price);
+    } else if (currentValue === 5) {
+      // Show toast notification
+      showToast("You can't add above 5 quantity per product", "warning");
+      // Reload the page after showing the toast
+      setTimeout(function () {
+        location.reload();
+      }, 1000);
+    }
   }
 
-  function decrement(itemId,cartId,newQuantity,selectedSize,price) {
+  function decrement(itemId, cartId, newQuantity, selectedSize, price) {
     var numberInput = document.getElementById("quantity" + itemId);
     var currentValue = parseInt(numberInput.value);
     if (currentValue > 1) {
       numberInput.value = currentValue - 1;
-      numInput = numberInput.value
-      updateQuantityAndMax(itemId,cartId,numInput,selectedSize,price);
+      numInput = numberInput.value;
+      updateQuantityAndMax(itemId, cartId, numInput, selectedSize, price);
     } else if (currentValue === 1) {
       showToast("There should be at least one product", "warning");
-    // Reload the page after showing the toast
-    setTimeout(function() {
-      location.reload();
-    }, 1000);
+      // Reload the page after showing the toast
+      setTimeout(function () {
+        location.reload();
+      }, 1000);
     }
   }
 </script>
@@ -333,31 +389,36 @@
       },
       error: function (error) {
         console.error("Error updating quantity:", error);
-        if (error.responseJSON && error.responseJSON.message === "Stock exceeded for this product") {
-        // Show toast notification for stock exceeding
-        showToast("Stock exceeded for this product", "error");
-        setTimeout(function() {
+        if (
+          error.responseJSON &&
+          error.responseJSON.message === "Stock exceeded for this product"
+        ) {
+          // Show toast notification for stock exceeding
+          showToast("Stock exceeded for this product", "error");
+          setTimeout(function () {
             window.location.reload();
           }, 1000);
-      } else {
-        // Show a generic error toast notification
-        showToast("Error updating quantity. Please try again later.", "error");
-      }
+        } else {
+          // Show a generic error toast notification
+          showToast(
+            "Error updating quantity. Please try again later.",
+            "error"
+          );
+        }
       },
     });
   }
 
   function showToast(message, type) {
-  // Use your preferred toast library to display the message
-  // For example, using the 'toastify-js' library
-  Toastify({
-    text: message,
-    duration: 3000,
-    position:"center",
-    backgroundColor: type === "error" ? "#ff6347" : "#32CD32", // Red for error, green for success
-  }).showToast();
-}
-
+    // Use your preferred toast library to display the message
+    // For example, using the 'toastify-js' library
+    Toastify({
+      text: message,
+      duration: 3000,
+      position: "center",
+      backgroundColor: type === "error" ? "#ff6347" : "#32CD32", // Red for error, green for success
+    }).showToast();
+  }
 </script>
 
 <style>

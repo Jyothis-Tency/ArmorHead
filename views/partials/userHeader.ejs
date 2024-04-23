@@ -93,6 +93,14 @@
       .resend-link:hover {
         text-decoration: underline;
       }
+      .wallet-icon {
+        background-image: url("/user-assets/css/images/wallet.png");
+        background-repeat: no-repeat;
+        background-size: contain;
+        display: inline-block;
+        width: 24px;
+        height: 24px;
+      }
     </style>
     <link rel="stylesheet" href="/user-assets/css/bootstrap.min.css" />
     <link rel="stylesheet" href="/user-assets/css/owl.carousel.min.css" />
@@ -125,6 +133,10 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.4/nouislider.min.css"
       rel="stylesheet"
     />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Include SweetAlert2 for alerts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   </head>
   <body>
     <!-- preloader -->
@@ -248,7 +260,7 @@
             </div>
             <div class="col-xl-2 col-lg-6 col-md-6 col-5 col-sm-7 pl-0">
               <div class="header-right f-right">
-                <ul>
+                <ul style="width: 300px">
                   <!-- <li class="search-btn">
                     <a class="search-btn nav-search search-trigger" href="#"
                       ><i class="fas fa-search"></i
@@ -258,12 +270,15 @@
                     <a href="/user-profile"><i class="far fa-user"></i></a>
                   </li>
                   <li>
-                    <button class="details-action-icon" type="submit">
+                    <a href="/wishlist" class="details-action-icon">
                       <i class="fas fa-heart"></i>
-                    </button>
+                    </a>
                   </li>
-                  <li class="d-shop-cart" style="margin-right: 15px;">
+                  <li class="d-shop-cart">
                     <a href="/cart"><i class="flaticon-shopping-cart"></i> </a>
+                  </li>
+                  <li>
+                    <a href="/get-wallet"><i class="wallet-icon"></i> </a>
                   </li>
                 </ul>
               </div>

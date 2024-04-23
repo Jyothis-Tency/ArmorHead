@@ -4,6 +4,9 @@ const userController = require("../controller/userController");
 const productController = require("../controller/productController");
 const cartController = require("../controller/cartController");
 const orderController = require("../controller/orderController");
+const wishlistController = require("../controller/wishlistController")
+const couponController = require("../controller/couponController")
+const walletController = require("../controller/walletController")
 const { isLoggedIn } = require("../authentication/authentify");
 
 // User actions
@@ -38,6 +41,10 @@ userRoute.get("/search-product", productController.searchProduct);
 userRoute.post("/filter-price", userController.filterPrice);
 userRoute.get("/filter", productController.filterProduct);
 
+// WishList Route 
+userRoute.get("/wishlist", isLoggedIn, wishlistController.viewWishlist);
+userRoute.post("/addToWishlist",isLoggedIn,wishlistController.addToWishlist);
+userRoute.post('/removeFromWishlist/:id',isLoggedIn,wishlistController.removeFromWishlist);
 
 // Cart Routes
 userRoute.get("/cart", isLoggedIn, cartController.userCart);
@@ -50,5 +57,12 @@ userRoute.post("/clear-cart", isLoggedIn, cartController.clearCart);
 userRoute.get("/checkoutPage", isLoggedIn, orderController.checkoutRender);
 userRoute.post("/place-order", isLoggedIn, orderController.placeOrder);
 userRoute.get("/order-details", isLoggedIn, orderController.orderDetailsPage);
+
+//Coupon based routes
+userRoute.post('/applyOrRemoveCoupon', isLoggedIn, couponController.applyOrRemoveCoupon);
+
+//Wallet based routes
+userRoute.get("/get-wallet", isLoggedIn, walletController.getWallet);
+
 
 module.exports = userRoute;

@@ -3,6 +3,8 @@ const cartHelper = require("../helper/cartHelper");
 const addressHelper = require("../helper/addressHelper");
 const orderHelper = require("../helper/orderHelper");
 const productHelper = require("../helper/productHelper");
+const walletHelper = require("../helper/walletHelper")
+const Wallet = require("../model/walletModel")
 const mongoose = require("mongoose");
 
 function orderDate() {
@@ -104,6 +106,12 @@ const placeOrder = async (req, res) => {
     }
 
     const totalAmount = await cartHelper.totalAmount(userId);
+    let wallet = await Wallet.findOne({ user: userId });
+    // console.log(wallet);
+    if (!wallet) {
+      wallet = new Wallet({ user: userId });
+      await wallet.save();
+    }
     const orderedDate = orderDate();
 
     if (paymentMethod === "cash on delivery") {
@@ -117,6 +125,35 @@ const placeOrder = async (req, res) => {
             orderedDate: orderedDate,
           });
         });
+    } else if (paymentMethod === "wallet") {
+      console.log('paymentMethod === wallet');
+      let isPaymentDone = await walletHelper.payUsingWallet(
+        userId,
+        totalAmount
+      );
+      // console.log(isPaymentDone);
+      if (isPaymentDone) {
+        await orderHelper
+          .forOrderPlacing(req.body, totalAmount, cartItems, userId, coupon)
+          .then(async (orderDetails) => {
+            await orderHelper.changeOrderStatus(
+              orderDetails._id,
+              "confirmed",
+              req.body.payment_method
+            );
+            await productHelper.stockDecrease(cartItems);
+            await cartHelper.clearTheCart(userId);
+            // console.log('3');
+            res
+              .status(202)
+              .json({ paymentMethod: "wallet", message: "Purchase Done" });
+          });
+      } else {
+        res.status(200).json({
+          paymentMethod: "wallet",
+          message: "Balance Insufficient in Wallet",
+        });
+      }
     }
   } catch (error) {
     console.log(error);

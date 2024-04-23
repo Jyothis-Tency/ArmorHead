@@ -105,26 +105,29 @@
                 <%= data.productDescription %>
               </div>
 
-              <div class="product-info-list variant-item" style="width: 500px;">
+              <div class="product-info-list variant-item" style="width: 500px">
                 <ul>
                   <li><span>Brands:</span>AXOR</li>
                   <li><span>Category:</span> <%= category.name %></li>
                   <li>
                     <div class="product_stock">
-                                <% let outOfStock = false; %>
-                                <% data.productSizes.forEach(size => { %>
-                                    <% console.log('Size:', size.size, 'Quantity:', size.quantity); %>
-                                    <% if (size.quantity <= 0) { %>
-                                        <span class="out_of_stock" style="color: #ff6347; width: 90px; height: 20px;">Out of Stock: <%= size.size %></span>
-                                        <% outOfStock = true; %>
-                                    <% } else { %>
-                                        <span class="stock_amount" style="color: green;"><%= size.size %>: <%= size.quantity %> left</span>
-                                    <% } %>
-                                <% }); %>
-                                <% if (!outOfStock) { %>
-                                    <span class="stock_amount">In Stock</span>
-                                <% } %>
-                            </div>
+                      <% let outOfStock = false; %> <%
+                      data.productSizes.forEach(size => { %> <%
+                      console.log('Size:', size.size, 'Quantity:',
+                      size.quantity); %> <% if (size.quantity <= 0) { %>
+                      <span
+                        class="out_of_stock"
+                        style="color: #ff6347; width: 90px; height: 20px"
+                        >Out of Stock: <%= size.size %></span
+                      >
+                      <% outOfStock = true; %> <% } else { %>
+                      <span class="stock_amount" style="color: green"
+                        ><%= size.size %>: <%= size.quantity %> left</span
+                      >
+                      <% } %> <% }); %> <% if (!outOfStock) { %>
+                      <span class="stock_amount">In Stock</span>
+                      <% } %>
+                    </div>
                   </li>
                 </ul>
               </div>
@@ -169,10 +172,15 @@
 
                     <div class="number-container">
                       <button type="button" onclick="decrement()">-</button>
-                      <input type="number" id="quantityInput" value="1" readonly/>
+                      <input
+                        type="number"
+                        id="quantityInput"
+                        value="1"
+                        readonly
+                      />
                       <button type="button" onclick="increment()">+</button>
                     </div>
-                    <button class="details-action-icon" type="submit">
+                    <button class="details-action-button" type="button" onclick="addToWishlist('<%= data._id%>')">
                       <i class="fas fa-heart"></i>
                     </button>
                     <div class="details-cart mt-40">
@@ -459,10 +467,10 @@
       numberInput.value = currentValue + 1;
     } else if (currentValue === 5) {
       showToast("You can't add above 5 quantity per product", "warning");
-    // Reload the page after showing the toast
-    setTimeout(function() {
-      location.reload();
-    }, 1000);
+      // Reload the page after showing the toast
+      setTimeout(function () {
+        location.reload();
+      }, 1000);
     }
   }
 
@@ -473,16 +481,76 @@
       numberInput.value = currentValue - 1;
     } else if (currentValue === 1) {
       showToast("There should be at least one product", "warning");
-    // Reload the page after showing the toast
-    setTimeout(function() {
-      location.reload();
-    }, 1000);
+      // Reload the page after showing the toast
+      setTimeout(function () {
+        location.reload();
+      }, 1000);
     }
   }
 </script>
 
 <script>
   function addToCart(prodId) {
+    try {
+      // Get the quantity from the plus-minus input
+      var quantity = $("#quantityInput").val();
+      console.log(`this is quantity ${quantity}`);
+      // Get the selected size
+      console.log(`this is size ${size}`);
+      console.log(`this is prodId ${prodId}`);
+      $.ajax({
+        type: "POST",
+        url: "/addToCart", // Adjust the URL if needed
+        data: {
+          size: size,
+          quantity: quantity,
+          prodId: prodId,
+        },
+        success: function (response) {
+          if (response.status === "true") {
+            // Show success message using Toastify
+            Toastify({
+              text: "Product added to cart successfully",
+              duration: 3000, // Duration in milliseconds
+              close: true, // Show close button
+              gravity: "top", // Display position: 'top', 'bottom', 'left', 'right'
+              position: "center", // Alignment of position: 'left', 'right', 'center'
+              backgroundColor: "green", // Background color
+            }).showToast();
+            setTimeout(() => {
+              window.location.href = "/cart";
+            }, 3000);
+          } else if (response.message) {
+            // Show error message using Toastify
+            Toastify({
+              text: response.message,
+              duration: 3000, // Duration in milliseconds
+              close: true, // Show close button
+              gravity: "top", // Display position: 'top', 'bottom', 'left', 'right'
+              position: "center", // Alignment of position: 'left', 'right', 'center'
+              backgroundColor: "red", // Background color
+            }).showToast();
+          }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+          console.error("Error in addToCart AJAX request:", errorThrown);
+          // Show error message using Toastify
+          Toastify({
+            text: "Error occurred while adding product to cart",
+            duration: 3000, // Duration in milliseconds
+            close: true, // Show close button
+            gravity: "top", // Display position: 'top', 'bottom', 'left', 'right'
+            position: "center", // Alignment of position: 'left', 'right', 'center'
+            backgroundColor: "red", // Background color
+          }).showToast();
+        },
+      });
+    } catch (error) {
+      console.error("Error in addToCart function:", error);
+    }
+  }
+
+  function addToWishlist(prodId) {
   try {
     // Get the quantity from the plus-minus input
     var quantity = $("#quantityInput").val();
@@ -492,7 +560,7 @@
     console.log(`this is prodId ${prodId}`);
     $.ajax({
       type: "POST",
-      url: "/addToCart", // Adjust the URL if needed
+      url: "/addToWishlist", // Adjust the URL to your backend route for adding to wishlist
       data: {
         size: size,
         quantity: quantity,
@@ -502,17 +570,17 @@
         if (response.status === "true") {
           // Show success message using Toastify
           Toastify({
-            text: "Product added to cart successfully",
+            text: "Product added to wishlist successfully",
             duration: 3000, // Duration in milliseconds
             close: true, // Show close button
             gravity: "top", // Display position: 'top', 'bottom', 'left', 'right'
             position: "center", // Alignment of position: 'left', 'right', 'center'
             backgroundColor: "green", // Background color
           }).showToast();
-          setTimeout(()=>{
-            window.location.href = "/cart";
-          },3000)
-        } else if(response.message) {
+          setTimeout(() => {
+            window.location.href = "/wishlist"; // Redirect to wishlist page after success
+          }, 3000);
+        } else if (response.message) {
           // Show error message using Toastify
           Toastify({
             text: response.message,
@@ -525,10 +593,10 @@
         }
       },
       error: function (jqXHR, textStatus, errorThrown) {
-        console.error("Error in addToCart AJAX request:", errorThrown);
+        console.error("Error in addToWishlist AJAX request:", errorThrown);
         // Show error message using Toastify
         Toastify({
-          text: "Error occurred while adding product to cart",
+          text: "Error occurred while adding product to wishlist",
           duration: 3000, // Duration in milliseconds
           close: true, // Show close button
           gravity: "top", // Display position: 'top', 'bottom', 'left', 'right'
@@ -538,9 +606,10 @@
       },
     });
   } catch (error) {
-    console.error("Error in addToCart function:", error);
+    console.error("Error in addToWishlist function:", error);
   }
 }
+
 
 </script>
 
@@ -577,8 +646,6 @@
       backgroundColor: type === "error" ? "#ff6347" : "#32CD32", // Red for error, green for success
     }).showToast();
   }
-
-  
 </script>
 
 <style>
@@ -628,6 +695,34 @@
   .out-of-stock {
     color: red; /* Change text color for out of stock */
     font-weight: bold; /* Optionally, make it bold */
+  }
+
+  .details-action-button {
+    height: 50px;
+
+    width: 50px;
+
+    border: 0;
+
+    background: #fff1f0;
+
+    border-radius: 50px;
+
+    margin-right: 0px;
+
+    margin-top: 15px;
+
+    color: #fe4536;
+
+    font-size: 15px;
+
+    line-height: 50px;
+  }
+
+  .details-action-button:hover {
+    background: #fe4536;
+
+    color: #fff;
   }
 </style>
 

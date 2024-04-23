@@ -2,6 +2,7 @@ const User = require("../model/userModel");
 const Product = require("../model/productModel");
 const Address = require("../model/addressModel");
 const Order = require("../model/orderModel");
+const Wallet = require("../model/walletModel")
 const Category = require("../model/categoryModel");
 const bcrypt = require("bcrypt");
 const otpHelper = require("../helper/otpHelper");
@@ -43,7 +44,7 @@ const userSignupPost = async (req, res) => {
     const { username, email, phone, password } = req.body;
     req.session.userData = { username, email, phone, password };
     console.log(req.session.userData);
-    const findUser = await User.findOne({email});
+    const findUser = await User.findOne({ email });
     console.log(findUser);
     if (!findUser) {
       var otp = await otpHelper.generateOtp();
@@ -402,31 +403,75 @@ const resendOtp = async (req, res) => {
 
 const cancelOrder = async (req, res) => {
   try {
-    console.log("inside cancel order");
+    console.log("Inside cancel order");
     const { orderId } = req.body;
-    console.log("Order ID:", orderId);
-    console.log("Is Order ID valid?", mongoose.Types.ObjectId.isValid(orderId));
+    console.log(orderId);
+    // Check if the orderId is valid
+    if (!mongoose.Types.ObjectId.isValid(orderId)) {
+      console.log("!mongoose.Types.ObjectId.isValid(orderId)");
+      return res.status(400).json({ error: "Invalid orderId" });
+    }
 
     const order = await Order.findOne({
       "orderedItems.orderId": new mongoose.Types.ObjectId(orderId),
     });
 
     if (!order) {
+      console.log("!order");
       return res
         .status(404)
         .json({ error: "No order found with the specified orderId" });
     }
 
+    // Find the ordered item with the given orderId
     const orderedItemIndex = order.orderedItems.findIndex((item) =>
       item.orderId.equals(orderId)
     );
+
+    console.log(orderedItemIndex);
 
     if (
       orderedItemIndex !== -1 &&
       order.orderedItems[orderedItemIndex].orderStat === "confirmed"
     ) {
-      order.orderedItems[orderedItemIndex].orderStat = "cancelled";
+      console.log("orderedItemIndex !== -1 && order.orderedItems[orderedItemIndex].orderStat === confirmed");
+      const orderedItem = order.orderedItems[orderedItemIndex];
+      console.log(orderedItem);
+      
+      if (order.paymentMethod === 'razorpay') {
+        // Update the wallet with the totalAmount for this order
+        const wallet = await Wallet.findOne({ user: req.session.userData._id });
+        if (!wallet) {
+          console.log("!wallet");
+          return res.status(404).json({ error: "Wallet not found" });
+        }
+        console.log(wallet.walletBalance);
+        console.log(order.totalAmount);
+        wallet.walletBalance += order.totalAmount;
+        console.log(wallet.walletBalance);
+        await wallet.save();
+      }
+
+      // Update the order item status to "cancelled"
+      orderedItem.orderStat = "cancelled";
+      console.log(orderedItem.orderStat);
+
+      // Restore product stock for the cancelled item
+      const product = await Product.findById(orderedItem.product);
+      console.log("product:");
+      console.log(product);
+      if (product) {
+        const sizeIndex = product.productSizes.findIndex(
+          (size) => size.size === orderedItem.size
+        );
+        if (sizeIndex !== -1) {
+          product.productSizes[sizeIndex].quantity += orderedItem.quantity;
+          await product.save();
+        }
+      }
+
       await order.save();
+     
       return res
         .status(200)
         .json({ message: "Order cancelled successfully", order });
@@ -435,7 +480,9 @@ const cancelOrder = async (req, res) => {
     }
   } catch (error) {
     console.error("Error cancelling order:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    return res
+      .status(500)
+      .json({ error: "Internal Server Error", message: error.message });
   }
 };
 
