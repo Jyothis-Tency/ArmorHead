@@ -4,9 +4,10 @@ const userController = require("../controller/userController");
 const productController = require("../controller/productController");
 const cartController = require("../controller/cartController");
 const orderController = require("../controller/orderController");
-const wishlistController = require("../controller/wishlistController")
-const couponController = require("../controller/couponController")
-const walletController = require("../controller/walletController")
+const wishlistController = require("../controller/wishlistController");
+const couponController = require("../controller/couponController");
+const walletController = require("../controller/walletController");
+const razorpay = require("../middleware/razorpay");
 const { isLoggedIn } = require("../authentication/authentify");
 
 // User actions
@@ -31,8 +32,12 @@ userRoute.post("/add-address", isLoggedIn, userController.addAddress);
 userRoute.post("/cancel-order", isLoggedIn, userController.cancelOrder);
 userRoute.post("/return-order", isLoggedIn, userController.returnOrder);
 userRoute.post("/updateAddress", isLoggedIn, userController.updateAddress);
-userRoute.delete("/delete-address/:addressId", isLoggedIn, userController.deleteAddress);
-userRoute.post("/change-password",isLoggedIn,userController.updatePassword);
+userRoute.delete(
+  "/delete-address/:addressId",
+  isLoggedIn,
+  userController.deleteAddress
+);
+userRoute.post("/change-password", isLoggedIn, userController.updatePassword);
 
 // Products Routes
 userRoute.get("/productDetails/:id", productController.getProductDetailsPage);
@@ -41,28 +46,43 @@ userRoute.get("/search-product", productController.searchProduct);
 userRoute.post("/filter-price", userController.filterPrice);
 userRoute.get("/filter", productController.filterProduct);
 
-// WishList Route 
+// WishList Route
 userRoute.get("/wishlist", isLoggedIn, wishlistController.viewWishlist);
-userRoute.post("/addToWishlist",isLoggedIn,wishlistController.addToWishlist);
-userRoute.post('/removeFromWishlist/:id',isLoggedIn,wishlistController.removeFromWishlist);
+userRoute.post("/addToWishlist", isLoggedIn, wishlistController.addToWishlist);
+userRoute.post(
+  "/removeFromWishlist/:id",
+  isLoggedIn,
+  wishlistController.removeFromWishlist
+);
 
 // Cart Routes
 userRoute.get("/cart", isLoggedIn, cartController.userCart);
 userRoute.post("/addToCart", isLoggedIn, cartController.addToCart);
-userRoute.post("/remove-cart-item/:id",isLoggedIn,cartController.removeFromCart);
+userRoute.post(
+  "/remove-cart-item/:id",
+  isLoggedIn,
+  cartController.removeFromCart
+);
 userRoute.post("/quantity-change", isLoggedIn, cartController.incDecQuantity);
 userRoute.post("/clear-cart", isLoggedIn, cartController.clearCart);
 
 // Purchase Routes
 userRoute.get("/checkoutPage", isLoggedIn, orderController.checkoutRender);
 userRoute.post("/place-order", isLoggedIn, orderController.placeOrder);
+userRoute.post("/createOrder", isLoggedIn, razorpay.createOrder);
+userRoute.post("/paymentSuccess", isLoggedIn, orderController.paymentSuccess);
+userRoute.post("/failedRazorpay", isLoggedIn, orderController.failedRazorpay);
 userRoute.get("/order-details", isLoggedIn, orderController.orderDetailsPage);
+userRoute.get("/order-success", isLoggedIn, orderController.orderSuccess);
 
 //Coupon based routes
-userRoute.post('/applyOrRemoveCoupon', isLoggedIn, couponController.applyOrRemoveCoupon);
+userRoute.post(
+  "/applyOrRemoveCoupon",
+  isLoggedIn,
+  couponController.applyOrRemoveCoupon
+);
 
 //Wallet based routes
 userRoute.get("/get-wallet", isLoggedIn, walletController.getWallet);
-
 
 module.exports = userRoute;

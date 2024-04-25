@@ -46,7 +46,7 @@ const getAllCartItems = async (userId) => {
     return userCartItems;
   } catch (error) {
     console.error("Error in getAllCartItems:", error);
-    throw error;
+    return [];
   }
 };
 

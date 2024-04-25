@@ -367,21 +367,7 @@
                 </form>
               </div>
             </div>
-
-            <!-- Change Password -->
-            <div class="change-password">
-              <h3>Change Password</h3>
-              <form class="password-form">
-                <!-- Form fields for changing password -->
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-</main>
-<div id="changePasswordModal" class="modal" style="display: flex; justify-content: center; align-items: center; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5);">
+            <div id="changePasswordModal" class="modal" style="display: none; justify-content: center; align-items: center; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5);">
   <div class="modal-content" style="background-color: #fff; padding: 20px; border-radius: 8px; max-width: 400px;">
     <h2 style="margin-bottom: 20px;">Change Password</h2>
     <form id="changePasswordForm" action="/change-password" method="POST">
@@ -415,6 +401,21 @@
   </div>
 </div>
 
+            <!-- Change Password -->
+            <!-- <div class="change-password">
+              <h3>Change Password</h3>
+              <form class="password-form">
+                <!-- Form fields for changing password -->
+              </form>
+            </div> -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+
 <%- include("../partials/userFooter") %>
 
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
@@ -429,7 +430,7 @@
   // Open the change password modal when the button is clicked
   changePasswordBtn.addEventListener("click", function () {
     changePasswordModal.style.display = "block";
-     window.location.reload();
+
   });
 
   // Close the change password modal

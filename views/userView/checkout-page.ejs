@@ -119,7 +119,7 @@
                     </div>
                     <div class="select-address">
                       <input
-                        type="checkbox"
+                        type="radio"
                         id="selectAddress<%= address._id %>"
                         name="selectAddress"
                         value="<%= address._id %>"
@@ -135,14 +135,10 @@
 
               <div class="different-address">
                 <div class="ship-different-title">
-                  <h3>
-             
-                  </h3>
+                  <h3></h3>
                 </div>
                 <div class="order-notes">
-                  <div class="checkout-form-list">
-              
-                  </div>
+                  <div class="checkout-form-list"></div>
                 </div>
               </div>
             </div>
@@ -185,15 +181,10 @@
                         </ul>
                       </td>
                     </tr>
-                    <tr class="order-total">
+                    <tr class="order_total">
                       <th>Order Total</th>
-                      <td></td>
                       <td>
-                        <strong
-                          ><span class="amount"
-                            >₹<%= totalAmount+70 %></span
-                          ></strong
-                        >
+                        <strong>₹<%= totalAmount+70 %></strong>
                       </td>
                     </tr>
                   </tfoot>
@@ -206,13 +197,13 @@
                     <div class="card-header" id="headingOne">
                       <h5 class="mb-0">
                         <input
-                          type="checkbox"
-                          id="cod-checkbox"
+                          type="radio"
+                          id="payment_cod"
                           class="styled-checkbox"
                           name="payment_method"
                           value="Cash on Delivery"
                         />
-                        <label for="cod-checkbox" class="checkbox-label"
+                        <label for="payment_cod" class="checkbox-label"
                           >Cash on Delivery (COD)</label
                         >
                       </h5>
@@ -235,13 +226,13 @@
                     <div class="card-header" id="headingOne">
                       <h5 class="mb-0">
                         <input
-                          type="checkbox"
-                          id="cod-checkbox"
+                          type="radio"
+                          id="payment_wallet"
                           class="styled-checkbox"
                           name="payment_method"
                           value="wallet"
                         />
-                        <label for="cod-checkbox" class="checkbox-label"
+                        <label for="payment_wallet" class="checkbox-label"
                           >Wallet</label
                         >
                       </h5>
@@ -255,6 +246,35 @@
                     >
                       <div class="card-body">
                         Pay with cash using wallet money.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="accordion" id="accordionExample">
+                  <div class="card">
+                    <div class="card-header" id="headingOne">
+                      <h5 class="mb-0">
+                        <input
+                          type="radio"
+                          id="payment_razorpay"
+                          class="styled-checkbox"
+                          name="payment_method"
+                          value="razorpay"
+                        />
+                        <label for="payment_razorpay" class="checkbox-label"
+                          >RazorPay</label
+                        >
+                      </h5>
+                    </div>
+
+                    <div
+                      id="collapseOne"
+                      class="collapse show"
+                      aria-labelledby="headingOne"
+                      data-parent="#accordionExample"
+                    >
+                      <div class="card-body">
+                        Online payment using RazorPay.
                       </div>
                     </div>
                   </div>
@@ -277,6 +297,250 @@
 <%- include("../partials/userFooter") %>
 
 <script>
+  $(document).ready(function () {
+    var totalAmountText = $(".order_total td strong")
+      .text()
+      .replace("₹", "")
+      .trim();
+    var totalAmount = parseFloat(totalAmountText);
+    console.log(totalAmount);
+
+    $("form").on("submit", function (event) {
+      event.preventDefault(); // Prevent the default form submission
+
+      var isCodSelected = $("#payment_cod").is(":checked");
+      var isWalletSelected = $("#payment_wallet").is(":checked");
+      var isRazorpaySelected = $("#payment_razorpay").is(":checked");
+
+      if (!isCodSelected && !isWalletSelected && !isRazorpaySelected) {
+        showToast("Select a payment option", "warning");
+      }
+
+      // Serialize the form data
+      var formData = $(this).serialize();
+      // Get the value of the selected address
+      var selectedAddress = $("input[name='selectAddress']:checked").val();
+      console.log(selectedAddress);
+
+      // Append the selected address as a separate parameter
+      formData += "&selected_address=" + encodeURIComponent(selectedAddress);
+      console.log(formData);
+
+      // Send an AJAX request to the backend
+      if (isCodSelected || isWalletSelected) {
+        $.ajax({
+          type: "POST",
+          url: "/place-order",
+          data: formData,
+          success: function (response) {
+            // Handle success response from the server
+            console.log(response);
+
+            // Check if the order was successfully placed
+            if (
+              response.paymentMethod === "wallet" ||
+              response.paymentMethod === "Cash on Delivery"
+            ) {
+              // Show a success message using SweetAlert2
+              if (response.totalAmount >= 1000) {
+                Swal.fire({
+                  icon: "success",
+                  title: "Order Placed",
+                  text: "Your order has been successfully placed!",
+                  confirmButtonColor: "#3085d6",
+                  confirmButtonText: "OK",
+                }).then((result) => {
+                  if (result.isConfirmed) {
+                    // Redirect to the order success page
+                    window.location.href = "/order-success";
+                  }
+                });
+              } else {
+                showToast("Cant use COD under ₹1000", "warning");
+              }
+            } else if (response.error) {
+              // Show an error message
+              console.error("Error placing order:", response);
+              alert("Failed to place order. Please try again.");
+            }
+          },
+          error: function (jqXHR, textStatus, errorThrown) {
+            // Handle error response from the server
+            const errorMessage =
+              jqXHR.responseJSON?.message || "An error occurred";
+            showToast(errorMessage, "error"); // Display error message to the user
+          },
+        });
+      } else if (isRazorpaySelected) {
+        console.log("razorpay");
+        fetch("/createorder", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ totalPrice: totalAmount }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data);
+            const parseAmount = parseInt(data.totalPrice);
+            console.log(parseAmount);
+            var options = {
+              key: "rzp_test_ywCWUQCjUZBwUk",
+              amount: data.orderId.amount,
+              currency: "INR",
+              name: "ArmorHead",
+              description: "Test Transaction",
+              image: "https://example.com/your_logo",
+              order_id: data.orderId.id,
+              handler: function (response) {
+                console.log(response);
+                console.log("Hello");
+                verify(response, data.orderId.id, formData);
+                console.log("hey");
+              },
+              prefill: {
+                name: "Gaurav Kumar",
+                email: "gaurav.kumar@example.com",
+                contact: "9000090000",
+              },
+              notes: {
+                address: "Razorpay Corporate Office",
+              },
+              theme: {
+                color: "#3399cc",
+              },
+            };
+            var rzp = new Razorpay(options);
+            rzp.open();
+            rzp.on("payment.failed", function (response) {
+              console.log("Payment failed:", response.error.description);
+              handleFailure(response.error.description);
+            });
+
+            function handleFailure(description) {
+              console.log("Payment failed:", description);
+
+              // Redirect to appropriate page or handle as required
+              createOrderWithStatusPending();
+              window.location.href = "/user-profile";
+            }
+
+            function createOrderWithStatusPending() {
+              console.log("inside createOrderWithStatusPending");
+              fetch("/failedRazorpay", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: formData,
+              })
+                .then((response) => {
+                  if (!response.ok) {
+                    throw new Error("Failed to create order.");
+                  }
+                  return response.json();
+                })
+                .then((data) => {
+                  console.log(data);
+                  if (data.success) {
+                    // Redirect to the appropriate page with the newly created order ID
+                    window.location.href = "/user-profile";
+                  } else {
+                    console.error("Error: Order creation failed");
+                    // Handle the error case where order creation fails
+                    // You may redirect to an error page or display a message to the user
+                  }
+                })
+                .catch((error) => {
+                  console.error("Error:", error);
+                  // Handle any errors that occur during the fetch operation
+                  // You may redirect to an error page or display a message to the user
+                });
+            }
+
+            function verify(response, orderId, formData) {
+              console.log("inside verify");
+              console.log(response);
+              console.log(orderId);
+              console.log(formData);
+              fetch("/paymentSuccess", {
+                method: "post",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  paymentid: response.razorpay_payment_id,
+                  razorpayorderid: response.razorpay_order_id,
+                  signature: response.razorpay_signature,
+                  orderId,
+                }),
+              })
+                .then((response) => {
+                  if (response.ok) {
+                    fetch("/place-order", {
+                      method: "POST",
+                      headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                      },
+                      body: formData,
+                    })
+                      .then((response) => response.json())
+                      .then((data) => {
+                        console.log(data);
+                        window.location.href = "/order-success";
+                      })
+                      .catch((error) => {
+                        console.error("Error:", error);
+                      });
+                  } else {
+                    console.error("Payment failed:");
+
+                    alert("Payment failed. Please try again later.");
+                  }
+                })
+                .catch((error) => {
+                  // Handle any errors that occur during the fetch operation
+                  console.error("Error:", error);
+                });
+            }
+          });
+      }
+    });
+  });
+
+  function showToast(message, type) {
+    // Initialize the background color based on the toast type
+    let backgroundColor;
+
+    // Determine the background color based on the type
+    switch (type) {
+      case "error":
+        backgroundColor = "#ff6347"; // Tomato red for error
+        break;
+      case "success":
+        backgroundColor = "#32CD32"; // Lime green for success
+        break;
+      case "warning":
+        backgroundColor = "#FFA500"; // Orange for warning
+        break;
+      default:
+        backgroundColor = "#000000"; // Black for unknown types
+    }
+
+    // Create and display the toast notification with Toastify
+    Toastify({
+      text: message, // Message to be displayed
+      duration: 3000, // Duration for which the toast is visible
+      position: "center", // Position of the toast
+      gravity: "top", // Toast appears at the top of the screen
+      backgroundColor, // Background color determined by type
+      close: true, // Show a close button on the toast
+    }).showToast(); // Display the toast
+  }
+</script>
+
+<!-- <script>
     // Wait for the document to be fully loaded
     document.addEventListener("DOMContentLoaded", function() {
         // Get all the checkboxes for selecting addresses
@@ -304,8 +568,7 @@
             });
         });
     });
-</script>
-
+</script> -->
 
 <script>
   // Function to fetch all countries from the REST Countries API

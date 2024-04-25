@@ -1,6 +1,7 @@
 const addressHelper = require("../helper/addressHelper");
 const Order = require("../model/orderModel");
-const mongoose = require("mongoose")
+const Coupon = require("../model/couponModel")
+const mongoose = require("mongoose");
 
 function orderDate() {
   const date = new Date();
@@ -45,14 +46,16 @@ function orderDate() {
   return `${dayOfWeek}, ${dayOfMonth} ${month} ${year}, ${time}`;
 }
 
-const forOrderPlacing = async (order, totalAmount, cartItems, userId1) => {
+const forOrderPlacing = async (order, totalAmount, cartItems, userId1, coupon, addressData) => {
   try {
     console.log("forOrderPlacing triggered");
     console.log(order);
-    // let couponUsed = await Coupon.findOne({ couponCode: coupon });
-
-    let status =
-      order.payment_method == "Cash on Delivery" ? "confirmed" : "pending";
+    let couponAmount
+    if (coupon) {
+      let couponUsed = await Coupon.findOne({ couponCode: coupon });
+      couponAmount = couponUsed ? couponUsed.discount : 0;
+    }
+    let status = order.payment_method == "Cash on Delivery" ? "confirmed" : "pending";
     // console.log(status);
     let date = orderDate();
     // console.log(date);
@@ -60,7 +63,8 @@ const forOrderPlacing = async (order, totalAmount, cartItems, userId1) => {
     // console.log(userId);
     let paymentMethod = order.payment_method;
     // console.log(paymentMethod);
-    let address = await addressHelper.findAnAddress(userId);
+    // let address = await addressHelper.findAnAddress(userId);
+    let address = addressData
     // console.log(address);
     let itemsOrdered = cartItems;
     // console.log(itemsOrdered);
@@ -73,6 +77,8 @@ const forOrderPlacing = async (order, totalAmount, cartItems, userId1) => {
       paymentMethod: paymentMethod,
       orderStatus: status,
       orderedItems: itemsOrdered,
+      coupon: coupon,
+      couponAmount: couponAmount,
     });
 
     await completedOrders.save();
@@ -108,6 +114,7 @@ const getOrderDetails = async (userId) => {
           orderDate: "$orderDate",
           totalAmount: "$totalAmount",
           paymentMethod: "$paymentMethod",
+          paymentStatus: "$paymentStatus",
           orderStatus: "$orderStatus",
           orderStat: "$orderedItems.orderStat", // Project the orderStat field
         },
@@ -179,7 +186,6 @@ const getAllDeliveredOrders = async () => {
   }
 };
 
-
 const getAllDeliveredOrdersByDate = async (startDate, endDate) => {
   try {
     console.log("getAllDeliveredOrdersByDate triggered");
@@ -207,10 +213,31 @@ const getAllDeliveredOrdersByDate = async (startDate, endDate) => {
   }
 };
 
+const changeOrderStatus = async (orderId, changeStatus, paymentMethod) => {
+  try {
+    const orderStatusChange = await Order.findOneAndUpdate(
+      { _id: orderId },
+      {
+        $set: {
+          orderStatus: changeStatus,
+          paymentMethod: paymentMethod,
+        },
+      },
+      {
+        new: true,
+      }
+    );
+    console.log(orderStatusChange);
+    return orderStatusChange;
+  } catch (error) {
+    throw new Error("Something went wrong! Failed to change status");
+  }
+};
 
 module.exports = {
   forOrderPlacing,
   getOrderDetails,
   getAllDeliveredOrders,
   getAllDeliveredOrdersByDate,
+  changeOrderStatus,
 };
