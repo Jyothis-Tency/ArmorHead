@@ -5,6 +5,7 @@ const addressHelper = require("../helper/addressHelper");
 const orderHelper = require("../helper/orderHelper");
 const productHelper = require("../helper/productHelper");
 const walletHelper = require("../helper/walletHelper");
+const razorpay = require("../middleware/razorpay");
 const Wallet = require("../model/walletModel");
 const mongoose = require("mongoose");
 
@@ -68,8 +69,6 @@ const checkoutRender = async (req, res) => {
     res.status(500).render("user/404");
   }
 };
-
-
 
 const orderDetailsPage = async (req, res) => {
   try {
@@ -308,7 +307,10 @@ const placeOrder = async (req, res) => {
           { new: true }
         );
 
-        console.log("updatePaymentStatus : ",updatedPaymentStatus.paymentStatus);
+        console.log(
+          "updatePaymentStatus : ",
+          updatedPaymentStatus.paymentStatus
+        );
 
         // Decrease product stock and clear cart
         await productHelper.stockDecrease(cartItems);
@@ -461,34 +463,47 @@ const failedRazorpay = async (req, res) => {
 
 const secondTry = async (req, res) => {
   try {
+    console.log("secondTry triggered");
     console.log(req.body);
     const orderId = req.body.order_id;
     // Find the order containing the ordered item with the specified orderId
-    const orderItem = await Order.findOne({ "orderedItems.orderId": orderId });
+    const order = await Order.findOne({ "orderedItems.orderId": orderId });
 
-    if (!orderItem) {
+    if (!order) {
       return res.status(404).json({ error: "Order not found" });
     }
 
-    // Retrieve the specific ordered item from the order
-    const order = order.orderedItems.find(
-      (item) => item.orderId.toString() === orderId
-    );
+    console.log("order :");
+    console.log(order);
+    console.log("orderId :", orderId);
 
-    if (!order) {
-      return res.status(404).json({ error: "Ordered item not found" });
+    let specificOrderItem;
+    if (order) {
+      // Find the specific ordered item by its orderId
+      specificOrderItem = order.orderedItems.find(
+        (item) => item.orderId.toString() === orderId
+      );
     }
-
+    let specificOrderId;
+    if (specificOrderItem) {
+      // Store the specific orderId in a variable
+      specificOrderId = specificOrderItem.orderId.toString();
+    }
+    console.log("specificOrderId :", specificOrderId);
     if (req.body.payment_method === "razorpay") {
       const razorpayOrderDetails = await razorpay.razorpayOrderCreate(
-        order._id,
+        specificOrderId,
         order.totalAmount
       );
+      console.log("razorPayDetails : ");
+      console.log(razorpayOrderDetails);
+
       const updatedOrder = await Order.findOneAndUpdate(
         { _id: order._id },
         { paymentStatus: "success" },
         { new: true }
       );
+      console.log("updateOrder : ");
       console.log(updatedOrder);
       res.json({
         paymentMethod: "razorpay",
@@ -502,6 +517,32 @@ const secondTry = async (req, res) => {
   }
 };
 
+const verifyPayment = async (req, res) => {
+  console.log("verify payment");
+  const userId = req.session.userData._id;
+  const loggedIn = userId;
+  await razorpay
+    .verifyPaymentSignature(req.body)
+    .then(async (response) => {
+      if (response.signatureIsValid) {
+        await orderHelper.changeOrderStatus(
+          req.body["orderDetails[_id]"],
+          "confirmed"
+        );
+        let cartItems = await cartHelper.getAllCartItems(userId);
+        await productHelper.stockDecrease(cartItems);
+        await cartHelper.clearTheCart(userId);
+        res.status(200).json({ status: true });
+      } else {
+        res.status(200).json({ status: false });
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+      res.status(500).render("user/404", { loggedIn });
+    });
+};
+
 module.exports = {
   checkoutRender,
   placeOrder,
@@ -512,4 +553,6 @@ module.exports = {
   orderSuccess,
   paymentSuccess,
   failedRazorpay,
+  secondTry,
+  verifyPayment,
 };

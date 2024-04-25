@@ -72,6 +72,7 @@ userRoute.post("/place-order", isLoggedIn, orderController.placeOrder);
 userRoute.post("/createOrder", isLoggedIn, razorpay.createOrder);
 userRoute.post("/paymentSuccess", isLoggedIn, orderController.paymentSuccess);
 userRoute.post("/failedRazorpay", isLoggedIn, orderController.failedRazorpay);
+userRoute.post("/second-try", isLoggedIn, orderController.secondTry);
 userRoute.get("/order-details", isLoggedIn, orderController.orderDetailsPage);
 userRoute.get("/order-success", isLoggedIn, orderController.orderSuccess);
 
