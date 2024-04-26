@@ -391,7 +391,7 @@
               currency: "INR",
               name: "ArmorHead",
               description: "Test Transaction",
-              image: "https://example.com/your_logo",
+              image: "/user-assets/img/logo-only.png",
               order_id: data.orderId.id,
               handler: function (response) {
                 console.log(response);
@@ -400,12 +400,12 @@
                 console.log("hey");
               },
               prefill: {
-                name: "Gaurav Kumar",
-                email: "gaurav.kumar@example.com",
-                contact: "9000090000",
+                name: "Ranga Annan",
+                email: "rangaannan@gmail.com",
+                contact: "1234567890",
               },
               notes: {
-                address: "Razorpay Corporate Office",
+                address: "Banglore City",
               },
               theme: {
                 color: "#3399cc",
@@ -423,7 +423,7 @@
 
               // Redirect to appropriate page or handle as required
               createOrderWithStatusPending();
-              window.location.href = "/user-profile";
+              window.location.href = "/order-details";
             }
 
             function createOrderWithStatusPending() {
@@ -445,7 +445,7 @@
                   console.log(data);
                   if (data.success) {
                     // Redirect to the appropriate page with the newly created order ID
-                    window.location.href = "/user-profile";
+                    window.location.href = "/order-details";
                   } else {
                     console.error("Error: Order creation failed");
                     // Handle the error case where order creation fails

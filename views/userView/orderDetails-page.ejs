@@ -36,8 +36,8 @@
           <td><%= order.paymentMethod %> : <%= order.paymentStatus %></td>
           <td><%= order.orderStat %></td>
           <td>
-            <% if (order.paymentStatus === 'success') { %>
-            <% if (order.orderStat === 'cancelled') { %>
+            <% if (order.paymentStatus === 'success') { %> <% if
+            (order.orderStat === 'cancelled') { %>
             <span>Cancelled</span>
             <% } else if (order.orderStat === 'returned') { %>
             <span>Returned</span>
@@ -59,9 +59,8 @@
             >
               Return
             </button>
-            <% } %>
-            <% } else if (order.paymentStatus === 'pending') { %>
-              <button
+            <% } %> <% } else if (order.paymentStatus === 'pending') { %>
+            <button
               class="retry-btn"
               data-order-id="<%= order.orderedItemId %>"
             >
@@ -153,6 +152,7 @@
 </style>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
 <script>
   // Handle retry button click for Razorpay payment method
   $(document).on("click", ".retry-btn", function (event) {
@@ -186,12 +186,12 @@
     console.log(orderinfo.razorpayOrderDetails.amount);
     console.log(orderinfo.razorpayOrderDetails.id);
     const options = {
-      key: `rzp_test_XnnB8x997qkm5Z`, // Enter the Key ID generated from the Dashboard
+      key: `rzp_test_ywCWUQCjUZBwUk`, // Enter the Key ID generated from the Dashboard
       amount: orderinfo.razorpayOrderDetails.amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
       currency: "INR",
-      name: "Reid", //your business name
+      name: "ArmorHead", //your business name
       description: "Test Transaction",
-      image: "/user/assets/images/demos/demo-10/logo-main.png",
+      image: "/user-assets/img/logo-only.png",
       order_id: `${orderinfo.razorpayOrderDetails.id}`, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
       handler: function (response) {
         // alert(response.razorpay_payment_id);
@@ -208,12 +208,12 @@
         );
       },
       prefill: {
-        name: "anushidh",
-        email: "anushidh101@gmail.com",
-        contact: "8075257134",
+        name: "Ranga Annan",
+        email: "rangaannan@gmail.com",
+        contact: "1234567890",
       },
       notes: {
-        address: "Razorpay Corporate Office",
+        address: "Banglore City",
       },
       theme: {
         color: "#3399cc",
@@ -256,13 +256,14 @@
             icon: "error",
             confirmButtonText: "Ok!",
           }).then(() => {
-            location.href = "/user-profile";
+            location.href = "/order-details";
           });
         }
       },
     });
   }
 </script>
+
 <script>
   function cancelOrder(orderId) {
     console.log("Cancelling order with ID:", orderId);

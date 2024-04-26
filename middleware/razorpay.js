@@ -31,13 +31,14 @@ const razorpayOrderCreate = async (orderId, totalAmount) => {
     console.log(totalAmount);
     let parseAmount = parseFloat(totalAmount);
     let amountAsInt = Math.round(parseAmount); // Round to nearest integer
-    const orderDetails = await razorpay.orders.create({
+    const orderDetails = razorpay.orders.create({
       amount: `${amountAsInt * 100}`,
       currency: "INR",
       receipt: `${orderId}`,
       payment_capture: 1,
     });
-    console.log("razorpay orderDetailsorderDetails razorpay :", orderDetails);
+    console.log("orderDetails.id : ",orderDetails.id);
+    console.log("razorpay orderDetails :", orderDetails);
     return orderDetails;
   } catch (error) {
     console.log(error);

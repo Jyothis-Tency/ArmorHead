@@ -296,6 +296,7 @@ const placeOrder = async (req, res) => {
         await orderHelper.changeOrderStatus(
           orderDetails._id,
           "confirmed",
+          "confirmed",
           req.body.payment_method
         );
 
@@ -348,6 +349,7 @@ const placeOrder = async (req, res) => {
           .then(async (orderDetails) => {
             await orderHelper.changeOrderStatus(
               orderDetails._id,
+              "confirmed",
               "confirmed",
               req.body.payment_method
             );
@@ -447,6 +449,7 @@ const failedRazorpay = async (req, res) => {
     await orderHelper.changeOrderStatus(
       orderDetails._id,
       "confirmed",
+      "pending",
       req.body.payment_method
     );
     const updatedOrder = await Order.findOneAndUpdate(
@@ -464,52 +467,29 @@ const failedRazorpay = async (req, res) => {
 const secondTry = async (req, res) => {
   try {
     console.log("secondTry triggered");
+    delete req.session.requestOrderId
     console.log(req.body);
-    const orderId = req.body.order_id;
-    // Find the order containing the ordered item with the specified orderId
-    const order = await Order.findOne({ "orderedItems.orderId": orderId });
-
+    const requestOrderId = req.body.order_id;
+    req.session.requestOrderId = requestOrderId;
+    const order = await Order.findOne({
+      "orderedItems.orderId": requestOrderId,
+    });
+    console.log(order);
     if (!order) {
       return res.status(404).json({ error: "Order not found" });
     }
-
-    console.log("order :");
-    console.log(order);
-    console.log("orderId :", orderId);
-
-    let specificOrderItem;
-    if (order) {
-      // Find the specific ordered item by its orderId
-      specificOrderItem = order.orderedItems.find(
-        (item) => item.orderId.toString() === orderId
-      );
-    }
-    let specificOrderId;
-    if (specificOrderItem) {
-      // Store the specific orderId in a variable
-      specificOrderId = specificOrderItem.orderId.toString();
-    }
-    console.log("specificOrderId :", specificOrderId);
     if (req.body.payment_method === "razorpay") {
       const razorpayOrderDetails = await razorpay.razorpayOrderCreate(
-        specificOrderId,
+        requestOrderId,
         order.totalAmount
       );
-      console.log("razorPayDetails : ");
-      console.log(razorpayOrderDetails);
-
-      const updatedOrder = await Order.findOneAndUpdate(
-        { _id: order._id },
-        { paymentStatus: "success" },
-        { new: true }
-      );
-      console.log("updateOrder : ");
-      console.log(updatedOrder);
+      console.log("process.env.KEY_ID : ",process.env.KEY_ID);
+      
       res.json({
         paymentMethod: "razorpay",
         order,
         razorpayOrderDetails,
-        razorpaykeyId: process.env.razorpay_key_id,
+        razorpaykeyId: process.env.KEY_ID,
       });
     }
   } catch (error) {
@@ -520,13 +500,22 @@ const secondTry = async (req, res) => {
 const verifyPayment = async (req, res) => {
   console.log("verify payment");
   const userId = req.session.userData._id;
+  const requestOrderId = req.session.requestOrderId;
   const loggedIn = userId;
+  const updatedOrder = await Order.findOneAndUpdate(
+    { "orderedItems.orderId": requestOrderId },
+    { paymentStatus: "success" },
+    { new: true }
+  );
+  console.log(updatedOrder);
+  console.log("updatedOrder._id", updatedOrder._id);
   await razorpay
     .verifyPaymentSignature(req.body)
     .then(async (response) => {
       if (response.signatureIsValid) {
         await orderHelper.changeOrderStatus(
-          req.body["orderDetails[_id]"],
+          updatedOrder._id,
+          "confirmed",
           "confirmed"
         );
         let cartItems = await cartHelper.getAllCartItems(userId);

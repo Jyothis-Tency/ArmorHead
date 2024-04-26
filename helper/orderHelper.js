@@ -213,12 +213,14 @@ const getAllDeliveredOrdersByDate = async (startDate, endDate) => {
   }
 };
 
-const changeOrderStatus = async (orderId, changeStatus, paymentMethod) => {
+const changeOrderStatus = async (orderId, changeStatus, newOrderStat, paymentMethod) => {
   try {
+    console.log("changeOrderStatus");
     const orderStatusChange = await Order.findOneAndUpdate(
       { _id: orderId },
       {
         $set: {
+          "orderedItems.$[].orderStat": newOrderStat,
           orderStatus: changeStatus,
           paymentMethod: paymentMethod,
         },
