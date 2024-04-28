@@ -375,8 +375,7 @@ const placeOrder = async (req, res) => {
 
 const orderSuccess = async (req, res) => {
   try {
-    const { paymentMethod, totalAmount, cartItems, orderedDate } =
-      req.session.tempOrderDetails;
+    const { paymentMethod, totalAmount, cartItems, orderedDate } = req.session.tempOrderDetails;
     res.render("userView/orderSuccess-page", {
       cartItems,
       deliveryDate: orderedDate,

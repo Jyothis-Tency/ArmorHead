@@ -245,9 +245,12 @@
             title: "Good job!",
             text: "Payment successful!",
             icon: "success",
-            confirmButtonText: "Ok!",
+            timer: 3000, // 3-second timer
+            timerProgressBar: true, // Show a progress bar
+            showConfirmButton: false, // Hide the confirm button
           }).then(() => {
-            location.href = "/order-success";
+            // Redirect to the order success page
+            window.location.reload()  // Ensure the URL is correct
           });
         } else {
           Swal.fire({

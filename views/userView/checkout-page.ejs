@@ -1,39 +1,46 @@
 <%- include("../partials/userHeader") %>
 <main>
-  <!-- breadcrumb-area-start -->
-  <section
-    class="breadcrumb-area"
-    data-background="/user-assets/img/bg/page-title.png"
-  >
-    <div class="container">
-      <div class="row">
-        <div class="col-xl-12">
-          <div class="breadcrumb-text text-center">
-            <h1>Checkout</h1>
-            <ul class="breadcrumb-menu">
-              <li><a href="/">home</a></li>
-              <li><span>Checkout</span></li>
-            </ul>
-          </div>
-        </div>
+<!-- checkout-breadcrumb -->
+<section style="background-image: url('/user-assets/img/bg/page-title.png'); height: 150px; padding: 20px 0;">
+  <div style="max-width: 1200px; margin: 0 auto;">
+    <div style="display: flex; justify-content: center; align-items: center; text-align: center;">
+      <div>
+        <h1 style="font-size: 70px; color: #333;">Checkout</h1>
+        <ul style="list-style: none; padding: 0; display: flex; justify-content: center;">
+          <li style="margin-right: 10px;"><a href="/" style="text-decoration: none; color: #007BFF;">Home</a></li>
+          <li style="color: #666;">Checkout</li>
+        </ul>
       </div>
     </div>
-  </section>
-  <!-- breadcrumb-area-end -->
+  </div>
+</section>
+<!-- end-checkout-breadcrumb -->
 
   <!-- checkout-area start -->
-  <section class="checkout-area pb-70">
+  <section class="checkout-area pb-70" style="padding-top: 10px;">
     <div class="container">
       <form action="/place-order" method="post">
         <div class="row">
           <div class="col-lg-6">
             <div class="checkbox-form">
               <h3>Billing Details</h3>
+
               <div class="row">
                 <% allAddress.forEach(address => { %>
                 <div class="col-md-4">
                   <!-- Adjust column size as needed -->
                   <div class="address-container">
+                    <div class="select-address">
+                      <input
+                        type="radio"
+                        id="selectAddress<%= address._id %>"
+                        name="selectAddress"
+                        value="<%= address._id %>"
+                      />
+                      <label for="selectAddress<%= address._id %>"
+                        >Select This Address</label
+                      >
+                    </div>
                     <div class="checkout-form-list">
                       <label>First Name<span class="required">*</span></label>
                       <input
@@ -117,17 +124,6 @@
                         disabled
                       />
                     </div>
-                    <div class="select-address">
-                      <input
-                        type="radio"
-                        id="selectAddress<%= address._id %>"
-                        name="selectAddress"
-                        value="<%= address._id %>"
-                      />
-                      <label for="selectAddress<%= address._id %>"
-                        >Select This Address</label
-                      >
-                    </div>
                   </div>
                 </div>
                 <% }); %>
@@ -148,6 +144,7 @@
             <div class="your-order mb-30">
               <h3>Your order</h3>
               <div class="your-order-table table-responsive">
+                <% if (cartItems.length > 0) { %>
                 <table>
                   <thead>
                     <tr>
@@ -189,6 +186,42 @@
                     </tr>
                   </tfoot>
                 </table>
+                <div class="coupon">
+                  <input
+                    id="coupon_code"
+                    class="input-text"
+                    name="coupon_code"
+                    placeholder="Coupon code"
+                    type="text"
+                  />
+                  <button
+                    class="btn theme-btn-2"
+                    name="apply_coupon"
+                    type="button"
+                    id="apply_coupon_button"
+                  >
+                    Apply coupon
+                  </button>
+                  <div id="coupon_message"></div>
+                  <!-- Display success or error messages here -->
+                </div>
+                <% } else { %>
+                <h4>No products added!!!</h4>
+                <a
+                  href="/shopPage"
+                  style="
+                    display: inline-block;
+                    padding: 10px 20px;
+                    background-color: red;
+                    color: white;
+                    text-decoration: none;
+                    text-align: center;
+                    border-radius: 5px;
+                  "
+                >
+                  Go to Shop
+                </a>
+                <% } %>
               </div>
 
               <div class="payment-method">
@@ -280,9 +313,22 @@
                   </div>
                 </div>
                 <div class="order-button-payment mt-20">
+                  <% if (cartItems.length > 0) { %>
+                  <!-- Active 'Place order' button -->
                   <button type="submit" class="btn theme-btn">
                     Place order
                   </button>
+                  <% } else { %>
+                  <!-- Disabled 'Place order' button with grey color -->
+                  <button
+                    type="button"
+                    class="btn"
+                    disabled="true"
+                    style=" background-color: grey; /* Change color to grey */
+                    color: #ccc; /* Optional: Change text color to lighter grey
+                    */ " > SORRY!!! Add products first
+                  </button>
+                  <% } %>
                 </div>
               </div>
             </div>
@@ -295,6 +341,60 @@
 </main>
 
 <%- include("../partials/userFooter") %>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  $(document).ready(function () {
+    $("#apply_coupon_button").click(function () {
+      var couponCode = $("#coupon_code").val();
+
+      if (!couponCode) {
+        Swal.fire({
+          icon: "warning",
+          title: "Please enter a coupon code before applying",
+        });
+        return;
+      }
+
+      $.ajax({
+        url: "/applyOrRemoveCoupon", // Adjust as needed
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({ couponCode: couponCode }), // Data to send
+        success: function (response) {
+          var messageBox = $("#coupon_message");
+          if (response.success) {
+            if (response.message === "Coupon applied successfully") {
+              $("#apply_coupon_button").text("Remove coupon");
+              messageBox
+                .text(response.message)
+                .removeClass("error-message")
+                .addClass("message");
+            } else if (response.message === "Coupon removed successfully") {
+              $("#apply_coupon_button").text("Apply coupon");
+              messageBox
+                .text(response.message)
+                .removeClass("error-message")
+                .addClass("message");
+            }
+          } else {
+            messageBox
+              .text(response.message)
+              .addClass("error-message")
+              .removeClass("message");
+          }
+        },
+        error: function (xhr, status, error) {
+          console.error("Error applying or removing coupon:", error);
+          $("#coupon_message")
+            .text("An error occurred. Please try again.")
+            .addClass("error-message")
+            .removeClass("message");
+        },
+      });
+    });
+  });
+</script>
 
 <script>
   $(document).ready(function () {
