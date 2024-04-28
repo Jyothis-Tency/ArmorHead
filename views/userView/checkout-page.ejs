@@ -1,23 +1,45 @@
 <%- include("../partials/userHeader") %>
 <main>
-<!-- checkout-breadcrumb -->
-<section style="background-image: url('/user-assets/img/bg/page-title.png'); height: 150px; padding: 20px 0;">
-  <div style="max-width: 1200px; margin: 0 auto;">
-    <div style="display: flex; justify-content: center; align-items: center; text-align: center;">
-      <div>
-        <h1 style="font-size: 70px; color: #333;">Checkout</h1>
-        <ul style="list-style: none; padding: 0; display: flex; justify-content: center;">
-          <li style="margin-right: 10px;"><a href="/" style="text-decoration: none; color: #007BFF;">Home</a></li>
-          <li style="color: #666;">Checkout</li>
-        </ul>
+  <!-- checkout-breadcrumb -->
+  <section
+    style="
+      background-image: url('/user-assets/img/bg/page-title.png');
+      height: 150px;
+      padding: 20px 0;
+    "
+  >
+    <div style="max-width: 1200px; margin: 0 auto">
+      <div
+        style="
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          text-align: center;
+        "
+      >
+        <div>
+          <h1 style="font-size: 70px; color: #333">Checkout</h1>
+          <ul
+            style="
+              list-style: none;
+              padding: 0;
+              display: flex;
+              justify-content: center;
+            "
+          >
+            <li style="margin-right: 10px">
+              <a href="/" style="text-decoration: none; color: #007bff">Home</a>
+            </li>
+            <li style="color: #666">Checkout</li>
+          </ul>
+        </div>
       </div>
     </div>
-  </div>
-</section>
-<!-- end-checkout-breadcrumb -->
+  </section>
+  <!-- end-checkout-breadcrumb -->
 
   <!-- checkout-area start -->
-  <section class="checkout-area pb-70" style="padding-top: 10px;">
+  <section class="checkout-area pb-70" style="padding-top: 10px">
     <div class="container">
       <form action="/place-order" method="post">
         <div class="row">
@@ -181,30 +203,60 @@
                     <tr class="order_total">
                       <th>Order Total</th>
                       <td>
-                        <strong>₹<%= totalAmount+70 %></strong>
+                        <div class="cart_subtotal" id="totalAmount">
+                          <p>Total</p>
+                          <p class="cart_amount"><%= totalAmount %></p>
+                        </div>
                       </td>
                     </tr>
                   </tfoot>
                 </table>
-                <div class="coupon">
-                  <input
-                    id="coupon_code"
-                    class="input-text"
-                    name="coupon_code"
-                    placeholder="Coupon code"
-                    type="text"
-                  />
-                  <button
-                    class="btn theme-btn-2"
-                    name="apply_coupon"
-                    type="button"
-                    id="apply_coupon_button"
-                  >
-                    Apply coupon
-                  </button>
-                  <div id="coupon_message"></div>
-                  <!-- Display success or error messages here -->
+                <!--coupon code area start-->
+
+                <div class="coupon_code left">
+                  <h3>Coupon</h3>
+                  <div class="coupon_inner">
+                    <div class="coupon-dropdown" style="height: 40px">
+                      <select
+                        id="couponSelect"
+                        class="coupon-select"
+                        style="height: 100%"
+                      >
+                        <option value="">Select a coupon</option>
+                        <% availableCoupons.forEach(function(coupon) { %>
+                        <option
+                          value="<%= coupon.couponCode %>"
+                          data-discount="<%= coupon.discount %>"
+                        >
+                          <%= coupon.couponName %> - <%=
+                          currencyFormat(coupon.discount) %> OFF <% if
+                          (coupon.isActive==='Active' ) { %> (Expires: <%=
+                          coupon.expiryDate.toLocaleDateString() %>) <% } else {
+                          %> (Expired) <% } %>
+                        </option>
+                        <% }); %>
+                      </select>
+                    </div>
+                    <button
+                      id="couponButton"
+                      type="button"
+                      style="margin-top: 10px"
+                    >
+                      <% if (couponApplied) { %>
+                      <!-- Check if appliedCouponCode is truthy -->
+                      Remove Coupon
+                      <!-- If coupon applied, show Remove Coupon button -->
+                      <% } else { %> Apply Coupon
+                      <!-- If no coupon applied, show Apply Coupon button -->
+                      <% } %>
+                    </button>
+                    <div id="couponMessage">
+                      <p></p>
+                    </div>
+                  </div>
                 </div>
+
+                <!--coupon code area end-->
                 <% } else { %>
                 <h4>No products added!!!</h4>
                 <a
@@ -324,9 +376,13 @@
                     type="button"
                     class="btn"
                     disabled="true"
-                    style=" background-color: grey; /* Change color to grey */
-                    color: #ccc; /* Optional: Change text color to lighter grey
-                    */ " > SORRY!!! Add products first
+                    style="
+                      background-color: grey; /* Change color to grey */
+                      color: #ccc; /* Optional: Change text color to lighter grey
+                    */
+                    "
+                  >
+                    SORRY!!! Add products first
                   </button>
                   <% } %>
                 </div>
@@ -344,64 +400,137 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-  $(document).ready(function () {
-    $("#apply_coupon_button").click(function () {
-      var couponCode = $("#coupon_code").val();
+  document.addEventListener("DOMContentLoaded", function () {
+    // Add event listener to the Apply/Remove Coupon button
+    document
+      .getElementById("couponButton")
+      .addEventListener("click", function () {
+        console.log("button clicked");
+        var couponCode = document.getElementById("couponSelect").value;
+        var button = document.getElementById("couponButton");
+        var buttonLabel = button.textContent.trim();
+        console.log("couponCode:", couponCode);
+        console.log("buttonLabel:", buttonLabel);
 
-      if (!couponCode) {
-        Swal.fire({
-          icon: "warning",
-          title: "Please enter a coupon code before applying",
-        });
-        return;
-      }
+        if (buttonLabel === "Apply Coupon") {
+          // Send request to apply coupon
+          applyCoupon(couponCode);
+        } else {
+          // Send request to remove coupon
+          removeCoupon();
+        }
+      });
+  });
 
-      $.ajax({
-        url: "/applyOrRemoveCoupon", // Adjust as needed
-        type: "POST",
-        contentType: "application/json",
-        data: JSON.stringify({ couponCode: couponCode }), // Data to send
-        success: function (response) {
-          var messageBox = $("#coupon_message");
-          if (response.success) {
-            if (response.message === "Coupon applied successfully") {
-              $("#apply_coupon_button").text("Remove coupon");
-              messageBox
-                .text(response.message)
-                .removeClass("error-message")
-                .addClass("message");
-            } else if (response.message === "Coupon removed successfully") {
-              $("#apply_coupon_button").text("Apply coupon");
-              messageBox
-                .text(response.message)
-                .removeClass("error-message")
-                .addClass("message");
-            }
-          } else {
-            messageBox
-              .text(response.message)
-              .addClass("error-message")
-              .removeClass("message");
-          }
+  var totalPrice;
+
+  async function applyCoupon(couponCode) {
+    try {
+      console.log("applyCoupon");
+      const response = await fetch("/applyCoupon", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-        error: function (xhr, status, error) {
-          console.error("Error applying or removing coupon:", error);
-          $("#coupon_message")
-            .text("An error occurred. Please try again.")
-            .addClass("error-message")
-            .removeClass("message");
+        body: JSON.stringify({ couponCode: couponCode }),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        console.log("data:", data);
+        totalPrice = data.cart.totalPrice;
+
+        Swal.fire({
+          icon: "success",
+          title: "Coupon Applied",
+          text: data.message,
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        console.log("data.cart.totalPrice:", data.cart.totalPrice);
+        // Update total amount displayed in the HTML
+        document.getElementById("totalAmount").innerHTML = `
+                <p>Total</p>
+                <p class="cart_amount">${data.cart.totalPrice}</p>
+            `;
+        document.getElementById("couponMessage").innerHTML = `
+                      <p>Coupon Applied !!!!</p>
+        `;
+        // Toggle button text between Apply Coupon and Remove Coupon
+        const button = document.getElementById("couponButton");
+        button.textContent = "Remove Coupon";
+      } else {
+        const errorMessage = await response.text();
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: errorMessage,
+        });
+      }
+    } catch (error) {
+      console.error("Error applying coupon:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "An error occurred while applying the coupon",
+      });
+    }
+  }
+
+  async function removeCoupon() {
+    try {
+      console.log("removeCoupon");
+      const response = await fetch("/removeCoupon", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
       });
-    });
-  });
+      if (response.ok) {
+        const data = await response.json();
+        console.log("data:", data);
+        totalPrice = null;
+
+        Swal.fire({
+          icon: "success",
+          title: "Coupon Removed",
+          text: data.message,
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        // Update total amount displayed in the HTML
+        document.getElementById("totalAmount").innerHTML = `
+                <p>Total</p>
+                <p class="cart_amount">${data.cart.totalPrice}</p>
+            `;
+        document.getElementById("couponMessage").innerHTML = `
+                      <p>Coupon Removed !!!!</p>
+        `;
+        // Toggle button text back to Apply Coupon
+        const button = document.getElementById("couponButton");
+        button.textContent = "Apply Coupon";
+      } else {
+        const errorMessage = await response.text();
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: errorMessage,
+        });
+      }
+    } catch (error) {
+      console.error("Error removing coupon:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "An error occurred while removing the coupon",
+      });
+    }
+  }
 </script>
 
 <script>
   $(document).ready(function () {
-    var totalAmountText = $(".order_total td strong")
-      .text()
-      .replace("₹", "")
-      .trim();
+    console.log("proceed to payment");
+    var totalAmountText = $(".cart_subtotal p").text().replace("₹", "").trim();
     var totalAmount = parseFloat(totalAmountText);
     console.log(totalAmount);
 

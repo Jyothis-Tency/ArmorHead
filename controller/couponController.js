@@ -25,6 +25,7 @@ const getCouponPage = async (req, res) => {
 
 const addCoupon = async (req, res) => {
   try {
+    console.log("addCoupon triggered");
     console.log(req.body);
     const coupon = await couponHelper.addCouponToDb(req.body);
     console.log(coupon);
@@ -45,26 +46,92 @@ const deleteCoupon = async (req, res) => {
 
 //User side
 
-const applyOrRemoveCoupon = async (req, res) => {
+const applyCoupon = async (req, res) => {
   try {
-    console.log("applyOrRemoveCoupon triggered");
+    console.log("inside applycoupon");
+    req.session.couponTotal = null;
+    console.log("req.session.couponTotal", req.session.couponTotal);
+    let couponApplied;
     const userId = req.session.userData._id;
     const cart = await Cart.findOne({ user: userId });
-    console.log(cart);
     if (!cart) {
       return res
         .status(404)
         .json({ success: false, message: "Cart not found for this user" });
     }
-    const couponCode = req.body.couponCode;
-    console.log(couponCode);
+    // Store the original total price before applying the coupon
+    req.session.originalTotal = cart.totalPrice;
 
-    if (!couponCode) {
+    const couponCode = req.body.couponCode;
+    const coupon = await Coupon.findOne({ couponCode });
+    if (!coupon) {
       return res
         .status(400)
-        .json({ success: false, message: "Coupon code is required" });
+        .json({ success: false, message: "Invalid coupon code" });
+    } else {
+      req.session.coupon = couponCode;
+    }
+    console.log("req.session.coupon:", req.session.coupon);
+    if (req.session.coupon) {
+      if (cart.totalPrice < coupon.minimumPurchaseAmount) {
+        return res.status(400).json({
+          success: false,
+          message: "Minimum purchase amount not met for this coupon",
+        });
+      }
+      if (coupon.expiryDate < new Date()) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Coupon has expired" });
+      }
+      if (coupon.usedBy.includes(userId)) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Coupon has already been used" });
+      }
+
+      // Apply the coupon discount
+      cart.totalPrice -= coupon.discount;
+      cart.coupon = couponCode;
+      couponApplied = req.session.coupon;
+
+      await Coupon.updateOne({ couponCode }, { $push: { usedBy: userId } });
+      await cart.save();
+      console.log("cart.totalPrice : ", cart.totalPrice);
+      req.session.couponTotal = cart.totalPrice;
+      console.log("req.session.couponTotal:", req.session.couponTotal);
+      console.log(cart);
+      return res.status(200).json({
+        success: true,
+        message: "Coupon applied successfully",
+        cart,
+        session: req.session,
+        couponApplied,
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
+  }
+};
+
+const removeCoupon = async (req, res) => {
+  try {
+    console.log("inside removecoupon");
+    req.session.couponTotal = null;
+    console.log("req.session.couponTotal:", req.session.couponTotal);
+    const userId = req.session.userData._id;
+    const cart = await Cart.findOne({ user: userId });
+
+    if (!cart) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Cart not found for this user" });
     }
 
+    const couponCode = req.session.coupon;
     const coupon = await Coupon.findOne({ couponCode });
     console.log(coupon);
 
@@ -74,69 +141,29 @@ const applyOrRemoveCoupon = async (req, res) => {
         .json({ success: false, message: "Invalid coupon code" });
     }
 
-    if (cart.coupon === couponCode) {
-      console.log("cart.coupon === couponCode");
-      console.log(cart.totalPrice);
-      console.log(coupon.discount);
-      cart.totalPrice += coupon.discount;
-      console.log(cart.totalPrice);
-      req.session.updatedTotal = cart.totalPrice;
-
-      cart.coupon = null;
-      req.session.coupon = null;
-
-      await Coupon.updateOne({ couponCode }, { $pull: { usedBy: userId } });
-      await cart.save();
-      return res
-        .status(200)
-        .json({
-          success: true,
-          message: "Coupon removed successfully",
-          cart,
-          session: req.session,
-        });
-    } else {
-      console.log("Coupon");
-      if (cart.totalPrice < coupon.minimumPurchaseAmount) {
-        console.log("cart.totalPrice < coupon.minimumPurchaseAmount");
-        return res
-          .status(400)
-          .json({
-            success: false,
-            message: "Minimum purchase amount not met for this coupon",
-          });
-      }
-      if (coupon.expiryDate < new Date()) {
-        console.log("coupon.expiryDate < new Date()");
-        return res
-          .status(400)
-          .json({ success: false, message: "Coupon has expired" });
-      }
-      if (coupon.usedBy.includes(userId)) {
-        console.log("coupon.usedBy.includes(userId)");
-        return res
-          .status(400)
-          .json({ success: false, message: "Coupon has already been used" });
-      }
-
-      cart.totalPrice -= coupon.discount;
-      console.log(cart.totalPrice);
-      req.session.updatedTotal = cart.totalPrice;
-      cart.coupon = couponCode;
-      req.session.coupon = couponCode;
-
-      await Coupon.updateOne({ couponCode }, { $push: { usedBy: userId } });
-      await cart.save();
-      // req.session.coupon = null
-      return res
-        .status(200)
-        .json({
-          success: true,
-          message: "Coupon applied successfully",
-          cart,
-          session: req.session,
-        });
+    if (cart.coupon !== couponCode) {
+      return res.status(400).json({
+        success: false,
+        message: "Coupon is not applied to this cart",
+      });
     }
+
+    // Remove the coupon from the cart
+    cart.totalPrice = req.session.originalTotal; // Restore the original total price
+    cart.coupon = null;
+    req.session.coupon = null;
+    console.log("req.session.coupon:", req.session.coupon);
+    await Coupon.updateOne({ couponCode }, { $pull: { usedBy: userId } });
+    await cart.save();
+    req.session.couponTotal = cart.totalPrice;
+    console.log("req.session.couponTotal:", req.session.couponTotal);
+    
+    return res.status(200).json({
+      success: true,
+      message: "Coupon removed successfully",
+      cart,
+      session: req.session,
+    });
   } catch (error) {
     console.error(error);
     return res
@@ -150,5 +177,6 @@ module.exports = {
   addCoupon,
   deleteCoupon,
   //Admin side
-  applyOrRemoveCoupon,
+  applyCoupon,
+  removeCoupon,
 };

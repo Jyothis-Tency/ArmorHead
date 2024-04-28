@@ -1,5 +1,6 @@
 const Order = require("../model/orderModel");
 const Address = require("../model/addressModel");
+const Coupon = require("../model/couponModel");
 const cartHelper = require("../helper/cartHelper");
 const addressHelper = require("../helper/addressHelper");
 const orderHelper = require("../helper/orderHelper");
@@ -44,7 +45,11 @@ function orderDate() {
 
 const checkoutRender = async (req, res) => {
   try {
+    console.log("checkoutRender triggered");
     const user = req.session.userData;
+    let couponApplied;
+    couponApplied = req.session.coupon;
+    console.log("couponApplied : ", couponApplied);
     cartCount = await cartHelper.getCartCount(user._id);
     let cartItems = await cartHelper.getAllCartItems(user._id);
     let totalAmount = await cartHelper.totalSubtotal(user._id, cartItems);
@@ -54,6 +59,11 @@ const checkoutRender = async (req, res) => {
     }
     const userAddress = await addressHelper.findAnAddress(user._id);
     let allAddress = await addressHelper.findAllAddress(user._id);
+    let availableCoupons = await Coupon.find({
+      expiryDate: { $gt: new Date() },
+      usedBy: { $ne: user._id },
+    });
+    console.log("availableCoupons: ", availableCoupons);
     res.render("userView/checkout-page", {
       loginStatus: req.session.userData,
       user,
@@ -63,6 +73,8 @@ const checkoutRender = async (req, res) => {
       allAddress: allAddress,
       cartCount,
       currencyFormat: cartHelper.currencyFormat,
+      availableCoupons,
+      couponApplied,
     });
   } catch (error) {
     console.log(error);
@@ -205,9 +217,14 @@ const updateOrderStatus = async (req, res) => {
 const placeOrder = async (req, res) => {
   try {
     console.log("placeOrder triggered");
-    delete req.session.tempOrderDetails;
+    req.session.tempOrderDetails = null;
+    console.log(
+      "deleted req.session.tempOrderDetails : ",
+      req.session.tempOrderDetails
+    );
     let userId = req.session.userData._id;
     let coupon = req.session.coupon;
+    console.log("coupon:", coupon);
     let selectedAddressId = req.body.selectAddress;
     console.log(selectedAddressId);
 
@@ -227,9 +244,17 @@ const placeOrder = async (req, res) => {
       console.log("!cartItems.length");
       throw new Error("Please add items to cart before checkout");
     }
-
-    const totalAmount = await cartHelper.totalAmount(userId);
-
+    let totalAmount;
+    console.log("req.session.couponTotal:", req.session.couponTotal);
+    if (
+      req.session.couponTotal === undefined ||
+      req.session.couponTotal === null
+    ) {
+      totalAmount = await cartHelper.totalAmount(userId);
+    } else {
+      totalAmount = req.session.couponTotal;
+    }
+    console.log("totalAmount:", totalAmount);
     let wallet = await Wallet.findOne({ user: userId });
     // console.log(wallet);
     if (!wallet) {
@@ -237,7 +262,7 @@ const placeOrder = async (req, res) => {
       await wallet.save();
     }
     const orderedDate = orderDate();
-
+    req.session.couponTotal = null;
     if (paymentMethod === "cash on delivery") {
       try {
         if (totalAmount >= 1000) {
@@ -263,7 +288,12 @@ const placeOrder = async (req, res) => {
             totalAmount,
             cartItems,
             orderedDate,
+            coupon,
           };
+          console.log(
+            "saved req.session.tempOrderDetails",
+            req.session.tempOrderDetails
+          );
         } else {
           console.log("Product below 1000");
         }
@@ -322,6 +352,7 @@ const placeOrder = async (req, res) => {
           totalAmount,
           cartItems,
           orderedDate,
+          coupon,
         };
 
         res.json({ paymentMethod: "razorpay", orderDetails });
@@ -375,10 +406,13 @@ const placeOrder = async (req, res) => {
 
 const orderSuccess = async (req, res) => {
   try {
-    const { paymentMethod, totalAmount, cartItems, orderedDate } = req.session.tempOrderDetails;
+    console.log("orderSuccess triggered");
+    const { paymentMethod, totalAmount, cartItems, orderedDate, coupon } =
+      req.session.tempOrderDetails;
     res.render("userView/orderSuccess-page", {
       cartItems,
       deliveryDate: orderedDate,
+      totalAmount,
     });
   } catch (error) {
     console.error(error);
@@ -466,7 +500,7 @@ const failedRazorpay = async (req, res) => {
 const secondTry = async (req, res) => {
   try {
     console.log("secondTry triggered");
-    delete req.session.requestOrderId
+    delete req.session.requestOrderId;
     console.log(req.body);
     const requestOrderId = req.body.order_id;
     req.session.requestOrderId = requestOrderId;
@@ -482,8 +516,8 @@ const secondTry = async (req, res) => {
         requestOrderId,
         order.totalAmount
       );
-      console.log("process.env.KEY_ID : ",process.env.KEY_ID);
-      
+      console.log("process.env.KEY_ID : ", process.env.KEY_ID);
+
       res.json({
         paymentMethod: "razorpay",
         order,

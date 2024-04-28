@@ -7,10 +7,14 @@
         <div class="col-xl-12">
           <div class="area-title text-center mb-50">
             <h2>Order Placed Successfully</h2>
-            <p>Your order has been successfully placed. Thank you for shopping with us!</p>
+            <p>
+              Your order has been successfully placed. Thank you for shopping
+              with us!
+            </p>
             <div class="order-details">
               <h3>Order Details</h3>
-              <table class="order-table"> <!-- Added class "order-table" -->
+              <table class="order-table">
+                <!-- Added class "order-table" -->
                 <thead>
                   <tr>
                     <th>Product Image</th>
@@ -21,27 +25,47 @@
                 </thead>
                 <tbody>
                   <% cartItems.forEach(item => { %>
-                    <tr>
-                      <td class="product-image"><img src="/uploads/product-images/<%= item.product.productImage[0] %>" alt="Product Image" style="width: 100px;"></td> <!-- Added class "product-image" -->
-                      <td><%= item.product.productName %></td>
-                      <td><%= item.quantity %></td>
-                      <td>₹<%= item.total %></td>
-                    </tr>
+                  <tr>
+                    <td class="product-image">
+                      <img
+                        src="/uploads/product-images/<%= item.product.productImage[0] %>"
+                        alt="Product Image"
+                        style="width: 100px"
+                      />
+                    </td>
+                    <!-- Added class "product-image" -->
+                    <td><%= item.product.productName %></td>
+                    <td><%= item.quantity %></td>
+                    <td>₹<%= totalAmount %></td>
+                  </tr>
                   <% }); %>
                 </tbody>
               </table>
             </div>
+
             <div class="delivery-details">
-              <% const orderedDate = new Date(); %>
-              <% const deliveryDate = new Date(orderedDate); %>
-              <% deliveryDate.setDate(deliveryDate.getDate() + 7); %>
+              <% const orderedDate = new Date(); %> <% const deliveryDate = new
+              Date(orderedDate); %> <%
+              deliveryDate.setDate(deliveryDate.getDate() + 7); %>
               <h3>Estimated Delivery Date</h3>
-              <p>Your order will arrive on <%= deliveryDate.toDateString() %>.</p>
+              <p>
+                Your order will arrive on <%= deliveryDate.toDateString() %>.
+              </p>
             </div>
           </div>
         </div>
       </div>
-      <a href="/" style="background-color: red; color: white; padding: 15px 30px; border-radius: 5px; text-decoration: none;">Back to Home</a>
+      <a
+        href="/"
+        style="
+          background-color: red;
+          color: white;
+          padding: 15px 30px;
+          border-radius: 5px;
+          text-decoration: none;
+        "
+        >Back to Home</a
+      >
     </div>
   </section>
 </main>
@@ -50,59 +74,58 @@
 
 <style>
   /* Styles for order success page */
-.order-success-message {
-  text-align: center;
-}
+  .order-success-message {
+    text-align: center;
+  }
 
-.order-details {
-  margin-top: 50px;
-  width: 80%; /* Reduced width of details table */
-  margin-left: auto;
-  margin-right: auto;
-}
+  .order-details {
+    margin-top: 50px;
+    width: 80%; /* Reduced width of details table */
+    margin-left: auto;
+    margin-right: auto;
+  }
 
-.order-details table {
-  width: 100%;
-  border-collapse: collapse;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-}
+  .order-details table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  }
 
-.order-details th, .order-details td {
-  padding: 15px; /* Applied padding */
-  text-align: left;
-}
+  .order-details th,
+  .order-details td {
+    padding: 15px; /* Applied padding */
+    text-align: left;
+  }
 
-.order-details th {
-  background-color: #f2f2f2;
-  font-weight: bold;
-  color: #333;
-}
+  .order-details th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+    color: #333;
+  }
 
-.order-details td.product-image img {
-  max-width: 100px;
-  height: auto;
-  border-radius: 5px;
-}
+  .order-details td.product-image img {
+    max-width: 100px;
+    height: auto;
+    border-radius: 5px;
+  }
 
-.delivery-details {
-  margin-top: 30px; /* Reduced margin top */
-}
+  .delivery-details {
+    margin-top: 30px; /* Reduced margin top */
+  }
 
-.delivery-details h3 {
-  margin-bottom: 10px;
-}
+  .delivery-details h3 {
+    margin-bottom: 10px;
+  }
 
-/* Styles for the back to home button */
-.back-to-home {
-  display: block;
-}
+  /* Styles for the back to home button */
+  .back-to-home {
+    display: block;
+  }
 
-.back-to-home a {
-  display: inline-block;
-  margin-top: 50px; /* Added margin top */
-}
-
+  .back-to-home a {
+    display: inline-block;
+    margin-top: 50px; /* Added margin top */
+  }
 </style>
-

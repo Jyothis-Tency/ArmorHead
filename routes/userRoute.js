@@ -78,11 +78,8 @@ userRoute.get("/order-details", isLoggedIn, orderController.orderDetailsPage);
 userRoute.get("/order-success", isLoggedIn, orderController.orderSuccess);
 
 //Coupon based routes
-userRoute.post(
-  "/applyOrRemoveCoupon",
-  isLoggedIn,
-  couponController.applyOrRemoveCoupon
-);
+userRoute.post('/applyCoupon', isLoggedIn, couponController.applyCoupon)
+userRoute.post('/removeCoupon',isLoggedIn,couponController.removeCoupon)
 
 //Wallet based routes
 userRoute.get("/get-wallet", isLoggedIn, walletController.getWallet);
