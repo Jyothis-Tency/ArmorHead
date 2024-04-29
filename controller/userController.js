@@ -4,6 +4,8 @@ const Address = require("../model/addressModel");
 const Order = require("../model/orderModel");
 const Wallet = require("../model/walletModel")
 const Category = require("../model/categoryModel");
+const productOffer = require("../model/productOfferModel")
+const categoryOffer = require("../model/categoryOfferModel")
 const bcrypt = require("bcrypt");
 const otpHelper = require("../helper/otpHelper");
 const passwordHelper = require("../helper/passwordHelper");
@@ -96,11 +98,10 @@ const otpVerifyGet = async (req, res) => {
 const otpVerifyPost = async (req, res) => {
   try {
     console.log("otpVerifyPost triggered");
-    console.log("first");
+
     const { otp } = req.body;
     const storedOtp = req.session.userOtp;
     const userData = req.session.userData;
-    console.log(userData.password);
 
     console.log(`${otp}, ${storedOtp}`);
     console.log(userData);
@@ -109,7 +110,7 @@ const otpVerifyPost = async (req, res) => {
       const hashedPassword = await passwordHelper.securePassword(
         userData.password
       );
-      console.log(hashedPassword);
+
       const newUser = new User({
         username: userData.username,
         email: userData.email,
@@ -119,18 +120,36 @@ const otpVerifyPost = async (req, res) => {
 
       await newUser.save();
 
-      console.log(`this is newUser - ${newUser}`);
-
+      // Clear the session data
       delete req.session.userOtp;
       delete req.session.userData;
 
       console.log("OTP verification successful");
       console.log("Data stored in database");
 
-      res.redirect("/login");
+      // Send success response to frontend
+      res.status(200).json({
+        success: true,
+        message: "OTP verified successfully. You are now registered.",
+      });
+    } else {
+      console.log("Invalid OTP");
+
+      // Send failure response to frontend
+      res.status(400).json({
+        success: false,
+        message: "Invalid OTP. Please try again.",
+      });
     }
   } catch (error) {
-    console.error(error);
+    console.error("Error in OTP verification:", error);
+
+    // Send error response to frontend
+    res.status(500).json({
+      success: false,
+      message:
+        "An error occurred during OTP verification. Please try again later.",
+    });
   }
 };
 

@@ -1,23 +1,45 @@
 <%- include("../partials/userHeader") %>
 <main>
-<!-- our-shop-breadcrumb -->
-<section style="background-image: url('/user-assets/img/bg/page-title.png'); height: 150px; padding: 20px 0;">
-  <div style="max-width: 1200px; margin: 0 auto;">
-    <div style="display: flex; justify-content: center; align-items: center; text-align: center;">
-      <div>
-        <h1 style="font-size: 70px; color: #333;">Our Shop</h1>
-        <ul style="list-style: none; padding: 0; display: flex; justify-content: center;">
-          <li style="margin-right: 10px;"><a href="/" style="text-decoration: none; color: #007BFF;">Home</a></li>
-          <li style="color: #666;">Shop</li>
-        </ul>
+  <!-- our-shop-breadcrumb -->
+  <section
+    style="
+      background-image: url('/user-assets/img/bg/page-title.png');
+      height: 150px;
+      padding: 20px 0;
+    "
+  >
+    <div style="max-width: 1200px; margin: 0 auto">
+      <div
+        style="
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          text-align: center;
+        "
+      >
+        <div>
+          <h1 style="font-size: 70px; color: #333">Our Shop</h1>
+          <ul
+            style="
+              list-style: none;
+              padding: 0;
+              display: flex;
+              justify-content: center;
+            "
+          >
+            <li style="margin-right: 10px">
+              <a href="/" style="text-decoration: none; color: #007bff">Home</a>
+            </li>
+            <li style="color: #666">Shop</li>
+          </ul>
+        </div>
       </div>
     </div>
-  </div>
-</section>
-<!-- end-our-shop-breadcrumb -->
+  </section>
+  <!-- end-our-shop-breadcrumb -->
 
   <!-- shop-area start -->
-  <section class="shop-area pt-100 pb-100" style="padding-top: 10px;">
+  <section class="shop-area pt-100 pb-100" style="padding-top: 10px">
     <div class="container">
       <div class="row">
         <div class="col-xl-9 col-lg-8">
@@ -84,43 +106,58 @@
               role="tabpanel"
               aria-labelledby="home-tab"
             >
-<div class="row">
-  <% for (let i = 0; i < products.length; i++) { %> <% const product =
-  products[i]; %>
-  <div class="col-xl-4 col-lg-6 col-md-6">
-    <div class="product-wrapper mb-50">
-      <div class="product-img mb-25">
-        <a href="/productDetails/<%= product._id %>">
-          <img
-            src="/uploads/product-images/<%= product.productImage[1] %>"
-            alt="<%= product.productName %>"
-          />
-          <input type="hidden" id="productId" value="<%= product._id %>" />
-        </a>
-        <!-- <div class="product-action text-center"> <a href="#" title="Shopping Cart" ><i class="flaticon-shopping-cart"></i ></a> <a href="#" title="Quick View" ><i class="flaticon-eye"></i ></a> <a href="#" data-toggle="tooltip" data-placement="right" title="Compare" ><i class="flaticon-compare"></i ></a> </div> -->
-      </div>
-      <div class="product-content pr-0">
-        <h4>
-          <a href="/productDetails/<%= product._id %>"
-            ><%= product.productName %></a
-          >
-        </h4>
-        <div class="product-meta">
-          <div class="pro-price">
-            <% if (product.totalQuantity === 0) { %>
-            <span style="font-size: larger; color: red;">Out of stock!!!!</span>
-            <% } else { %>
-            <span style="font-size: larger; font-weight: bold; color: goldenrod;">₹<%= product.salePrice %></span>
-            <% if (product.regularPrice) { %>
-            <span class="old-price">₹<%= product.regularPrice %></span>
-            <% } %> <% } %>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <% } %>
-</div>
+              <div class="row">
+                <% for (let i = 0; i < products.length; i++) { %> <% const
+                product = products[i]; %>
+                <div class="col-xl-4 col-lg-6 col-md-6">
+                  <div class="product-wrapper mb-50">
+                    <div class="product-img mb-25">
+                      <a href="/productDetails/<%= product._id %>">
+                        <img
+                          src="/uploads/product-images/<%= product.productImage[1] %>"
+                          alt="<%= product.productName %>"
+                        />
+                        <input
+                          type="hidden"
+                          id="productId"
+                          value="<%= product._id %>"
+                        />
+                      </a>
+                      <!-- <div class="product-action text-center"> <a href="#" title="Shopping Cart" ><i class="flaticon-shopping-cart"></i ></a> <a href="#" title="Quick View" ><i class="flaticon-eye"></i ></a> <a href="#" data-toggle="tooltip" data-placement="right" title="Compare" ><i class="flaticon-compare"></i ></a> </div> -->
+                    </div>
+                    <div class="product-content pr-0">
+                      <h4>
+                        <a href="/productDetails/<%= product._id %>"
+                          ><%= product.productName %></a
+                        >
+                      </h4>
+                      <div class="product-meta">
+                        <div class="pro-price">
+                          <% if (product.totalQuantity === 0) { %>
+                          <span style="font-size: larger; color: red"
+                            >Out of stock!!!!</span
+                          >
+                          <% } else { %>
+                          <span
+                            style="
+                              font-size: larger;
+                              font-weight: bold;
+                              color: goldenrod;
+                            "
+                            >₹<%= product.salePrice %></span
+                          >
+                          <% if (product.regularPrice) { %>
+                          <span class="old-price"
+                            >₹<%= product.regularPrice %></span
+                          >
+                          <% } %> <% } %>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <% } %>
+              </div>
             </div>
             <div
               class="tab-pane fade"
@@ -168,12 +205,15 @@
               <div class="widget_list widget_categories">
                 <h2>Product categories</h2>
                 <ul>
+                  <li>
+                    <a href="/filter?sort=<%= sort %>">All Categories</a>
+                  </li>
                   <% for (let i = 0; i < category.length; i++) { %>
                   <li>
                     <a
                       href="/filter?category=<%= category[i]._id %>&sort=<%= sort %>"
                     >
-                      <%= category[i].name %> <span></span>
+                      <%= category[i].name %>
                     </a>
                   </li>
                   <% } %>

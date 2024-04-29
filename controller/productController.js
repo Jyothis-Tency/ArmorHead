@@ -1,6 +1,8 @@
 const productHelper = require("../helper/productHelper");
 const Product = require("../model/productModel");
 const Category = require("../model/categoryModel");
+const productOffer = require("../model/productOfferModel");
+const categoryOffer = require("../model/categoryOfferModel");
 const User = require("../model/userModel");
 const fs = require("fs");
 const path = require("path");
@@ -258,6 +260,13 @@ const getShopPage = async (req, res) => {
     }
     // console.log("Sorted products:", currentProduct);
 
+    const productOffers = await productOffer
+      .find({ "productOffer.offerStatus": true })
+      .populate("productOffer.product");
+    const categoryOffers = await categoryOffer
+      .find({ "categoryOffer.offerStatus": true })
+      .populate("categoryOffer.category");
+
     // Paginate the results
     const count = await Product.countDocuments(query);
     const categories = await Category.find({ isListed: true });
@@ -277,6 +286,8 @@ const getShopPage = async (req, res) => {
       sort: sort,
       products: productsOnPage,
       category: categories,
+      productOffers: productOffers,
+      categoryOffers: categoryOffers,
       count: count,
       productLength: productLength,
       totalPages: totalPages,
@@ -379,8 +390,14 @@ const searchProduct = async (req, res) => {
     }
 
     console.log(products);
+    const productOffers = await productOffer
+      .find({ "productOffer.offerStatus": true })
+      .populate("productOffer.product");
+    const categoryOffers = await categoryOffer
+      .find({ "categoryOffer.offerStatus": true })
+      .populate("categoryOffer.category");
     const categories = await Category.find({ isListed: true });
-    res.json([products, categories]);
+    res.json([products, productOffers, categoryOffers, categories]);
   } catch (error) {
     console.error("Error searching for products:", error);
     res.status(500).json({ error: "Error searching for products" });

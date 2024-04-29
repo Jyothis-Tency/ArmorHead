@@ -1,34 +1,98 @@
 <%- include("../partials/userHeader") %>
 
+<!-- HTML Structure for OTP Verification -->
 <main>
-<!-- verify-otp-section -->
-<section style="background-image: url('/user-assets/img/bg/page-title.png'); height: 150px; padding: 20px 0;">
-  <div style="max-width: 1200px; margin: 0 auto;">
-    <div style="display: flex; justify-content: center; align-items: center; text-align: center;">
-      <div>
-        <h1 style="font-size: 70px; color: #333;">Verify OTP</h1>
+  <!-- Verify OTP Section -->
+  <section
+    style="
+      background-image: url('/user-assets/img/bg/page-title.png');
+      height: 150px;
+      padding: 20px 0;
+    "
+  >
+    <div style="max-width: 1200px; margin: 0 auto">
+      <div
+        style="
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          text-align: center;
+        "
+      >
+        <div>
+          <h1 style="font-size: 70px; color: #333">Verify OTP</h1>
+        </div>
       </div>
     </div>
-  </div>
-</section>
-<!-- end-verify-otp-section -->
+  </section>
+  <!-- End Verify OTP Section -->
 
   <!-- OTP Verification Area -->
-  <section class="login-area pt-100 pb-100" style="padding-top: 10px;">
+  <section class="login-area pt-100 pb-100" style="padding-top: 10px">
     <div class="container">
       <div class="row">
         <div class="col-lg-8 offset-lg-2">
           <div class="basic-login">
             <h3 class="text-center mb-60">Enter OTP to Verify</h3>
-            <form action="/verify-otp" method="post">
-              <label for="otp">Enter OTP <span>**</span></label>
-              <input id="otp" name="otp" type="text" placeholder="Enter OTP..." class="form-control" />
 
-              <button class="btn theme-btn-2 w-100">Verify OTP</button>
+            <!-- Form without 'action' to ensure JavaScript handles submission -->
+            <form id="otpForm" method="post">
+              <label for="otp">Enter OTP <span>**</span></label>
+              <input
+                id="otp"
+                name="otp"
+                type="text"
+                placeholder="Enter OTP..."
+                class="form-control"
+                required
+              />
+
+              <button class="btn theme-btn-2 w-100" type="submit">
+                Verify OTP
+              </button>
             </form>
-            <div class="login-action mb-20 fix">
-              <span class="forgot-login f-right">
-                <a href="#" id="resendOtpLink" class="resend-link">Resend OTP</a>
+
+            <!-- Timer and Resend OTP -->
+            <div
+              class="login-action mb-20 fix"
+              style="
+                position: relative;
+                height: 100px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+              "
+            >
+              <!-- Absolute positioning to overlay one span over another -->
+              <span
+                id="timer"
+                style="
+                  position: absolute;
+                  top: 50%;
+                  transform: translateY(-50%);
+                  font-size: 1.5em;
+                  font-weight: bold;
+                  text-align: center;
+                "
+              ></span>
+
+              <span
+                class="forgot-login"
+                style="
+                  position: absolute;
+                  top: 70%;
+                  transform: translateY(-50%);
+                  text-align: center;
+                "
+              >
+                <a
+                  href="#"
+                  id="resendOtpLink"
+                  class="resend-link"
+                  style="display: none"
+                >
+                  Resend OTP
+                </a>
               </span>
             </div>
           </div>
@@ -39,7 +103,150 @@
   <!-- OTP Verification Area End -->
 </main>
 
+<!-- JQuery and AJAX Script to Resend OTP -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const otpForm = document.getElementById("otpForm");
+
+    otpForm.addEventListener("submit", function (event) {
+      event.preventDefault(); // Prevent the default form behavior
+
+      const otp = otpForm.elements["otp"].value; // Get the OTP
+
+      // Send AJAX request to verify OTP
+      fetch("/verify-otp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ otp }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            Toastify({
+              text: data.message,
+              duration: 3000, // Display for 3 seconds
+              close: true,
+              gravity: "top",
+              position: "center",
+              backgroundColor: "green", // Green for success
+            }).showToast();
+
+            // Optional: Redirect after a delay
+            setTimeout(() => {
+              window.location.href = "/login";
+            }, 3000); // Redirect after 3 seconds
+          } else {
+            // If OTP verification fails
+            Toastify({
+              text: data.message,
+              duration: 3000,
+              close: true,
+              gravity: "top",
+              position: "center",
+              backgroundColor: "red", // Red for error
+            }).showToast();
+          }
+        })
+        .catch((error) => {
+          Toastify({
+            text: "An error occurred. Please try again later.",
+            duration: 3000,
+            close: true,
+            gravity: "top",
+            position: "center",
+            backgroundColor: "red",
+          }).showToast();
+        });
+    });
+  });
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    let duration = 60; // Timer duration in seconds
+    let display = document.querySelector("#timer");
+    let resendOtpLink = document.querySelector("#resendOtpLink");
+    resendOtpLink.style.display = "none"; // Initially hide the "Resend OTP" link
+    let intervalId;
+
+    // Function to start the countdown timer
+    function startTimer(duration, display) {
+      let timer = duration;
+      intervalId = setInterval(function () {
+        let minutes = Math.floor(timer / 60);
+        let seconds = timer % 60;
+
+        display.textContent = `${minutes < 10 ? "0" : ""}${minutes}:${
+          seconds < 10 ? "0" : ""
+        }${seconds}`;
+
+        if (timer <= 0) {
+          clearInterval(intervalId);
+          display.style.display = "none"; // Hide the timer display
+          resendOtpLink.style.display = "inline"; // Show the "Resend OTP" link
+          Swal.fire({
+            icon: "error",
+            title: "Timer Expired",
+            text: "The timer has expired for OTP verification. Please try again.",
+          });
+        }
+
+        timer--;
+      }, 1000);
+    }
+
+    // Start the timer on page load
+    startTimer(duration, display);
+
+    // Event listener for OTP form submission
+    const otpForm = document.querySelector("#otpForm");
+    otpForm.addEventListener("submit", function (event) {
+      clearInterval(intervalId); // Stop the timer when the form is submitted
+    });
+
+    // Event listener for "Resend OTP" link
+    resendOtpLink.addEventListener("click", function (event) {
+      event.preventDefault(); // Prevent the default behavior of the link
+      clearInterval(intervalId); // Clear existing timer
+      display.style.display = "inline"; // Show the timer display
+      resendOtpLink.style.display = "none"; // Hide "Resend OTP" again
+      startTimer(duration, display); // Restart the timer
+
+      // Logic to resend OTP (example AJAX request)
+      fetch("/resendOtp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "same-origin", // Include credentials in the request
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            Swal.fire({
+              icon: "success",
+              title: "OTP Resent",
+              text: "Your new OTP has been sent successfully.",
+            });
+          } else {
+            Swal.fire({
+              icon: "error",
+              title: "Resend OTP Failed",
+              text: data.message || "Failed to resend OTP. Please try again.",
+            });
+          }
+        })
+        .catch((error) => {
+          Swal.fire({
+            icon: "error",
+            title: "Resend OTP Failed",
+            text: "An error occurred while resending OTP. Please try again later.",
+          });
+        });
+    });
+  });
+</script>
+
 <%- include("../partials/userFooter") %>
-
-
-

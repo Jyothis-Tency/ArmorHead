@@ -130,7 +130,7 @@ const getOrderDetails = async (userId) => {
 
 const getAllDeliveredOrders = async () => {
   try {
-    console.log("getAllDeliveredOrders");
+    console.log("getAllDeliveredOrders triggered");
 
     // Determine the start of the current month
     const currentMonthStart = new Date(
@@ -141,12 +141,6 @@ const getAllDeliveredOrders = async () => {
 
     // Aggregation pipeline
     const result = await Order.aggregate([
-      // Match orders that are delivered and created after the start of the current month
-      {
-        $match: {
-          createdAt: { $gte: currentMonthStart },
-        },
-      },
       // Unwind the orderedItems to deal with them individually
       {
         $unwind: "$orderedItems",
@@ -172,6 +166,12 @@ const getAllDeliveredOrders = async () => {
           localField: "orderedItems.product",
           foreignField: "_id",
           as: "productDetails",
+        },
+      },
+      // Match orders that are delivered and created after the start of the current month
+      {
+        $match: {
+          createdAt: { $gte: currentMonthStart },
         },
       },
     ]);

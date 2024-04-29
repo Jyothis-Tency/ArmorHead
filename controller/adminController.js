@@ -70,17 +70,18 @@ const getLogout = async (req, res) => {
 
 const salesReportPage = async (req, res) => {
   try {
-    // console.log('salesreportpage');
+    console.log("salesReportPage triggered");
     const sales = await orderHelper.getAllDeliveredOrders();
-    console.log(sales);
+    console.log("sales : ", sales);
     // const deliveredOrders = await Order.find({ orderStatus: "delivered" });
     const count = sales.length;
     console.log(count);
     let totalOrderAmount = 0;
     let totalDiscountAmount = 0;
     for (const order of sales) {
-      totalOrderAmount += order.productDetails[0].salePrice;
-      totalDiscountAmount += order.totalDiscount + order.couponAmount;
+      console.log("order.couponAmount:", order.couponAmount);
+      totalOrderAmount += order.totalAmount;
+      totalDiscountAmount += order.couponAmount;
     }
     console.log(totalOrderAmount);
     console.log(totalDiscountAmount);
@@ -114,17 +115,39 @@ const salesReport = async (req, res) => {
     endDate = new Date(endDate);
     console.log(startDate);
     console.log(endDate);
-    const salesReport = await orderHelper.getAllDeliveredOrdersByDate(
+    const sales = await orderHelper.getAllDeliveredOrdersByDate(
       startDate,
       endDate
     );
-    for (let i = 0; i < salesReport.length; i++) {
-      salesReport[i].orderDate = dateFormat(salesReport[i].orderDate);
-      salesReport[i].totalAmount = currencyFormat(salesReport[i].totalAmount);
+    console.log("sales : ", sales);
+    // const deliveredOrders = await Order.find({ orderStatus: "delivered" });
+    const count = sales.length;
+    console.log(count);
+    let totalOrderAmount = 0;
+    let totalDiscountAmount = 0;
+    for (const order of sales) {
+      console.log("order.couponAmount:", order.couponAmount);
+      totalOrderAmount += order.productDetails[0].salePrice;
+      totalDiscountAmount += order.couponAmount;
     }
-    console.log("salesReport");
-    console.log(salesReport);
-    res.status(200).json({ sales: salesReport });
+    console.log(totalOrderAmount);
+    console.log(totalDiscountAmount);
+    sales.forEach((order) => {
+      const orderDate = new Date(order.orderDate);
+      const formattedDate = orderDate.toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      });
+      order.orderDate = formattedDate;
+    });
+
+    res.status(200).json({
+      sales,
+      count,
+      totalOrderAmount,
+      totalDiscountAmount,
+    });
   } catch (error) {
     throw error;
   }

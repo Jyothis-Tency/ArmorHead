@@ -1,3 +1,4 @@
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 <%- include("../partials/adminHeader") %>
     <style>
         /* Paste the CSS styles here */
@@ -182,7 +183,7 @@
                                         <%= sales[i].orderStatus %>
                                     </span></td>
                                 <td>
-                                    ₹<%= sales[i].productDetails[0].salePrice %>
+                                    ₹<%= sales[i].totalAmount %>
                                 </td>
                                 <td>
                                     <% if (sales[i].totalDiscount) { %>
@@ -215,7 +216,7 @@
     </div>
 
     <div id="overall-discount">
-        <% if (totalDiscountAmount) { %>
+        <% if (totalDiscountAmount || totalDiscountAmount===NaN) { %>
                                     <h3>Overall Discount: ₹<%= totalDiscountAmount %></h3>
                                     <% } else { %>
                                        <h3>Overall Discount: No Discount</h3>
@@ -228,59 +229,85 @@
   </section> <!-- content-main end// -->
 </body>
 
-
+<%- include("../partials/adminFooter") %>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
   integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
   crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
-
-
-<%- include("../partials/adminFooter") %>
 <script>
-    $('#date-wise-report').on('submit', function (e) {
-     e.preventDefault();
-     console.log("clicked");
-     Swal.fire('do you want to do this ?', {
-         buttons: ["no", "yes"]
-     })
-     .then((res) => {
-         if (res.value) {
-             $.ajax({
-                 url: '/admin/sales-report',
-                 type: 'post',
-                 data: $('#date-wise-report').serialize()
-             })
-             .done((res) => {
-                 let sales = res.sales;
-                 console.log("hi");
-                 console.log(sales);
-                 $('#defaultReport').empty(); // Clear the table body before appending new data
-   
-                 for (let i = 0; i < sales.length; i++) {
-                     console.log(sales[i]._id);
-                     $('#defaultReport').append(`
-                         <tr>
-                             <td class="text-center">`+ (i + 1) + `</td>
-                             <td class="text-center"><b>`+ sales[i]._id + `</b></td>
-                             <td class="text-center">`+ sales[i].user + `</td>
-                             <td class="text-center">`+ sales[i].orderDate + `</td>
-                             <td class="text-center">`+ sales[i].paymentMethod + `</td>
-                             <td class="text-center"><span class="badge rounded-pill alert-warning">`+ sales[i].orderStatus + `</span></td>
-                             <td class="text-center">`+ sales[i].totalAmount + `</td>
-                             <td class="text-center">`+ sales[i].totalDiscount + `</td>
-                         </tr>
-                     `);
-                 }
-                 document.getElementById('salesReportStore').value = sales;
-             })
-         }
-     });
-   });
-   
-   
+$('#date-wise-report').on('submit', function (e) {
+  e.preventDefault(); // Prevent form default submission
+  Swal.fire({
+    title: 'Do you want to generate the report?',
+    showCancelButton: true,
+    confirmButtonText: 'Yes',
+    cancelButtonText: 'No',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      $.ajax({
+        url: '/admin/sales-report',
+        type: 'post',
+        data: $('#date-wise-report').serialize(), // Serialize form data
+      })
+      .done((res) => {
+        const sales = res.sales; // Sales data from backend
+
+        if (sales && sales.length > 0) {
+          $('#defaultReport').empty(); // Clear existing content
+
+          // Loop through the sales data and append rows to the table
+          sales.forEach((sale, index) => {
+            const username = sale.userDetails?.[0]?.username || 'Unknown';
+            const orderDate = sale.orderDate || 'N/A';
+            const paymentMethod = sale.paymentMethod || 'N/A';
+            const orderStatus = sale.orderStatus || 'N/A';
+            const salePrice = sale.productDetails?.[0]?.salePrice || 0;
+
+            const totalDiscount = sale.totalDiscount ? `₹${sale.totalDiscount}` : 'No discount';
+            const couponAmount = sale.couponAmount ? `₹${sale.couponAmount}` : 'No Coupon';
+
+            $('#defaultReport').append(`
+              <tr>
+                <td class="text-center">${index + 1}</td>
+                <td class="text-center"><b>${sale._id}</b></td>
+                <td class="text-center">${username}</td>
+                <td class="text-center">${orderDate}</td>
+                <td class="text-center">${paymentMethod}</td>
+                <td class="text-center"><span class="badge rounded-pill alert-warning">${orderStatus}</span></td>
+                <td class="text-center">₹${salePrice}</td>
+                <td class="text-center">${totalDiscount}</td>
+                <td class="text-center">${couponAmount}</td>
+              </tr>
+            `);
+          });
+        } else {
+          Toastify({
+            text: 'No sales data found for the selected period. Please try again with different dates.',
+            duration: 3000, // Display duration
+            gravity: 'top', // Display position
+            position: 'center',
+            backgroundColor: 'red', // Background color
+            stopOnFocus: true, // Stop when focused
+          }).showToast();
+
+          setTimeout(() => {
+            window.location.reload(); // Reload the page after toast
+          }, 3500); // Wait for toast to disappear
+        }
+      })
+      .fail((err) => {
+        console.error("Error fetching sales report:", err);
+        Swal.fire('Error fetching report', 'Please try again later', 'error');
+      });
+    }
+  });
+});
+
+
    
      $('#pdf').on('click', function (e) {
          e.preventDefault();

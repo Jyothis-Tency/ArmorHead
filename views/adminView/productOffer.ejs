@@ -36,7 +36,7 @@
       </tr>
     </thead>
     <tbody>
-      <% for(let i = 0; i < prodoffers.length; i++) { %>
+      <% for(let i=0; i < prodoffers.length; i++) { %>
       <tr>
         <td><%= i + 1 %></td>
         <td><%= prodoffers[i].name %></td>
@@ -63,8 +63,8 @@
             data-offer-name="<%= prodoffers[i].name %>"
             data-product-name="<%= prodoffers[i].productOffer.product.productName %>"
             data-discount="<%= prodoffers[i].discount %>"
-            data-start-date="<%= prodoffers[i].startingDate %>"
-            data-end-date="<%= prodoffers[i].endingDate %>"
+            data-start-date="<%= prodoffers[i].startingDate.toISOString().split('T')[0] %>"
+            data-end-date="<%= prodoffers[i].endingDate.toISOString().split('T')[0] %>"
           >
             Edit Offer +
           </button>
@@ -110,7 +110,7 @@
           <div class="mb-3">
             <label for="recipient-name" class="col-form-label">Product</label>
             <select name="product" id="productName" class="form-select">
-              <% for( let i = 0; i < products.length; i++ ) { %>
+              <% for( let i=0; i < products.length; i++ ) { %>
               <option class="form-option" value="<%= products[i]._id %>">
                 <%= products[i].productName %>
               </option>
@@ -118,9 +118,7 @@
             </select>
           </div>
           <div class="mb-3">
-            <label for="recipient-name" class="col-form-label"
-              >Discount %</label
-            >
+            <label for="recipient-name" class="col-form-label">Discount </label>
             <input
               type="text"
               class="form-control"
@@ -140,6 +138,7 @@
               required="true"
               id="startingDate"
             />
+            <div id="error3" class="text-danger"></div>
           </div>
           <div class="mb-3">
             <label for="recipient-name" class="col-form-label"
@@ -152,6 +151,7 @@
               required="true"
               id="expiringDate"
             />
+            <div id="error4" class="text-danger"></div>
           </div>
           <div class="modal-footer">
             <button
@@ -204,11 +204,12 @@
               name="name"
               id="editOfferName"
             />
+            <div id="error1" class="text-danger"></div>
           </div>
           <div class="mb-3">
             <label for="editProductName" class="col-form-label">Product</label>
             <select name="product" id="editProductName" class="form-select">
-              <% for( let i = 0; i < products.length; i++ ) { %>
+              <% for( let i=0; i < products.length; i++ ) { %>
               <option class="form-option" value="<%= products[i]._id %>">
                 <%= products[i].productName %>
               </option>
@@ -225,6 +226,7 @@
               name="discount"
               id="editOfferDiscount"
             />
+            <div id="error2" class="text-danger"></div>
           </div>
           <div class="mb-3">
             <label for="editOfferStartDate" class="col-form-label"
@@ -236,6 +238,7 @@
               name="startingDate"
               id="editOfferStartDate"
             />
+            <div id="error3" class="text-danger"></div>
           </div>
           <div class="mb-3">
             <label for="editOfferEndDate" class="col-form-label"
@@ -247,6 +250,7 @@
               name="endingDate"
               id="editOfferEndDate"
             />
+            <div id="error4" class="text-danger"></div>
           </div>
           <div class="modal-footer">
             <button
@@ -266,9 +270,136 @@
 
 <%- include("../partials/adminFooter") %>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 <script>
+  document
+    .getElementById("prodOffer")
+    .addEventListener("submit", async (event) => {
+      event.preventDefault(); // Prevent the default form submission behavior
+      console.log("inside prodOffer");
+      const nameInput = document.getElementById("offerName");
+      const productInput = document.getElementById("productName");
+      const discountInput = document.getElementById("prodOfferAmount");
+      const startingDateInput = document.getElementById("startingDate");
+      const endingDateInput = document.getElementById("expiringDate");
+
+      const name = nameInput.value.trim();
+      const product = productInput.value;
+      const discount = discountInput.value.trim();
+      const startingDate = startingDateInput.value;
+      const endingDate = endingDateInput.value;
+      console.log(
+        `${name} ${product} ${discount} ${startingDate} ${endingDate}`
+      );
+      // Reset error messages
+      document.getElementById("error1").textContent = "";
+      document.getElementById("error2").textContent = "";
+
+      const startingDateError = startingDateInput.nextElementSibling;
+      if (startingDateError) {
+        startingDateError.textContent = "";
+      }
+
+      const endingDateError = endingDateInput.nextElementSibling;
+      if (endingDateError) {
+        endingDateError.textContent = "";
+      }
+      console.log("1");
+      // Validate name (assuming this field is required)
+      if (!name) {
+        document.getElementById("error1").textContent =
+          "Please enter an offer name";
+        return;
+      }
+      console.log("2");
+      // Validate discount
+      const discountRegex = /^\d+$/;
+      if (!discountRegex.test(discount)) {
+        document.getElementById("error2").textContent =
+          "Discount should be a valid integer";
+        return;
+      }
+      console.log("3");
+      // Validate starting date
+      const today = new Date().toISOString().split("T")[0];
+      if (startingDate < today) {
+        document.getElementById("error3").textContent =
+          "Starting date cannot be earlier than today";
+        return;
+      }
+      console.log("4");
+      // Validate ending date
+      if (endingDate <= startingDate) {
+        document.getElementById("error4").textContent =
+          "Ending date must be after the starting date";
+        return;
+      }
+      console.log("5");
+      const formData = {
+        name,
+        product,
+        discount,
+        startingDate,
+        endingDate,
+      };
+      console.log(formData);
+      try {
+        const response = await fetch("/admin/add-ProdOffer", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // Handle successful response
+          Toastify({
+            text: "Product offer created successfully",
+            duration: 3000,
+            gravity: "top",
+            position: "center",
+            style: {
+              background: "green",
+              color: "white",
+            },
+          }).showToast();
+
+          // Optionally, you can redirect or perform additional actions
+          setTimeout(() => {
+            window.location.href = "/admin/productOffer";
+          }, 2000);
+        } else {
+          // Handle error response
+          Toastify({
+            text:
+              data.message ||
+              "An error occurred while creating the product offer",
+            duration: 3000,
+            gravity: "top",
+            position: "center",
+            style: {
+              background: "red",
+              color: "white",
+            },
+          }).showToast();
+        }
+      } catch (error) {
+        // Handle network or other errors
+        Toastify({
+          text: "An error occurred while creating the product offer",
+          duration: 3000,
+          gravity: "top",
+          position: "center",
+          style: {
+            background: "red",
+            color: "white",
+          },
+        }).showToast();
+        console.error("Error:", error);
+      }
+    });
   // JavaScript to populate the edit modal fields with offer details
   function populateEditModal(
     offerId,
@@ -320,6 +451,195 @@
       );
     });
   });
+
+  document
+    .getElementById("editProdOfferForm")
+    .addEventListener("submit", async (event) => {
+      event.preventDefault(); // Prevent the default form submission behavior
+      console.log("inside edit");
+
+      const offerIdInput = document.getElementById("editOfferId");
+      const nameInput = document.getElementById("editOfferName");
+      const productInput = document.getElementById("editProductName");
+      const discountInput = document.getElementById("editOfferDiscount");
+      const startingDateInput = document.getElementById("editOfferStartDate");
+      const endingDateInput = document.getElementById("editOfferEndDate");
+
+      const offerId = offerIdInput.value;
+      const name = nameInput.value;
+      const product = productInput.value;
+      const discount = discountInput.value;
+      const startingDate = startingDateInput.value;
+      const endingDate = endingDateInput.value;
+
+      console.log(
+        `${name} ${product} ${discount} ${startingDate} ${endingDate}`
+      );
+
+      // Reset error messages
+      document.getElementById("error1").textContent = "";
+      document.getElementById("error2").textContent = "";
+
+      const startingDateError = startingDateInput.nextElementSibling;
+      if (startingDateError) {
+        startingDateError.textContent = "";
+      }
+
+      const endingDateError = endingDateInput.nextElementSibling;
+      if (endingDateError) {
+        endingDateError.textContent = "";
+      }
+
+      console.log("1");
+
+      // Validate name (assuming this field is required)
+      if (!name) {
+        console.log("inside name validation");
+        const nameInput = document.getElementById("editOfferName");
+        const nameErrorContainer =
+          nameInput.parentElement.querySelector("#error1");
+        nameErrorContainer.textContent = "Please enter an offer name";
+        return;
+      }
+
+      // Validate if name contains spaces
+      if (/\s/.test(name)) {
+        console.log("inside name spaces validation");
+        const nameInput = document.getElementById("editOfferName");
+        const nameErrorContainer =
+          nameInput.parentElement.querySelector("#error1");
+        nameErrorContainer.textContent = "Offer name should not contain spaces";
+        return;
+      }
+      console.log("2");
+
+      // const discountRegex = /^\d+$/;
+      if (!discount) {
+        console.log("inside discount validation");
+        const discountInput = document.getElementById("editOfferDiscount");
+        const discountErrorContainer =
+          discountInput.parentElement.querySelector("#error2");
+        discountErrorContainer.textContent = "Please enter a discount";
+        return;
+      }
+      // Validate if discount contains spaces
+      if (/\s/.test(discount)) {
+        console.log("inside discount spaces validation");
+        const discountInput = document.getElementById("editOfferDiscount");
+        const discountErrorContainer =
+          discountInput.parentElement.querySelector("#error2");
+        discountErrorContainer.textContent =
+          "Discount should not contain spaces";
+        return;
+      }
+      if (!/^\d+$/.test(discount)) {
+        console.log("inside discount validation");
+        const discountInput = document.getElementById("editOfferDiscount");
+        const discountErrorContainer =
+          discountInput.parentElement.querySelector("#error2");
+        discountErrorContainer.textContent =
+          "Discount should be a valid integer";
+        return;
+      }
+
+      console.log("3");
+
+      // Validate starting date
+      const today = new Date().toISOString().split("T")[0];
+      if (startingDate < today) {
+        console.log("inside start date validation");
+        const startingDateInput = document.getElementById("editOfferStartDate");
+        const startingDateErrorContainer =
+          startingDateInput.parentElement.querySelector("#error3");
+        startingDateErrorContainer.textContent =
+          "Starting date cannot be earlier than today";
+        return;
+      }
+
+      console.log("4");
+
+      // Validate ending date
+      if (endingDate <= startingDate) {
+        console.log("inside end date validation");
+        const endingDateInput = document.getElementById("editOfferEndDate");
+        const endingDateErrorContainer =
+          endingDateInput.parentElement.querySelector("#error4");
+        endingDateErrorContainer.textContent =
+          "Ending date must be after the starting date";
+        return;
+      }
+
+      console.log("5");
+
+      const formData = {
+        offerId,
+        name,
+        product,
+        discount,
+        startingDate,
+        endingDate,
+      };
+
+      console.log(formData);
+
+      try {
+        const response = await fetch("/admin/edit-ProdOffer", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // Handle successful response
+          Toastify({
+            text: "Product offer updated successfully",
+            duration: 3000,
+            gravity: "top",
+            position: "center",
+            style: {
+              background: "green",
+              color: "white",
+            },
+          }).showToast();
+
+          // Optionally, you can redirect or perform additional actions
+          setTimeout(() => {
+            window.location.href = "/admin/productOffer";
+          }, 2000);
+        } else {
+          // Handle error response
+          Toastify({
+            text:
+              data.message ||
+              "An error occurred while updating the product offer",
+            duration: 3000,
+            gravity: "top",
+            position: "center",
+            style: {
+              background: "red",
+              color: "white",
+            },
+          }).showToast();
+        }
+      } catch (error) {
+        // Handle network or other errors
+        Toastify({
+          text: "An error occurred while updating the product offer",
+          duration: 3000,
+          gravity: "top",
+          position: "center",
+          style: {
+            background: "red",
+            color: "white",
+          },
+        }).showToast();
+        console.error("Error:", error);
+      }
+    });
 
   function deleteOffer(offerId) {
     console.log("clicked", offerId);
