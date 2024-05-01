@@ -85,13 +85,35 @@ const checkoutRender = async (req, res) => {
 const orderDetailsPage = async (req, res) => {
   try {
     const userId = req.session.userData._id;
-    const orderDetails = await orderHelper.getOrderDetails(userId);
-    res.render("userView/orderDetails-page", { orderDetails });
+
+    // Extract the current page from the request query, defaulting to 1 if not provided
+    const page = parseInt(req.query.page, 10) || 1;
+
+    // Define the limit for the number of orders to display per page
+    const limit = 3;
+
+    // Get the order details for the specified page and limit
+    const orderDetails = await orderHelper.getOrderDetails(userId, page, limit);
+
+    // Fetch the total number of orders for the user to calculate total pages
+    const totalOrders = await Order.countDocuments({ user: userId });
+
+    // Calculate the total number of pages needed
+    const totalPages = Math.ceil(totalOrders / limit);
+
+    res.render("userView/orderDetails-page", {
+      orderDetails,
+      page, // Current page number
+      totalOrders, // Total number of orders for the user
+      limit, // Limit of orders per page
+      totalPages, // Total number of pages needed
+    });
   } catch (error) {
     console.error("Error in orderDetails:", error);
     res.status(500).send("Internal Server Error");
   }
 };
+
 
 const getOrderListAdmin = async (req, res) => {
   try {

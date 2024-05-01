@@ -2,15 +2,91 @@
 
 <main>
   <!-- slider-area start -->
-<section class="custom-slider-area pos-relative" style="width: 100%; height: 700px; position: relative; overflow: hidden;">
-  <div class="custom-slider-active" style="width: 100%; height: 100%; display: flex; transition: transform 0.5s ease;">
-    <div class="custom-single-slider custom-slider-2 custom-slide-1-style custom-slide-height-2 d-flex align-items-center" style="flex: 0 0 100%; width: 100%; height: 100%; background-size: cover; background-position: center; background-repeat: no-repeat; background-image: url('/user-assets/img/slider/newSlide1.jpeg');"></div>
-    <div class="custom-single-slider custom-slider-2 custom-slide-1-style custom-slide-height-2 d-flex align-items-center" style="flex: 0 0 100%; width: 100%; height: 100%; background-size: cover; background-position: center; background-repeat: no-repeat; background-image: url('/user-assets/img/slider/newSlide2.jpeg');"></div>
-    <div class="custom-single-slider custom-slider-2 custom-slide-1-style custom-slide-height-2 d-flex align-items-center" style="flex: 0 0 100%; width: 100%; height: 100%; background-size: cover; background-position: center; background-repeat: no-repeat; background-image: url('/user-assets/img/slider/newSlide3.jpeg');"></div>
-  </div>
-  <div class="custom-nav-btn custom-prev-btn" style="position: absolute; top: 50%; left: 10px; transform: translateY(-50%); font-size: 24px; color: #333; background-color: rgba(255, 255, 255, 0.5); padding: 8px 16px; border-radius: 4px; cursor: pointer;">&lt;</div>
-  <div class="custom-nav-btn custom-next-btn" style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%); font-size: 24px; color: #333; background-color: rgba(255, 255, 255, 0.5); padding: 8px 16px; border-radius: 4px; cursor: pointer;">&gt;</div>
-</section>
+  <section
+    class="custom-slider-area pos-relative"
+    style="width: 100%; height: 700px; position: relative; overflow: hidden"
+  >
+    <div
+      class="custom-slider-active"
+      style="
+        width: 100%;
+        height: 100%;
+        display: flex;
+        transition: transform 0.5s ease;
+      "
+    >
+      <div
+        class="custom-single-slider custom-slider-2 custom-slide-1-style custom-slide-height-2 d-flex align-items-center"
+        style="
+          flex: 0 0 100%;
+          width: 100%;
+          height: 100%;
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          background-image: url('/user-assets/img/slider/newSlide1.jpeg');
+        "
+      ></div>
+      <div
+        class="custom-single-slider custom-slider-2 custom-slide-1-style custom-slide-height-2 d-flex align-items-center"
+        style="
+          flex: 0 0 100%;
+          width: 100%;
+          height: 100%;
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          background-image: url('/user-assets/img/slider/newSlide2.jpeg');
+        "
+      ></div>
+      <div
+        class="custom-single-slider custom-slider-2 custom-slide-1-style custom-slide-height-2 d-flex align-items-center"
+        style="
+          flex: 0 0 100%;
+          width: 100%;
+          height: 100%;
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          background-image: url('/user-assets/img/slider/newSlide3.jpeg');
+        "
+      ></div>
+    </div>
+    <div
+      class="custom-nav-btn custom-prev-btn"
+      style="
+        position: absolute;
+        top: 50%;
+        left: 10px;
+        transform: translateY(-50%);
+        font-size: 24px;
+        color: #333;
+        background-color: rgba(255, 255, 255, 0.5);
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+      "
+    >
+      &lt;
+    </div>
+    <div
+      class="custom-nav-btn custom-next-btn"
+      style="
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        transform: translateY(-50%);
+        font-size: 24px;
+        color: #333;
+        background-color: rgba(255, 255, 255, 0.5);
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+      "
+    >
+      &gt;
+    </div>
+  </section>
   <!-- slider-area end -->
 
   <!-- banner area start -->
@@ -23,39 +99,40 @@
       <div class="row">
         <div class="col-xl-5 col-lg-12">
           <div class="area-title mb-50">
-            <h2>Brand New Products</h2>
-            <p>Browse the huge variety of our products</p>
+            <h2>Latest Products</h2>
+            
           </div>
         </div>
         <div class="col-xl-7 col-lg-12">
           <div class="product-tab mb-40">
-            <ul
-              class="nav product-nav justify-content-xl-end"
-              id="myTab"
-              role="tablist"
-            >
-              <li class="nav-item">
-                <a
+            <ul class="nav product-nav justify-content-xl-end">
+              <!-- HTML -->
+              <li
+                class="nav-item"
+                style="display: flex; align-items: center; gap: 10px"
+              >
+                <!-- Flexbox for layout -->
+                <span><strong>To buy these products, Click Here</strong></span>
+                <!-- First span with bold text -->
+                <span
                   class="nav-link"
-                  id="contact-tab1"
-                  data-toggle="tab"
-                  href="#contact"
-                  role="tab"
-                  aria-controls="contact"
-                  aria-selected="false"
                   style="
-                    height: 40px;
                     color: white;
                     background-color: red;
-                    padding: 14px 20px;
+                    padding: 10px 15px; /* Padding for the button */
                     text-decoration: none;
-                    transition: background-color 0.3s, color 0.3s;
+                    border-radius: 5px; /* Rounded corners */
+                    cursor: pointer; /* Cursor style for interactivity */
+                    transition: background-color 0.3s; /* Transition for hover effect */
+                    font-weight: bold; /* Making text bold */
                   "
-                  onmouseover="this.style.backgroundColor='#B30000'"
-                  onmouseout="this.style.backgroundColor='red'"
-                   onclick="this.style.backgroundColor='#660000'; window.location.href='/shopPage';"
-                  >Go To Shop Page</a
+                  onmouseover="this.style.backgroundColor = 'yellow'; this.style.color = 'black';"
+                  onmouseout="this.style.backgroundColor = 'red'; this.style.color = 'white';"
+                  onclick="window.location.href='/shopPage';"
                 >
+                  <strong>Go To Shop Page</strong>
+                  <!-- Second span with bold text -->
+                </span>
               </li>
             </ul>
           </div>
@@ -64,15 +141,8 @@
       <div class="row">
         <div class="col-xl-12">
           <div class="product-tab-content">
-            <div class="tab-content" id="myTabContent">
-              <div
-                class="tab-pane fade show active"
-                id="home"
-                role="tabpanel"
-                aria-labelledby="home-tab"
-              >
-                <!-- <div class="product-slider owl-carousel"> -->
-                <!-- home.ejs -->
+            <div class="tab-content">
+              <div class="tab-pane fade show active">
                 <div class="products">
                   <% for (let i = 0; i < products.length; i++) { %> <% const
                   product = products[i]; %>
@@ -80,42 +150,21 @@
                   <div
                     class="pro-item"
                     style="
-                      width: calc(33.33% - 20px);
-                      margin-right: 20px;
+                      width: calc(25% - 15px); /* Reduced width */
+                      margin-right: 15px; /* Reduced margin */
                       float: left;
                     "
                   >
-                    <div class="product-wrapper mb-50">
-                      <div class="product-img mb-25">
-                        <a href="/shopPage">
-                          <!-- Updated href attribute -->
-                          <img
-                            src="/uploads/product-images/<%= product.productImage[1] %>"
-                            alt="<%= product.productName %>"
-                            style="width: 100%; height: auto"
-                          />
-                        </a>
-                        <!-- Other product image elements -->
+                    <div class="product-wrapper mb-30">
+                      <!-- Reduced bottom margin -->
+                      <div class="product-img mb-15">
+                        <!-- Reduced image margin -->
+                        <img
+                          src="/uploads/product-images/<%= product.productImage[1] %>"
+                          alt="<%= product.productName %>"
+                          style="width: 100%; height: auto"
+                        />
 
-                        <!-- Product action buttons -->
-                        <div class="product-action text-center">
-                          <a href="#" title="Shopping Cart">
-                            <i class="flaticon-shopping-cart"></i>
-                          </a>
-                          <a href="#" title="Quick View">
-                            <i class="flaticon-eye"></i>
-                          </a>
-                          <a
-                            href="#"
-                            data-toggle="tooltip"
-                            data-placement="right"
-                            title="Compare"
-                          >
-                            <i class="flaticon-compare"></i>
-                          </a>
-                        </div>
-
-                        <!-- Sale tag -->
                         <div class="sale-tag">
                           <% if (product.isNew) { %>
                           <span class="new">new</span>
@@ -125,22 +174,18 @@
                         </div>
                       </div>
 
-                      <!-- Product content -->
                       <div class="product-content">
-                        <div class="pro-cat mb-10">
-                          <!-- Product categories -->
+                        <div class="pro-cat mb-5">
+                          <!-- Reduced category margin -->
                           <% if (product.categories &&
                           product.categories.length) { %> <% for (let j = 0; j <
                           product.categories.length; j++) { %> <% const category
                           = product.categories[j]; %>
-                          <a href="#"><%= category.name %></a>
+                          <span><%= category.name %></span>
                           <% } %> <% } %>
                         </div>
                         <h4>
-                          <a href="/shopPage/:sortValue"
-                            ><%= product.productName %></a
-                          >
-                          <!-- Updated href attribute -->
+                          <span><%= product.productName %></span>
                         </h4>
                         <div class="product-meta">
                           <div class="pro-price">
@@ -152,19 +197,11 @@
                             <% } %>
                           </div>
                         </div>
-                        <!-- Product wishlist button -->
-                        <div class="product-wishlist">
-                          <a href="#"
-                            ><i class="far fa-heart" title="Wishlist"></i
-                          ></a>
-                        </div>
                       </div>
                     </div>
                   </div>
                   <% } %>
                 </div>
-
-                <!-- </div> -->
               </div>
             </div>
           </div>
@@ -172,6 +209,7 @@
       </div>
     </div>
   </section>
+
   <!-- product-area end -->
 
   <!-- features-area start -->
@@ -366,21 +404,23 @@
   <!-- subscribe-area end -->
 </main>
 <script>
-const sliderActive = document.querySelector('.custom-slider-active');
-const prevBtn = document.querySelector('.custom-prev-btn');
-const nextBtn = document.querySelector('.custom-next-btn');
-const slides = Array.from(document.querySelectorAll('.custom-single-slider'));
-const slideWidth = slides[0].offsetWidth; // Get the width of the first slide
+  const sliderActive = document.querySelector(".custom-slider-active");
+  const prevBtn = document.querySelector(".custom-prev-btn");
+  const nextBtn = document.querySelector(".custom-next-btn");
+  const slides = Array.from(document.querySelectorAll(".custom-single-slider"));
+  const slideWidth = slides[0].offsetWidth; // Get the width of the first slide
 
-let currentSlide = 0;
+  let currentSlide = 0;
 
-function showSlide(n) {
-  currentSlide = (n + slides.length) % slides.length;
-  sliderActive.style.transform = `translateX(-${currentSlide * slideWidth}px)`;
-}
+  function showSlide(n) {
+    currentSlide = (n + slides.length) % slides.length;
+    sliderActive.style.transform = `translateX(-${
+      currentSlide * slideWidth
+    }px)`;
+  }
 
-prevBtn.addEventListener('click', () => showSlide(currentSlide - 1));
-nextBtn.addEventListener('click', () => showSlide(currentSlide + 1));
+  prevBtn.addEventListener("click", () => showSlide(currentSlide - 1));
+  nextBtn.addEventListener("click", () => showSlide(currentSlide + 1));
 </script>
 <%- include("../partials/userFooter") %>
 <style>

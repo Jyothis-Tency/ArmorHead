@@ -1,6 +1,6 @@
 const addressHelper = require("../helper/addressHelper");
 const Order = require("../model/orderModel");
-const Coupon = require("../model/couponModel")
+const Coupon = require("../model/couponModel");
 const mongoose = require("mongoose");
 
 function orderDate() {
@@ -46,16 +46,24 @@ function orderDate() {
   return `${dayOfWeek}, ${dayOfMonth} ${month} ${year}, ${time}`;
 }
 
-const forOrderPlacing = async (order, totalAmount, cartItems, userId1, coupon, addressData) => {
+const forOrderPlacing = async (
+  order,
+  totalAmount,
+  cartItems,
+  userId1,
+  coupon,
+  addressData
+) => {
   try {
     console.log("forOrderPlacing triggered");
     console.log(order);
-    let couponAmount
+    let couponAmount;
     if (coupon) {
       let couponUsed = await Coupon.findOne({ couponCode: coupon });
       couponAmount = couponUsed ? couponUsed.discount : 0;
     }
-    let status = order.payment_method == "Cash on Delivery" ? "confirmed" : "pending";
+    let status =
+      order.payment_method == "Cash on Delivery" ? "confirmed" : "pending";
     // console.log(status);
     let date = orderDate();
     // console.log(date);
@@ -64,7 +72,7 @@ const forOrderPlacing = async (order, totalAmount, cartItems, userId1, coupon, a
     let paymentMethod = order.payment_method;
     // console.log(paymentMethod);
     // let address = await addressHelper.findAnAddress(userId);
-    let address = addressData
+    let address = addressData;
     // console.log(address);
     let itemsOrdered = cartItems;
     // console.log(itemsOrdered);
@@ -89,8 +97,10 @@ const forOrderPlacing = async (order, totalAmount, cartItems, userId1, coupon, a
   }
 };
 
-const getOrderDetails = async (userId) => {
+const getOrderDetails = async (userId, page = 1, limit = 5) => {
   try {
+    const skip = (page - 1) * limit; // Calculate how many records to skip
+
     const result = await Order.aggregate([
       { $match: { user: new mongoose.Types.ObjectId(userId) } },
       { $unwind: "$orderedItems" }, // Unwind orderedItems array
@@ -99,16 +109,15 @@ const getOrderDetails = async (userId) => {
           from: "products",
           localField: "orderedItems.product",
           foreignField: "_id",
-          as: "productDetails", // Renamed to productDetails
+          as: "productDetails",
         },
       },
       {
         $project: {
-          _id: 0,
           orderId: "$_id",
           orderedItemId: "$orderedItems.orderId",
-          productName: { $arrayElemAt: ["$productDetails.productName", 0] }, // Extract productName from productDetails array
-          productImage: { $arrayElemAt: ["$productDetails.productImage", 0] }, // Extract productImage from productDetails array
+          productName: { $arrayElemAt: ["$productDetails.productName", 0] },
+          productImage: { $arrayElemAt: ["$productDetails.productImage", 0] },
           quantity: "$orderedItems.quantity",
           size: "$orderedItems.size",
           orderDate: "$orderDate",
@@ -116,9 +125,12 @@ const getOrderDetails = async (userId) => {
           paymentMethod: "$paymentMethod",
           paymentStatus: "$paymentStatus",
           orderStatus: "$orderStatus",
-          orderStat: "$orderedItems.orderStat", // Project the orderStat field
+          orderStat: "$orderedItems.orderStat",
         },
       },
+      { $sort: { orderDate: -1 } }, // Sort by order date in descending order
+      { $skip: skip }, // Skip the calculated number of records
+      { $limit: limit }, // Limit the number of records to the specified limit
     ]);
 
     return result;
@@ -190,6 +202,14 @@ const getAllDeliveredOrdersByDate = async (startDate, endDate) => {
   try {
     console.log("getAllDeliveredOrdersByDate triggered");
     const result = await Order.aggregate([
+      {
+        $lookup: {
+          from: "users",
+          localField: "user",
+          foreignField: "_id",
+          as: "userDetails",
+        },
+      },
       // Unwind the orderedItems to deal with them individually
       {
         $unwind: "$orderedItems",
@@ -213,7 +233,12 @@ const getAllDeliveredOrdersByDate = async (startDate, endDate) => {
   }
 };
 
-const changeOrderStatus = async (orderId, changeStatus, newOrderStat, paymentMethod) => {
+const changeOrderStatus = async (
+  orderId,
+  changeStatus,
+  newOrderStat,
+  paymentMethod
+) => {
   try {
     console.log("changeOrderStatus");
     const orderStatusChange = await Order.findOneAndUpdate(

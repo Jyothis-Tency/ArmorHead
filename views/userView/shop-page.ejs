@@ -167,20 +167,58 @@
             ></div>
           </div>
 
-          <div class="basic-pagination basic-pagination-2 text-center mt-20">
-            <ul>
-              <li>
-                <a href="#"><i class="fas fa-angle-double-left"></i></a>
+          <div class="pagination" style="text-align: center; margin-top: 20px">
+            <ul
+              style="
+                padding: 0;
+                list-style: none;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+              "
+            >
+              <% if (currentPage > 1) { %>
+              <li style="margin-right: 10px">
+                <a
+                  href="/shopPage?page=<%= currentPage - 1 %>&sort=<%= sort %>"
+                  style="
+                    text-decoration: none;
+                    border: 1px solid #ddd;
+                    padding: 5px 10px;
+                    border-radius: 5px;
+                    background-color: #fff;
+                  "
+                >
+                  <i class="fas fa-angle-double-left" style="color: #333"></i>
+                </a>
               </li>
-              <li><a href="#">01</a></li>
-              <li class="active"><a href="#">02</a></li>
-              <li><a href="#">03</a></li>
-              <li>
-                <a href="#"><i class="fas fa-ellipsis-h"></i></a>
+              <% } %> <% for (let i = 1; i <= totalPages; i++) { %>
+              <li
+                style="margin-right: 10px; <%= i === currentPage ? 'font-weight: bold;' : '' %>"
+              >
+                <a
+                  href="/shopPage?page=<%= i %>&sort=<%= sort %>"
+                  style="text-decoration: none; border: 1px solid #ddd; padding: 5px 10px; border-radius: 5px; background-color: <%= i === currentPage ? '#ff6347' : '#fff' %>; color: <%= i === currentPage ? '#fff' : '#333' %>;"
+                >
+                  <%= i %>
+                </a>
               </li>
-              <li>
-                <a href="#"><i class="fas fa-angle-double-right"></i></a>
+              <% } %> <% if (currentPage < totalPages) { %>
+              <li style="margin-right: 10px">
+                <a
+                  href="/shopPage?page=<%= currentPage + 1 %>&sort=<%= sort %>"
+                  style="
+                    text-decoration: none;
+                    border: 1px solid #ddd;
+                    padding: 5px 10px;
+                    border-radius: 5px;
+                    background-color: #fff;
+                  "
+                >
+                  <i class="fas fa-angle-double-right" style="color: #333"></i>
+                </a>
               </li>
+              <% } %>
             </ul>
           </div>
         </div>

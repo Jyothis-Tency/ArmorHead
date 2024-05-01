@@ -127,7 +127,7 @@ const salesReport = async (req, res) => {
     let totalDiscountAmount = 0;
     for (const order of sales) {
       console.log("order.couponAmount:", order.couponAmount);
-      totalOrderAmount += order.productDetails[0].salePrice;
+      totalOrderAmount += order.totalAmount;
       totalDiscountAmount += order.couponAmount;
     }
     console.log(totalOrderAmount);

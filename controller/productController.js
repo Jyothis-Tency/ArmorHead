@@ -21,47 +21,52 @@ const getAddProductPage = async (req, res) => {
 const addProducts = async (req, res) => {
   try {
     console.log("addProducts triggered");
-
-    const products = req.body;
-    console.log("req.body data =" + JSON.stringify(products));
-    const smallQuantity = parseInt(req.body.small_quantity, 10) || 0;
-    const mediumQuantity = parseInt(req.body.medium_quantity, 10) || 0;
-    const largeQuantity = parseInt(req.body.large_quantity, 10) || 0;
+    console.log(req.body);
+    const { productName, productDescription, regularPrice, salePrice, small_quantity, medium_quantity, large_quantity, category } = req.body;
+    
+    console.log( productName, productDescription, regularPrice, salePrice, small_quantity, medium_quantity, large_quantity, category );
+    const smallQuantity = parseInt(small_quantity, 10) || 0;
+    const mediumQuantity = parseInt(medium_quantity, 10) || 0;
+    const largeQuantity = parseInt(large_quantity, 10) || 0;
     const productExists = await Product.findOne({
-      productName: products.productName,
+      productName: productName,
     });
+    console.log(productExists);
     if (!productExists) {
       // Calculate total quantity
       const totalQuantity = smallQuantity + mediumQuantity + largeQuantity;
-
+      console.log("1");
       const productSizes = [
         { size: "Small", quantity: smallQuantity },
         { size: "Medium", quantity: mediumQuantity },
         { size: "Large", quantity: largeQuantity },
         // Add more sizes if needed
       ];
-
+      console.log(productSizes);
+      console.log("2");
       const images = [];
       if (req.files && req.files.length > 0) {
         for (let i = 0; i < req.files.length; i++) {
           images.push(req.files[i].filename);
         }
       }
-
+      console.log(images);
+      console.log("3");
       const newProduct = new Product({
-        id: Date.now(),
-        productName: products.productName,
-        productDescription: products.productDescription,
-        category: products.category,
-        regularPrice: products.regularPrice,
-        salePrice: products.salePrice,
+        productName: productName,
+        productDescription: productDescription,
+        category: category,
+        regularPrice: regularPrice,
+        salePrice: salePrice,
         productSizes,
         totalQuantity, // Assign total quantity
         createdOn: new Date(),
         productImage: images,
       });
+      console.log(newProduct);
       await newProduct.save();
-      console.log("New product = " + newProduct);
+      console.log(newProduct);
+      console.log("4");
       res.redirect("/admin/productPage");
       // res.json("success")
     } else {
@@ -271,7 +276,7 @@ const getShopPage = async (req, res) => {
     const count = await Product.countDocuments(query);
     const categories = await Category.find({ isListed: true });
     console.log(categories);
-    const itemsPerPage = 8;
+    const itemsPerPage = 3;
     const currentPage = parseInt(req.query.page) || 1;
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
@@ -430,7 +435,7 @@ const filterProduct = async (req, res) => {
 
     const categories = await Category.find({ isListed: true });
 
-    const itemsPerPage = 8;
+    const itemsPerPage = 3;
     const currentPage = parseInt(req.query.page) || 1;
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;

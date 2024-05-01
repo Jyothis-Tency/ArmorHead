@@ -90,31 +90,37 @@
                   </tr>
                 </thead>
                 <tbody id="order-details">
-                  <% for (let i = 0; i < userOrders.length; i++) { %> <% const
-                  order = userOrders[i]; %>
-                  <tr>
-                    <td class="product-name"><%= order.productName %></td>
-                    <td class="product-image">
-                      <!-- Adjust the max-width as per your preference -->
-                      <!-- Add image tag to display the product image -->
-                      <img
-                        src="/uploads/product-images/<%= order.productImage[1] %>"
-                        alt="<%= order.productName %>"
-                        class="product-image"
-                      />
-                    </td>
+  <% 
+    // Sort the userOrders array by order date in descending order to get the latest orders at the top
+    const sortedOrders = userOrders.sort((a, b) => new Date(b.orderDate) - new Date(a.orderDate));
 
-                    <td class="product-quantity"><%= order.quantity %></td>
-                    <td class="product-size"><%= order.size %></td>
-                    <td class="order-date">
-                      <%= new Date(order.orderDate).toLocaleString('en-US', {
-                      dateStyle: 'medium', timeStyle: 'short' }) %>
-                    </td>
-                    <td class="payment-method"><%= order.paymentMethod %></td>
-                    <td class="order-status"><%= order.orderStat %></td>
-                  </tr>
-                  <% } %>
-                </tbody>
+    // Get the first three most recent orders
+    const recentOrders = sortedOrders.slice(0, 3);
+  %>
+
+  <% for (let i = 0; i < recentOrders.length; i++) { 
+       const order = recentOrders[i]; 
+  %>
+  <tr>
+    <td class="product-name"><%= order.productName %></td>
+    <td class="product-image">
+      <img
+        src="/uploads/product-images/<%= order.productImage[1] %>"
+        alt="<%= order.productName %>"
+        style="max-width: 100px; border-radius: 5px;"
+      />
+    </td>
+    <td class="product-quantity"><%= order.quantity %></td>
+    <td class="product-size"><%= order.size %></td>
+    <td class="order-date">
+      <%= new Date(order.orderDate).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) %>
+    </td>
+    <td class="payment-method"><%= order.paymentMethod %></td>
+    <td class="order-status"><%= order.orderStat %></td>
+  </tr>
+  <% } %>
+</tbody>
+
               </table>
               <% } %>
               <button onclick="window.location.href='/order-details'">

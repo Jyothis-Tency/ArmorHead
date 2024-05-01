@@ -157,7 +157,7 @@
                             <th scope="col">Payment Method</th>
                             <th scope="col">Order Status</th>
                             <th scope="col">Total Amount</th>
-                            <th scope="col">Total Discount</th>
+                            
                             <th scope="col">Coupon Discount</th>
                         </tr>
                     </thead>
@@ -185,13 +185,7 @@
                                 <td>
                                     ₹<%= sales[i].totalAmount %>
                                 </td>
-                                <td>
-                                    <% if (sales[i].totalDiscount) { %>
-    ₹<%= sales[i].totalDiscount %>
-  <% } else { %>
-    No discount
-  <% } %>
-                                </td>
+                                
                                 <td>
                                     <% if (sales[i].couponAmount) { %>
                                     ₹<%= sales[i].couponAmount %>
@@ -208,7 +202,7 @@
             </div> <!-- table-responsive //end -->
              <!-- Additional Divs for Overall Statistics -->
     <div id="overall-sales">
-        <h3>Overall Sales: <%= count %></h3>
+        <h3>Overall Sales Count : <%= count %></h3>
     </div>
 
     <div id="overall-order-amount">
@@ -265,7 +259,7 @@ $('#date-wise-report').on('submit', function (e) {
             const orderDate = sale.orderDate || 'N/A';
             const paymentMethod = sale.paymentMethod || 'N/A';
             const orderStatus = sale.orderStatus || 'N/A';
-            const salePrice = sale.productDetails?.[0]?.salePrice || 0;
+            const salePrice = sale.totalAmount || 0;
 
             const totalDiscount = sale.totalDiscount ? `₹${sale.totalDiscount}` : 'No discount';
             const couponAmount = sale.couponAmount ? `₹${sale.couponAmount}` : 'No Coupon';
@@ -279,7 +273,6 @@ $('#date-wise-report').on('submit', function (e) {
                 <td class="text-center">${paymentMethod}</td>
                 <td class="text-center"><span class="badge rounded-pill alert-warning">${orderStatus}</span></td>
                 <td class="text-center">₹${salePrice}</td>
-                <td class="text-center">${totalDiscount}</td>
                 <td class="text-center">${couponAmount}</td>
               </tr>
             `);
