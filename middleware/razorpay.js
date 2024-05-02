@@ -7,21 +7,30 @@ var razorpay = new Razorpay({
 
 const createOrder = async (req, res) => {
   try {
-    console.log("inside create order");
+    console.log("createOrder triggered");
     console.log(req.body.totalPrice);
     const amount = parseInt(req.body.totalPrice);
     console.log(amount);
-    const orderDetails = await razorpay.orders.create({
-      amount: `${amount * 100}`,
-      currency: "INR",
-      receipt: String(req.session.userData),
-      payment_capture: 1,
-    });
-    console.log(orderDetails);
-    res.json({ orderId: orderDetails, totalPrice: req.body.totalPrice });
+
+    try {
+      const orderDetails = await razorpay.orders.create({
+        amount: `${amount * 100}`,
+        currency: "INR",
+        receipt: String(req.session.userData),
+        payment_capture: 1,
+      });
+      console.log(orderDetails);
+      res.json({ orderId: orderDetails, totalPrice: amount });
+    } catch (error) {
+      console.log(error);
+      throw error; // Re-throw the error to be caught by the outer try...catch
+    }
   } catch (error) {
     console.log(error);
-    throw error;
+    // Handle the error appropriately, e.g., send an error response
+    res
+      .status(500)
+      .json({ error: "An error occurred while creating the order" });
   }
 };
 

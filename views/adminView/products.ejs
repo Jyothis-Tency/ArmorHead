@@ -21,6 +21,7 @@
         <table class="table table-striped">
             <thead>
               <tr>
+                <th scope="col">Image</th>
                 <th scope="col"><b>Product name</b></th>
                 <th scope="col"><b>Category</b></th>
                 <th scope="col"><b>Sale Price</b></th>
@@ -31,6 +32,7 @@
             <tbody>
                 <% for(let i = 0; i < data.length; i++) {    %>
                     <tr>
+                        <td><img src="/uploads/product-images/<%= data[i].productImage[1] %>" alt="Product Image" style="max-width: 50px; height: auto; border-radius: 5px"></td>
                         <td><%= data[i].productName %></td>
                         <td><%= data[i].category[0].name %></td>
                         <td>₹<%= data[i].salePrice %></td>

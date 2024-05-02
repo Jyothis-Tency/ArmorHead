@@ -661,6 +661,15 @@ const updatePassword = async (req, res) => {
   }
 };
 
+const changePasswordPage = async (req, res) => {
+  try {
+    console.log("changePasswordPage triggered");
+    res.render("userView/changePassword")
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 module.exports = { filterPrice }; // Export the function
 
 module.exports = {
@@ -685,4 +694,5 @@ module.exports = {
   deleteAddress,
   filterPrice,
   updatePassword,
+  changePasswordPage,
 };

@@ -1,427 +1,184 @@
+<!-- Include Partial Header -->
 <%- include("../partials/userHeader") %>
 
 <main>
   <!-- User Profile Section -->
-  <section class="user-profile-area pt-100 pb-100">
-    <div class="container">
-      <div class="row">
-        <div class="col-xl-3">
-          <!-- User Profile Sidebar -->
+  <section class="user-profile-area pt-100 pb-100" style="display: flex; flex-direction: row;">
+    <div class="user-sidebar" style="
+        background-color: #2c3e50; 
+        color: white; 
+        padding: 20px; 
+        width: 300px; 
+        height: 200px; 
+        margin-top: 250px;
+        position: fixed; 
+        top: 0; 
+        left: 0; 
+        border-radius: 0 10px 10px 0; 
+        box-shadow: 2px 0 15px rgba(0, 0, 0, 0.2);
+        ">
+      <!-- User Profile Sidebar -->
+      <div class="user-profile-sidebar">
+        <ul class="user-profile-menu" style="list-style-type: none; padding: 0; margin: 0;">
+          <li style="margin-bottom: 15px;"><a href="/user-profile" style="color: white; text-decoration: none; font-weight: bold;">Profile Details</a></li>
+          <li style="margin-bottom: 15px;"><a href="/changePassword" style="color: white; text-decoration: none; font-weight: bold;">Change Password</a></li>
+          <li style="margin-bottom: 15px;"><a href="/order-details" style="color: white; text-decoration: none; font-weight: bold;">Order Details</a></li>
+          <li style="margin-bottom: 15px;"><a href="/address-management" style="color: white; text-decoration: none; font-weight: bold;">Address Management</a></li>
+          <li style="margin-bottom: 15px;"><a href="/wallet" style="color: white; text-decoration: none; font-weight: bold;">Wallet</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- User Profile Content -->
+    <div class="container" style="margin-left: 320px;">
+      <div class="user-profile-content" style="padding: 20px; background-color: #fff; border-radius: 10px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);">
+        <h2 style="color: #2c3e50;">Hello <%= loginStatus.username %></h2>
+        <p style="color: #7f8c8d;">
+          From your account dashboard, you can view your recent orders, manage your shipping and billing addresses, and edit your password and account details.
+        </p>
+
+        <!-- Account Details -->
+        <div class="account-details" style="margin-bottom: 30px;">
+          <h3 style="color: #34495e;">Account Details</h3>
+          <p>Your Name : <%= loginStatus.username %></p>
+          <p>Email : <%= loginStatus.email %></p>
+          <button
+            style="width: 110px; background-color: red; color: white; border-radius: 5px; padding: 10px;"
+          >
+            <a href="/logout" style="text-decoration: none; color: white;">Sign Out</a>
+          </button>
+          <button
+            id="changePasswordBtn"
+            style="width: 150px; background-color: red; color: white; border-radius: 5px; padding: 10px; margin-left: 10px;"
+          >
+            Change Password
+          </button>
         </div>
-        <div class="col-xl-9">
-          <!-- User Profile Content -->
-          <div class="user-profile-content">
-            <h2>Hello <%= loginStatus.username %></h2>
-            <p>
-              From your account dashboard you can view your recent orders,
-              manage your shipping and billing addresses, and edit your password
-              and account details.
-            </p>
-            <!-- account details -->
-            <div class="account-details">
-              <h3>Account Details</h3>
-              <p>Your Name : <%= loginStatus.username %></p>
-              <p>Email : <%= loginStatus.email %></p>
-              <button
-                style="
-                  width: 110px;
-                  background-color: red;
-                  color: white;
-                  border-radius: 5px;
-                  padding: 10px;
-                "
-              >
-                <a href="/logout" style="text-decoration: none; color: white"
-                  >Sign Out</a
-                >
-              </button>
-              <button
-                id="changePasswordBtn"
-                style="
-                  width: 150px;
-                  background-color: red;
-                  color: white;
-                  border-radius: 5px;
-                  padding: 10px;
-                  margin-left: 10px;
-                "
-              >
-                Change Password
-              </button>
-            </div>
-            </div>
 
-            <!-- Recent Orders -->
-            <div class="recent-orders">
-              <h3>Recent Orders</h3>
-              <% if (userOrders.length === 0) { %>
-              <table class="order-table">
-                <thead>
-                  <tr>
-                    <th>Product</th>
-                    <th>Product Image</th>
-                    <!-- Add new column for product image -->
-                    <th>Quantity</th>
-                    <th>Size</th>
-                    <th>Order Date</th>
-                    <th>Payment Method</th>
-                    <th>Order Status</th>
-                  </tr>
-                </thead>
-                <tbody id="order-details">
-                  <tr>
-                    <td colspan="7">No new orders yet !!!!!!</td>
-                    <!-- Adjust colspan for new column -->
-                  </tr>
-                </tbody>
-              </table>
-              <% } else { %>
-              <table class="order-table">
-                <thead>
-                  <tr>
-                    <th>Product</th>
-                    <th>Product Image</th>
-                    <!-- Add new column for product image -->
-                    <th>Quantity</th>
-                    <th>Size</th>
-                    <th>Order Date</th>
-                    <th>Payment Method</th>
-                    <th>Order Status</th>
-                  </tr>
-                </thead>
-                <tbody id="order-details">
-  <% 
-    // Sort the userOrders array by order date in descending order to get the latest orders at the top
-    const sortedOrders = userOrders.sort((a, b) => new Date(b.orderDate) - new Date(a.orderDate));
+        <!-- Recent Orders -->
+        <div class="recent-orders" style="margin-bottom: 30px;">
+          <h3 style="color: #34495e;">Recent Orders</h3>
+          <% if (userOrders.length === 0) { %>
+          <table class="order-table" style="width: 100%; border-collapse: collapse; border-radius: 10px; overflow: hidden; box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);">
+            <thead>
+              <tr style="background-color: #ecf0f1;">
+                <th style="padding: 15px; text-align: left; color: #2c3e50;">Product</th>
+                <th style="padding: 15px; text-align: left; color: #2c3e50;">Product Image</th>
+                <th style="padding: 15px; text-align: left; color: #2c3e50;">Quantity</th>
+                <th style="padding: 15px; text-align: left; color: #2c3e50;">Size</th>
+                <th style="padding: 15px; text-align: left; color: #2c3e50;">Order Date</th>
+                <th style="padding: 15px; text-align: left; color: #2c3e50;">Payment Method</th>
+                <th style="padding: 15px; text-align: left; color: #2c3e50;">Order Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td colspan="7" style="padding: 20px; text-align: center; color: #7f8c8d;">No new orders yet !!!!!!</td>
+              </tr>
+            </tbody>
+          </table>
+          <% } else { %>
+          <table class="order-table" style="width: 100%; border-collapse: collapse; border-radius: 10px; overflow: hidden; box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);">
+            <thead>
+              <tr style="background-color: #ecf0f1;">
+                <th style="padding: 15px; text-align: left; color: #2c3e50;">Product</th>
+                <th style="padding: 15px; text-align: left; color: #2c3e50;">Product Image</th>
+                <th style="padding: 15px; text-align: left; color: #2c3e50;">Quantity</th>
+                <th style="padding: 15px; text-align: left; color: #2c3e50;">Size</th>
+                <th style="padding: 15px; text-align: left; color: #2c3e50;">Order Date</th>
+                <th style="padding: 15px; text-align: left; color: #2c3e50;">Payment Method</th>
+                <th style="padding: 15px; text-align: left; color: #2c3e50;">Order Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% 
+                const sortedOrders = userOrders.sort((a, b) => new Date(b.orderDate) - new Date(a.orderDate));
+                const recentOrders = sortedOrders.slice(0, 3);
+              %>
 
-    // Get the first three most recent orders
-    const recentOrders = sortedOrders.slice(0, 3);
-  %>
+              <% recentOrders.forEach(order => { %>
+              <tr>
+                <td style="padding: 15px; text-align: left; color: #34495e;"><%= order.productName %></td>
+                <td class="product-image" style="padding: 15px; text-align: left;">
+                  <img
+                    src="/uploads/product-images/<%= order.productImage[1] %>"
+                    alt="<%= order.productName %>"
+                    style="max-width: 100px; border-radius: 5px;"
+                  />
+                </td>
+                <td style="padding: 15px; text-align: left; color: #34495e;"><%= order.quantity %></td>
+                <td style="padding: 15px; text-align: left; color: #34495e;"><%= order.size %></td>
+                <td style="padding: 15px; text-align: left; color: #34495e;"><%= new Date(order.orderDate).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) %></td>
+                <td style="padding: 15px; text-align: left; color: #34495e;"><%= order.paymentMethod %></td>
+                <td style="padding: 15px; text-align: left; color: #34495e;"><%= order.orderStat %></td>
+              </tr>
+              <% }); %>
+            </tbody>
+          </table>
+          <% } %>
+          <button style="background-color: #ff6347; color: #fff; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; transition: background-color 0.3s; margin-top: 20px;" onclick="window.location.href='/order-details'">To Order Details</button>
+        </div>
 
-  <% for (let i = 0; i < recentOrders.length; i++) { 
-       const order = recentOrders[i]; 
-  %>
-  <tr>
-    <td class="product-name"><%= order.productName %></td>
-    <td class="product-image">
-      <img
-        src="/uploads/product-images/<%= order.productImage[1] %>"
-        alt="<%= order.productName %>"
-        style="max-width: 100px; border-radius: 5px;"
-      />
-    </td>
-    <td class="product-quantity"><%= order.quantity %></td>
-    <td class="product-size"><%= order.size %></td>
-    <td class="order-date">
-      <%= new Date(order.orderDate).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) %>
-    </td>
-    <td class="payment-method"><%= order.paymentMethod %></td>
-    <td class="order-status"><%= order.orderStat %></td>
-  </tr>
-  <% } %>
-</tbody>
-
-              </table>
-              <% } %>
-              <button onclick="window.location.href='/order-details'">
-                To Order Details
-              </button>
-            </div>
-
-            <!-- Addresses -->
-            <div class="addresses">
-              <h3>Addresses</h3>
-              <button id="openAddAddressModalBtn">Add Address</button>
-              <% if (allAddress.length > 0) { %>
-              <table class="address-table">
-                <tr>
-                  <% allAddress.forEach(address => { %>
-                  <td>
-                    <div class="address">
-                      <h4>Edit Address</h4>
-                      <p>First Name: <%= address.firstName %></p>
-                      <p>Last Name: <%= address.lastName %></p>
-                      <p>House: <%= address.house %></p>
-                      <p>Locality: <%= address.locality %></p>
-                      <p>City: <%= address.city %></p>
-                      <p>State: <%= address.state %></p>
-                      <p>Pincode: <%= address.pincode %></p>
-                      <p>Country: <%= address.country %></p>
-                      <p>Email: <%= address.email %></p>
-                      <p>Phone: <%= address.phone %></p>
-                      <button
-                        class="edit-address-btn"
-                        data-address="<%= JSON.stringify(address) %>"
-                      >
-                        Edit Address
-                      </button>
-                      <button
-                        onclick="deleteAddress('<%= address._id.toString() %>')"
-                        class="delete-address-btn"
-                      >
-                        Delete Address
-                      </button>
-                    </div>
-                  </td>
-                  <% }); %>
-                </tr>
-              </table>
-              <% } else { %>
-              <p>No addresses found</p>
-              <% } %>
-            </div>
-
-            <!-- Edit Address -->
-            <div id="editAddressModal" class="modal">
-              <form id="editAddressForm" action="/updateAddress" method="POST">
-                <div class="modal-content">
-                  <h2>Edit Address</h2>  
-                  <!-- Address inputs -->
-                  <div class="address-form">
-                    <input
-                      type="hidden"
-                      id="editAddressId"
-                      name="_id"
-                      value=""
-                    />
-                    <label for="editFirstName">First Name:</label>
-                    <input
-                      type="text"
-                      id="editFirstName"
-                      name="firstName"
-                      placeholder="First Name"
-                    />
-                    <label for="editLastName">Last Name:</label>
-                    <input
-                      type="text"
-                      id="editLastName"
-                      name="lastName"
-                      placeholder="Last Name"
-                    />
-                    <label for="editHouse">House:</label>
-                    <input
-                      type="text"
-                      id="editHouse"
-                      name="house"
-                      placeholder="House"
-                    />
-                    <label for="editLocality">Locality:</label>
-                    <input
-                      type="text"
-                      id="editLocality"
-                      name="locality"
-                      placeholder="Locality"
-                    />
-                    <label for="editCity">City:</label>
-                    <input
-                      type="text"
-                      id="editCity"
-                      name="city"
-                      placeholder="City"
-                    />
-                    <label for="editState">State:</label>
-                    <input
-                      type="text"
-                      id="editState"
-                      name="state"
-                      placeholder="State"
-                    />
-                    <label for="editPincode">Pincode:</label>
-                    <input
-                      type="text"
-                      id="editPincode"
-                      name="pincode"
-                      placeholder="Pincode"
-                    />
-                    <label for="editCountry">Country:</label>
-                    <input
-                      type="text"
-                      id="editCountry"
-                      name="country"
-                      placeholder="Country"
-                    />
-                    <label for="editEmail">Email:</label>
-                    <input
-                      type="text"
-                      id="editEmail"
-                      name="email"
-                      placeholder="Email"
-                    />
-                    <label for="editPhone">Phone:</label>
-                    <input
-                      type="text"
-                      id="editPhone"
-                      name="phone"
-                      placeholder="Phone"
-                    />
-                  </div>
-                  <!-- Buttons -->
-                  <div class="modal-buttons">
-                    <button
-                      type="button"
-                      id="cancelEdit"
-                      onclick="closeModal()"
-                    >
-                      Cancel
-                    </button>
-                    <button id="submitEditAddress" type="submit">Submit</button>
-                  </div>
+        <!-- Addresses -->
+        <div class="addresses" style="margin-bottom: 30px;">
+          <h3 style="color: #34495e;">Addresses</h3>
+          <button id="openAddAddressModalBtn" style="background-color: #ff6347; color: #fff; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; transition: background-color 0.3s;">Add Address</button>
+          <% if (allAddress.length > 0) { %>
+          <table class="address-table" style="width: 100%; border-collapse: collapse; border-radius: 10px; overflow: hidden; box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);">
+            <tr>
+              <% allAddress.forEach(address => { %>
+              <td>
+                <div class="address" style="padding: 20px; border-radius: 10px; background-color: #f9f9f9; box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);">
+                  <h4 style="color: #34495e;">Edit Address</h4>
+                  <p style="color: #666;">First Name: <%= address.firstName %></p>
+                  <p style="color: #666;">Last Name: <%= address.lastName %></p>
+                  <p style="color: #666;">House: <%= address.house %></p>
+                  <p style="color: #666;">Locality: <%= address.locality %></p>
+                  <p style="color: #666;">City: <%= address.city %></p>
+                  <p style="color: #666;">State: <%= address.state %></p>
+                  <p style="color: #666;">Pincode: <%= address.pincode %></p>
+                  <p style="color: #666;">Country: <%= address.country %></p>
+                  <p style="color: #666;">Email: <%= address.email %></p>
+                  <p style="color: #666;">Phone: <%= address.phone %></p>
+                  <button class="edit-address-btn" data-address="<%= JSON.stringify(address) %>" style="background-color: #ff6347; color: #fff; border-radius: 5px; padding: 10px;">Edit Address</button>
+                  <button onclick="deleteAddress('<%= address._id %>')" style="background-color: red; color: white; border-radius: 5px; padding: 10px;">Delete Address</button>
                 </div>
-              </form>
-            </div>
+              </td>
+              <% }); %>
+            </tr>
+          </table>
+          <% } else { %>
+          <p style="color: #7f8c8d;">No addresses found</p>
+          <% } %>
+        </div>
 
-            <!-- Add Address Modal -->
-            <div id="addAddressModal" class="modal">
-              <div class="modal-content">
-                <h2>Add Address</h2>
-                <form
-                  id="addAddressForm"
-                  class="address-form"
-                  action="/add-address"
-                  method="post"
-                >
-                  <!-- Address inputs -->
-                  <div class="address-form">
-                    <input
-                      type="hidden"
-                      id="addAddressId"
-                      name="_id"
-                      value=""
-                    />
-                    <label for="addFirstName">First Name:</label>
-                    <input
-                      type="text"
-                      id="addFirstName"
-                      name="firstName"
-                      placeholder="First Name"
-                    />
-                    <label for="addLastName">Last Name:</label>
-                    <input
-                      type="text"
-                      id="addLastName"
-                      name="lastName"
-                      placeholder="Last Name"
-                    />
-                    <label for="addHouse">House:</label>
-                    <input
-                      type="text"
-                      id="addHouse"
-                      name="house"
-                      placeholder="House"
-                    />
-                    <label for="addLocality">Locality:</label>
-                    <input
-                      type="text"
-                      id="addLocality"
-                      name="locality"
-                      placeholder="Locality"
-                    />
-                    <label for="addCity">City:</label>
-                    <input
-                      type="text"
-                      id="addCity"
-                      name="city"
-                      placeholder="City"
-                    />
-                    <label for="addState">State:</label>
-                    <input
-                      type="text"
-                      id="addState"
-                      name="state"
-                      placeholder="State"
-                    />
-                    <label for="addPincode">Pincode:</label>
-                    <input
-                      type="text"
-                      id="addPincode"
-                      name="pincode"
-                      placeholder="Pincode"
-                    />
-                    <label for="addCountry">Country:</label>
-                    <input
-                      type="text"
-                      id="addCountry"
-                      name="country"
-                      placeholder="Country"
-                    />
-                    <label for="addEmail">Email:</label>
-                    <input
-                      type="text"
-                      id="addEmail"
-                      name="email"
-                      placeholder="Email"
-                    />
-                    <label for="addPhone">Phone:</label>
-                    <input
-                      type="text"
-                      id="addPhone"
-                      name="phone"
-                      placeholder="Phone"
-                    />
-                  </div>
-                  <!-- Buttons -->
-                  <div class="modal-buttons">
-                    <button
-                      type="button"
-                      id="cancelAdd"
-                      onclick="closeAddAddressModal()"
-                    >
-                      Cancel
-                    </button>
-                    <button type="submit">Submit</button>
-                  </div>
-                </form>
+        <!-- Change Password -->
+        <div id="changePasswordModal" class="modal" style="display: none; justify-content: center; align-items: center; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5);">
+          <div class="modal-content" style="background-color: #fff; padding: 20px; border-radius: 8px; max-width: 400px;">
+            <h2 style="color: #2c3e50; margin-bottom: 20px;">Change Password</h2>
+            <form id="changePasswordForm" action="/change-password" method="POST">
+              <div class="form-group">
+                <label for="currentPassword">Current Password:</label>
+                <input type="text" id="currentPassword" name="currentPassword" required style="width: 100%; padding: 10px; margin-bottom: 10px;">
               </div>
-            </div>
-            <div id="changePasswordModal" class="modal" style="display: none; justify-content: center; align-items: center; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5);">
-  <div class="modal-content" style="background-color: #fff; padding: 20px; border-radius: 8px; max-width: 400px;">
-    <h2 style="margin-bottom: 20px;">Change Password</h2>
-    <form id="changePasswordForm" action="/change-password" method="POST">
-      <div class="form-group">
-        <label for="currentPassword">Current Password:</label>
-        <input
-          type="text"
-          id="currentPassword"
-          name="currentPassword"
-          placeholder="Enter your current password"
-          required
-          style="width: 100%; padding: 10px; margin-bottom: 10px;"
-        />
-      </div>
-      <div class="form-group">
-        <label for="newPassword">New Password:</label>
-        <input
-          type="text"
-          id="newPassword"
-          name="newPassword"
-          placeholder="Enter your new password"
-          required
-          style="width: 100%; padding: 10px; margin-bottom: 10px;"
-        />
-      </div>
-      <div class="modal-buttons" style="display: flex; justify-content: space-between; margin-top: 20px;">
-        <button type="button" id="cancelChangePassword" onclick="closeModall()" style="padding: 10px 20px; background-color: #dc0000; border: none; border-radius: 4px; cursor: pointer;">Cancel</button>
-        <button type="submit" style="padding: 10px 20px; background-color: #3085d6; color: #fff; border: none; border-radius: 4px; cursor: pointer;">Submit</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-            <!-- Change Password -->
-            <!-- <div class="change-password">
-              <h3>Change Password</h3>
-              <form class="password-form">
-                <!-- Form fields for changing password -->
-              </form>
-            </div> -->
+              <div class="form-group">
+                <label for="newPassword">New Password:</label>
+                <input type="text" id="newPassword" name="newPassword" required style="width: 100%; padding: 10px; margin-bottom: 10px;">
+              </div>
+              <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+                <button type="button" id="cancelChangePassword" onclick="closeModall()" style="padding: 10px 20px; background-color: red; color: white; border: none; border-radius: 4px;">Cancel</button>
+                <button type="submit" style="padding: 10px 20px; background-color: #3085d6; color: white; border: none; border-radius: 4px;">Submit</button>
+              </div>
+            </form>
           </div>
         </div>
+
       </div>
     </div>
   </section>
 </main>
 
-
+<!-- Include Partial Footer -->
 <%- include("../partials/userFooter") %>
 
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
@@ -813,7 +570,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   };
 </script>
-
+<!-- 
 <style>
   /* Global Styles */
   body {
@@ -841,6 +598,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   /* User Profile Sidebar Styles */
   .user-profile-sidebar {
+    width: 500px;
     background-color: #f2f2f2;
     border-radius: 10px;
     padding: 20px;
@@ -1106,4 +864,4 @@ document.addEventListener("DOMContentLoaded", function () {
   .modal-buttons button:hover {
     background-color: #e74c3c;
   }
-</style>
+</style> -->

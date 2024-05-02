@@ -10,7 +10,7 @@ const getCustomersInfo = async (req, res) => {
     if (req.query.page) {
       page = req.query.page;
     }
-    const limit = 3;
+    const limit = 5;
     const userData = await User.find({
       isAdmin: "0",
       $or: [
@@ -18,6 +18,7 @@ const getCustomersInfo = async (req, res) => {
         { email: { $regex: ".*" + search + ".*" } },
       ],
     })
+      .sort({ createdAt: -1 })
       .limit(limit * 1)
       .skip((page - 1) * limit)
       .exec();

@@ -1,8 +1,7 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const productSchema = new mongoose.Schema(
   {
-    _id: mongoose.Schema.Types.ObjectId,
     productName: {
       type: String,
       required: true,
@@ -22,14 +21,14 @@ const productSchema = new mongoose.Schema(
       required: true,
     },
     createdOn: {
-      type: String,
+      type: Date,
       required: true,
     },
     productSizes: [
       {
         size: {
           type: String,
-          enum: ["Small", "Medium", "Large"], // Replace with full names
+          enum: ["Small", "Medium", "Large"],
           required: true,
         },
         quantity: {
@@ -47,7 +46,13 @@ const productSchema = new mongoose.Schema(
     },
     totalQuantity: {
       type: Number,
-      default: 0, // Default value is set to 0
+      default: 0,
+      // default: function () {
+      //   return this.productSizes.reduce(
+      //     (total, size) => total + size.quantity,
+      //     0
+      //   );
+      // },
     },
     productImage: [
       {
@@ -59,10 +64,9 @@ const productSchema = new mongoose.Schema(
       default: false,
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
-
-
-
-module.exports = mongoose.model('Product', productSchema);
+module.exports = mongoose.model("Product", productSchema);

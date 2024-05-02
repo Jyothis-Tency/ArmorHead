@@ -270,6 +270,69 @@
   <% } %>
 </div>
 
+ <div 
+    class="user-sidebar" 
+    style="
+      background-color: #2c3e50; 
+      color: white; 
+      padding: 20px; 
+      width: 300px; 
+      height: auto; /* Adjust to fit content */
+      position: fixed; 
+      top: 50%; /* Align in the middle vertically */
+      transform: translateY(-50%); /* Centering effect */
+      left: 0; 
+      border-radius: 0 10px 10px 0; 
+      box-shadow: 2px 0 15px rgba(0, 0, 0, 0.2);
+    "
+  >
+    <!-- User Profile Sidebar -->
+    <div class="user-profile-sidebar">
+      <ul style="list-style-type: none; padding: 0; margin: 0;">
+        <li style="margin-bottom: 15px;">
+          <a 
+            href="/user-profile" 
+            style="color: white; text-decoration: none; font-weight: bold;"
+          >
+            Profile Details
+          </a>
+        </li>
+        <li style="margin-bottom: 15px;">
+          <a 
+            href="/change-password" 
+            style="color: white; text-decoration: none; font-weight: bold;"
+          >
+            Change Password
+          </a>
+        </li>
+        <li style="margin-bottom: 15px;">
+          <a 
+            href="/order-details" 
+            style="color: white; text-decoration: none; font-weight: bold;"
+          >
+            Order Details
+          </a>
+        </li>
+        <li style="margin-bottom: 15px;">
+          <a 
+            href="/address-management" 
+            style="color: white; text-decoration: none; font-weight: bold;"
+          >
+            Address Management
+          </a>
+        </li>
+        <li style="margin-bottom: 15px;">
+          <a 
+            href="/wallet" 
+            style="color: white; text-decoration: none; font-weight: bold;"
+          >
+            Wallet
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
 </main>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

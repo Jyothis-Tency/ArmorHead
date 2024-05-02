@@ -204,8 +204,8 @@
                       <th>Order Total</th>
                       <td>
                         <div class="cart_subtotal" id="totalAmount">
-                          <p>Total</p>
-                          <p class="cart_amount"><%= totalAmount %></p>
+                          <span>Total</span>
+                          <p class="cart_amount">₹<%= totalAmount %></p>
                         </div>
                       </td>
                     </tr>
@@ -531,6 +531,7 @@
   $(document).ready(function () {
     console.log("proceed to payment");
     var totalAmountText = $(".cart_subtotal p").text().replace("₹", "").trim();
+    console.log(totalAmountText);
     var totalAmount = parseFloat(totalAmountText);
     console.log(totalAmount);
 

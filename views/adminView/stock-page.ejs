@@ -55,4 +55,14 @@
 
 </div>
 
+<script>
+document.querySelectorAll('form').forEach(form => {
+  form.addEventListener('submit', event => {
+    setTimeout(() => {
+      location.reload();
+    }, 1000); // 3 seconds
+  });
+});
+</script>
+
 <%- include("../partials/adminFooter") %>

@@ -117,6 +117,9 @@ const orderDetailsPage = async (req, res) => {
 
 const getOrderListAdmin = async (req, res) => {
   try {
+    const { page = 1, limit = 10 } = req.query;
+    const parsedPage = parseInt(page); // Ensure it's a number
+    const parsedLimit = parseInt(limit);
     const allOrderDetails = await Order.aggregate([
       { $unwind: "$orderedItems" },
       {
@@ -152,9 +155,18 @@ const getOrderListAdmin = async (req, res) => {
           orderStat: "$orderedItems.orderStat",
         },
       },
+      { $sort: { orderDate: -1 } },
+      { $skip: (parsedPage - 1) * parsedLimit },
+      { $limit: parseInt(parsedLimit) },
     ]);
 
-    res.render("adminView/order-list", { allOrderDetails });
+     const totalOrders = await Order.countDocuments();
+
+    res.render("adminView/order-list", {
+      allOrderDetails,
+      currentPage: parseInt(page),
+      totalPages: Math.ceil(totalOrders / limit),
+    });
   } catch (error) {
     console.error("Error fetching order details:", error);
     res.status(500).json({ error: "Internal Server Error" });
