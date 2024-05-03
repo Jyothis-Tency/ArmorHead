@@ -32,6 +32,7 @@ userRoute.get("/user-profile", isLoggedIn, userController.userProfile);
 userRoute.post("/add-address", isLoggedIn, userController.addAddress);
 userRoute.post("/cancel-order", isLoggedIn, userController.cancelOrder);
 userRoute.post("/return-order", isLoggedIn, userController.returnOrder);
+userRoute.get("/address", isLoggedIn, userController.addressPage);
 userRoute.post("/updateAddress", isLoggedIn, userController.updateAddress);
 userRoute.delete(
   "/delete-address/:addressId",

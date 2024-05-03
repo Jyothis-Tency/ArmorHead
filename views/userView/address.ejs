@@ -1,0 +1,128 @@
+<%- include("../partials/userHeader") %>
+<main>
+  <div style="text-align: center; margin-bottom: 30px;">
+    <h1 style="color: #34495e; margin-bottom: 20px;">Addresses</h1>
+
+    <div class="addresses" style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
+      <% if (allAddress.length > 0) { %>
+        <% allAddress.forEach((address, index) => { %>
+          <div style="width: 80%; border: 1px solid #ccc; border-radius: 10px; padding: 10px;">
+            <div
+              style="display: flex; justify-content: space-between; align-items: center; background-color: #34495e; border-radius: 5px; padding: 10px;"
+            >
+              <button
+                id="accordion-button-<%= index %>"
+                onclick="toggleAccordion('<%= index %>')"
+                style="background: none; color: white; border: none; text-align: left; flex: 1;"
+              >
+                Address <%= index + 1 %> (Click to Expand)
+              </button>
+              <div style="display: flex; gap: 10px;">
+                <button
+                  onclick="openEditAddressModal('<%= JSON.stringify(address) %>')"
+                  style="background-color: #ff6347; color: white; border: none; padding: 10px; border-radius: 5px;"
+                >
+                  Edit
+                </button>
+                <button
+                  onclick="deleteAddress('<%= address._id %>')"
+                  style="background-color: red; color: white; border: none; padding: 10px; border-radius: 5px;"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+            <div
+              id="accordion-content-<%= index %>"
+              style="display: none; padding: 15px; background-color: #f9f9f9; border-radius: 5px;"
+            >
+              <h4 style="color: #34495e; text-align: left;">Address Details</h4>
+              <p style="color: #666; text-align: left;">First Name: <%= address.firstName %></p>
+              <p style="color: #666; text-align: left;">Last Name: <%= address.lastName %></p>
+              <p style="color: #666; text-align: left;">House: <%= address.house %></p>
+              <p style="color: #666; text-align: left;">Locality: <%= address.locality %></p>
+              <p style="color: #666; text-align: left;">City: <%= address.city %></p>
+              <p style="color: #666; text-align: left;">State: <%= address.state %></p>
+              <p style="color: #666; text-align: left;">Pincode: <%= address.pincode %></p>
+              <p style="color: #666; text-align: left;">Country: <%= address.country %></p>
+              <p style="color: #666; text-align: left;">Email: <%= address.email %></p>
+              <p style="color: #666; text-align: left;">Phone: <%= address.phone %></p>
+            </div>
+          </div>
+        <% }); %>
+      <% } else { %>
+        <p style="color: #7f8c8d; text-align: center;">No addresses found</p>
+      <% } %>
+
+      <!-- Accordion for adding a new address -->
+      <div style="width: 80%; border: 1px solid #ccc; border-radius: 10px; padding: 10px;">
+        <div
+          style="display: flex; justify-content: space-between; align-items: center; background-color: #34495e; border-radius: 5px; padding: 10px;"
+        >
+          <button
+            id="accordion-button-new"
+            onclick="toggleAccordion('new')"
+            style="background: none; color: white; border: none; text-align: left; flex: 1;"
+          >
+            Add Address (Click to Expand)
+          </button>
+        </div>
+        <div
+          id="accordion-content-new"
+          style="display: none; padding: 15px; background-color: #f9f9f9; border-radius: 5px;"
+        >
+          <!-- Content for adding a new address could go here -->
+          <p style="color: #666; text-align: left;">Add a new address here...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+<%- include("../partials/userFooter") %>
+
+<script>
+  let currentOpenIndex = 0; // Set the default open accordion index
+
+  function toggleAccordion(index) {
+    // Close the currently open accordion
+    if (currentOpenIndex !== index) {
+      const previousContent = document.getElementById(`accordion-content-${currentOpenIndex}`);
+      const previousButton = document.getElementById(`accordion-button-${currentOpenIndex}`);
+      if (previousContent) {
+        previousContent.style.display = "none";
+        previousButton.textContent = `Address ${parseInt(currentOpenIndex) + 1} (Click to Expand)`;
+      }
+    }
+
+    // Toggle the clicked accordion
+    const content = document.getElementById(`accordion-content-${index}`);
+    const button = document.getElementById(`accordion-button-${index}`);
+    const isExpanded = content.style.display === "block";
+
+    content.style.display = isExpanded ? "none" : "block";
+    button.textContent = isExpanded
+      ? `Address ${parseInt(index) + 1} (Click to Expand)`
+      : `Address ${parseInt(index) + 1} (Click to Collapse)`;
+
+    if (!isExpanded) {
+      // If it wasn't expanded before, make this the currently open index
+      currentOpenIndex = index;
+    }
+  }
+
+  function deleteAddress(addressId) {
+    console.log(`Delete address with ID: ${addressId}`);
+    // Implement the delete logic here
+  }
+
+  function openEditAddressModal(address) {
+    console.log(`Edit address:`, address);
+    // Implement the logic to open the edit modal
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    // Open the default accordion when the page is rendered
+    toggleAccordion(currentOpenIndex);
+  });
+</script>
+

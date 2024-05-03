@@ -670,6 +670,21 @@ const changePasswordPage = async (req, res) => {
   }
 }
 
+const addressPage = async (req, res) => {
+  try {
+    console.log("addressPage triggered");
+    let userId = req.session.userData._id;
+    let userAddress = await addressHelper.findAnAddress(userId);
+    console.log("userAddress : ",userAddress);
+    let allAddress = await addressHelper.findAllAddress(userId);
+    console.log("allAddress : ", allAddress);
+    res.render("userView/address", { allAddress, userAddress });
+  } catch (error) {
+    console.log(error);
+    res.render("userView/404")
+  }
+}
+
 module.exports = { filterPrice }; // Export the function
 
 module.exports = {
@@ -695,4 +710,5 @@ module.exports = {
   filterPrice,
   updatePassword,
   changePasswordPage,
+  addressPage,
 };
