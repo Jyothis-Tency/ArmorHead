@@ -24,7 +24,7 @@
           <li style="margin-bottom: 15px;"><a href="/changePassword" style="color: white; text-decoration: none; font-weight: bold;">Change Password</a></li>
           <li style="margin-bottom: 15px;"><a href="/order-details" style="color: white; text-decoration: none; font-weight: bold;">Order Details</a></li>
           <li style="margin-bottom: 15px;"><a href="/address" style="color: white; text-decoration: none; font-weight: bold;">Address Management</a></li>
-          <li style="margin-bottom: 15px;"><a href="/wallet" style="color: white; text-decoration: none; font-weight: bold;">Wallet</a></li>
+          <li style="margin-bottom: 15px;"><a href="/get-wallet" style="color: white; text-decoration: none; font-weight: bold;">Wallet</a></li>
         </ul>
       </div>
     </div>
@@ -47,132 +47,7 @@
           >
             <a href="/logout" style="text-decoration: none; color: white;">Sign Out</a>
           </button>
-          <button
-            id="changePasswordBtn"
-            style="width: 150px; background-color: red; color: white; border-radius: 5px; padding: 10px; margin-left: 10px;"
-          >
-            Change Password
-          </button>
         </div>
-
-        <!-- Recent Orders -->
-        <div class="recent-orders" style="margin-bottom: 30px;">
-          <h3 style="color: #34495e;">Recent Orders</h3>
-          <% if (userOrders.length === 0) { %>
-          <table class="order-table" style="width: 100%; border-collapse: collapse; border-radius: 10px; overflow: hidden; box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);">
-            <thead>
-              <tr style="background-color: #ecf0f1;">
-                <th style="padding: 15px; text-align: left; color: #2c3e50;">Product</th>
-                <th style="padding: 15px; text-align: left; color: #2c3e50;">Product Image</th>
-                <th style="padding: 15px; text-align: left; color: #2c3e50;">Quantity</th>
-                <th style="padding: 15px; text-align: left; color: #2c3e50;">Size</th>
-                <th style="padding: 15px; text-align: left; color: #2c3e50;">Order Date</th>
-                <th style="padding: 15px; text-align: left; color: #2c3e50;">Payment Method</th>
-                <th style="padding: 15px; text-align: left; color: #2c3e50;">Order Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td colspan="7" style="padding: 20px; text-align: center; color: #7f8c8d;">No new orders yet !!!!!!</td>
-              </tr>
-            </tbody>
-          </table>
-          <% } else { %>
-          <table class="order-table" style="width: 100%; border-collapse: collapse; border-radius: 10px; overflow: hidden; box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);">
-            <thead>
-              <tr style="background-color: #ecf0f1;">
-                <th style="padding: 15px; text-align: left; color: #2c3e50;">Product</th>
-                <th style="padding: 15px; text-align: left; color: #2c3e50;">Product Image</th>
-                <th style="padding: 15px; text-align: left; color: #2c3e50;">Quantity</th>
-                <th style="padding: 15px; text-align: left; color: #2c3e50;">Size</th>
-                <th style="padding: 15px; text-align: left; color: #2c3e50;">Order Date</th>
-                <th style="padding: 15px; text-align: left; color: #2c3e50;">Payment Method</th>
-                <th style="padding: 15px; text-align: left; color: #2c3e50;">Order Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% 
-                const sortedOrders = userOrders.sort((a, b) => new Date(b.orderDate) - new Date(a.orderDate));
-                const recentOrders = sortedOrders.slice(0, 3);
-              %>
-
-              <% recentOrders.forEach(order => { %>
-              <tr>
-                <td style="padding: 15px; text-align: left; color: #34495e;"><%= order.productName %></td>
-                <td class="product-image" style="padding: 15px; text-align: left;">
-                  <img
-                    src="/uploads/product-images/<%= order.productImage[1] %>"
-                    alt="<%= order.productName %>"
-                    style="max-width: 100px; border-radius: 5px;"
-                  />
-                </td>
-                <td style="padding: 15px; text-align: left; color: #34495e;"><%= order.quantity %></td>
-                <td style="padding: 15px; text-align: left; color: #34495e;"><%= order.size %></td>
-                <td style="padding: 15px; text-align: left; color: #34495e;"><%= new Date(order.orderDate).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) %></td>
-                <td style="padding: 15px; text-align: left; color: #34495e;"><%= order.paymentMethod %></td>
-                <td style="padding: 15px; text-align: left; color: #34495e;"><%= order.orderStat %></td>
-              </tr>
-              <% }); %>
-            </tbody>
-          </table>
-          <% } %>
-          <button style="background-color: #ff6347; color: #fff; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; transition: background-color 0.3s; margin-top: 20px;" onclick="window.location.href='/order-details'">To Order Details</button>
-        </div>
-
-        <!-- Addresses -->
-        <div class="addresses" style="margin-bottom: 30px;">
-          <h3 style="color: #34495e;">Addresses</h3>
-          <button id="openAddAddressModalBtn" style="background-color: #ff6347; color: #fff; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; transition: background-color 0.3s;">Add Address</button>
-          <% if (allAddress.length > 0) { %>
-          <table class="address-table" style="width: 100%; border-collapse: collapse; border-radius: 10px; overflow: hidden; box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);">
-            <tr>
-              <% allAddress.forEach(address => { %>
-              <td>
-                <div class="address" style="padding: 20px; border-radius: 10px; background-color: #f9f9f9; box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);">
-                  <h4 style="color: #34495e;">Edit Address</h4>
-                  <p style="color: #666;">First Name: <%= address.firstName %></p>
-                  <p style="color: #666;">Last Name: <%= address.lastName %></p>
-                  <p style="color: #666;">House: <%= address.house %></p>
-                  <p style="color: #666;">Locality: <%= address.locality %></p>
-                  <p style="color: #666;">City: <%= address.city %></p>
-                  <p style="color: #666;">State: <%= address.state %></p>
-                  <p style="color: #666;">Pincode: <%= address.pincode %></p>
-                  <p style="color: #666;">Country: <%= address.country %></p>
-                  <p style="color: #666;">Email: <%= address.email %></p>
-                  <p style="color: #666;">Phone: <%= address.phone %></p>
-                  <button class="edit-address-btn" data-address="<%= JSON.stringify(address) %>" style="background-color: #ff6347; color: #fff; border-radius: 5px; padding: 10px;">Edit Address</button>
-                  <button onclick="deleteAddress('<%= address._id %>')" style="background-color: red; color: white; border-radius: 5px; padding: 10px;">Delete Address</button>
-                </div>
-              </td>
-              <% }); %>
-            </tr>
-          </table>
-          <% } else { %>
-          <p style="color: #7f8c8d;">No addresses found</p>
-          <% } %>
-        </div>
-
-        <!-- Change Password -->
-        <div id="changePasswordModal" class="modal" style="display: none; justify-content: center; align-items: center; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5);">
-          <div class="modal-content" style="background-color: #fff; padding: 20px; border-radius: 8px; max-width: 400px;">
-            <h2 style="color: #2c3e50; margin-bottom: 20px;">Change Password</h2>
-            <form id="changePasswordForm" action="/change-password" method="POST">
-              <div class="form-group">
-                <label for="currentPassword">Current Password:</label>
-                <input type="text" id="currentPassword" name="currentPassword" required style="width: 100%; padding: 10px; margin-bottom: 10px;">
-              </div>
-              <div class="form-group">
-                <label for="newPassword">New Password:</label>
-                <input type="text" id="newPassword" name="newPassword" required style="width: 100%; padding: 10px; margin-bottom: 10px;">
-              </div>
-              <div style="display: flex; justify-content: space-between; margin-top: 20px;">
-                <button type="button" id="cancelChangePassword" onclick="closeModall()" style="padding: 10px 20px; background-color: red; color: white; border: none; border-radius: 4px;">Cancel</button>
-                <button type="submit" style="padding: 10px 20px; background-color: #3085d6; color: white; border: none; border-radius: 4px;">Submit</button>
-              </div>
-            </form>
-          </div>
-        </div>
-
       </div>
     </div>
   </section>
@@ -180,11 +55,9 @@
 
 <!-- Include Partial Footer -->
 <%- include("../partials/userFooter") %>
-
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-
 <script>
   // Get the change password button and modal
   const changePasswordBtn = document.getElementById("changePasswordBtn");
@@ -290,7 +163,7 @@ document.addEventListener("DOMContentLoaded", function () {
     $("#editCountry").val(addressData.country);
     $("#editEmail").val(addressData.email);
     $("#editPhone").val(addressData.phone);
-
+    
     $("#editAddressModal").show();
   });
 

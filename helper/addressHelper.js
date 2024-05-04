@@ -51,7 +51,7 @@ const editAddress = async (addressDetails) => {
   try {
     console.log("editAddress triggered");
     // Convert userId string to ObjectId
-    const addressId = String(addressDetails._id);
+    const addressId = String(addressDetails.addressId);
     console.log(addressId);
 
     // Check if an address document with the given userId exists

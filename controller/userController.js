@@ -3,14 +3,10 @@ const Product = require("../model/productModel");
 const Address = require("../model/addressModel");
 const Order = require("../model/orderModel");
 const Wallet = require("../model/walletModel")
-const Category = require("../model/categoryModel");
-const productOffer = require("../model/productOfferModel")
-const categoryOffer = require("../model/categoryOfferModel")
 const bcrypt = require("bcrypt");
 const otpHelper = require("../helper/otpHelper");
 const passwordHelper = require("../helper/passwordHelper");
 const addressHelper = require("../helper/addressHelper");
-const cartHelper = require("../helper/cartHelper");
 const orderHelper = require("../helper/orderHelper");
 const dateFormatHelper = require("../helper/dateFormatHelper");
 const nodemailer = require("nodemailer");
@@ -22,7 +18,9 @@ const renderHome = async (req, res) => {
     console.log("renderHome triggered");
     const userNow = req.session.userData;
     console.log(req.session.userData);
-    const products = await Product.find();
+    const products = await Product.find()
+      .sort({ createdOn: -1 })
+      .limit(4);
     res.render("userView/index-main", { user: userNow, products });
   } catch (err) {
     console.error(err);
@@ -565,42 +563,46 @@ const returnOrder = async (req, res) => {
 const updateAddress = async (req, res) => {
   try {
     console.log("updateAddress triggered");
+
+    // Extract user ID from session data
     let userId = req.session.userData._id;
+
+    // Log the received data for debugging
+    console.log("Request data:");
     console.log(req.body);
-    // Update the address with the data received from the form
+
+    // Update the address with the received form data
     await addressHelper.editAddress(req.body);
 
-    // Fetch updated address details
-    let addressId = req.body._id;
-    let userAddress = await addressHelper.findAnAddress(addressId);
-
-    let userOrders = await orderHelper.getOrderDetails(userId);
-
-    // Fetch all addresses
-    let allAddress = await addressHelper.findAllAddress(userId);
-
-    // res.render("userView/profile", {
-    //   loginStatus: req.session.userData,
-    //   allAddress: allAddress,
-    //   userAddress: userAddress,
-    //   userOrders: userOrders,
-    // });
+    // Retrieve the updated address information
+    let addressId = req.body.addressId; // Assuming the address ID is provided in the form data
+    let updatedAddress = await addressHelper.findAnAddress(addressId);
 
     console.log("updateAddress successful");
-    res
-      .status(200)
-      .json({ success: true, message: "Address updated successfully" });
+
+    // Send success response
+    res.status(200).json({
+      success: true,
+      message: "Address updated successfully",
+      address: updatedAddress,
+    });
   } catch (error) {
     console.error("Error updating address:", error);
-    res
-      .status(500)
-      .json({ success: false, message: "Failed to update address" });
+
+    // Send failure response in case of error
+    res.status(500).json({
+      success: false,
+      message: "Failed to update address",
+    });
   }
 };
 
+
 const deleteAddress = async (req, res) => {
   try {
+    console.log("deleteAddress triggered");
     const addressId = req.params.addressId;
+    console.log(addressId);
     await Address.deleteOne({ _id: addressId });
     console.log("Address deleted successfully");
     // Send a success response

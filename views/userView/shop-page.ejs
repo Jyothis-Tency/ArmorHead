@@ -258,15 +258,6 @@
                 </ul>
               </div>
             </div>
-
-            <!-- <div class="shop-widget">
-              <h3 class="shop-title">Filter selection</h3>
-              <div class="price-filter">
-                <div id="slider-range"></div>
-                <input type="text" id="amount" />
-              </div>
-              <button id="range-button">Apply Range</button>
-            </div> -->
             <button id="change-button" hidden>Apply Change</button>
           </div>
         </div>
@@ -275,6 +266,7 @@
   </section>
   <!-- shop-area end -->
 </main>
+<%- include("../partials/userFooter") %>
 <script>
   $(document).ready(function () {
     $("#slider-range").slider({
@@ -374,8 +366,6 @@
     }
   }
 </script>
-
-<%- include("../partials/userFooter") %>
 
 <style>
   /* Global Styles */
