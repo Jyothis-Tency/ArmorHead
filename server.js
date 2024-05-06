@@ -1,5 +1,5 @@
 const express = require("express");
-const dotenv = require("dotenv").config();
+require("dotenv").config();
 const PORT = process.env.PORT || 3007;
 const ejs = require("ejs");
 const multer = require("multer");
@@ -16,7 +16,20 @@ const adminRoute = require("./routes/adminRoute");
 const app = express();
 
 //Database connection
-mongoose.connect("mongodb://localhost:27017/firstProjectDB");
+
+const mongoConnectionString = process.env.MONGO_STRING;
+
+mongoose
+  .connect(mongoConnectionString, {
+    serverSelectionTimeoutMS: 5000, // Timeout after 5 seconds if server is unavailable
+    autoIndex: true, // Automatically build indexes (if needed)
+  })
+  .then(() => {
+    console.log("Successfully connected to MongoDB");
+  })
+  .catch((error) => {
+    console.error("Error connecting to MongoDB:", error);
+  });
 
 // Middlewares
 app.use("/", express.static(path.join(__dirname, "public")));

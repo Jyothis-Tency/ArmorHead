@@ -80,8 +80,8 @@ const addProductOffer = async (req, res) => {
 
     await newOffer.save();
 
-    const currentSalePrice = existingProduct.salePrice;
-    existingProduct.oldSalePrice = currentSalePrice;
+    const currentSalePrice = existingProduct.regularPrice;
+    existingProduct.oldSalePrice = existingProduct.salePrice;
     console.log(currentSalePrice);
     const offerDiscount = discount;
     const newSalePrice = currentSalePrice - offerDiscount;
@@ -229,8 +229,8 @@ const addCategoryOffer = async (req, res) => {
       const productToUpdate = await Product.findById(
         productsWithoutProductOffer[i]
       );
-      const oldSalePrice = productToUpdate.salePrice;
-      productToUpdate.oldSalePrice = oldSalePrice;
+      const oldSalePrice = productToUpdate.regularPrice;
+      productToUpdate.oldSalePrice = productToUpdate.salePrice;
       const newSalePrice = oldSalePrice - discount;
       productToUpdate.salePrice = newSalePrice;
       await productToUpdate.save();
@@ -276,14 +276,18 @@ const editCategoryOffer = async (req, res) => {
 
 const deleteCategoryOffer = async (req, res) => {
   try {
+    console.log("deleteCategoryOffer triggered");
     const offerId = req.params.offerId;
+    console.log(offerId);
     const deletedOffer = await categoryOffer.findById(offerId);
     if (!deletedOffer) {
       return res.status(404).send("Category offer not found");
     }
     const categoryId = deletedOffer.categoryOffer.category;
+    console.log(categoryId);
     const offerDiscount = deletedOffer.discount;
     const productsToUpdate = await Product.find({ category: categoryId });
+    console.log(productsToUpdate);
     for (let i = 0; i < productsToUpdate.length; i++) {
       const productToUpdate = productsToUpdate[i];
       // productToUpdate.salePrice += offerDiscount;

@@ -1,6 +1,5 @@
 <%- include("../partials/adminHeader") %>
 
-
 <style>
     .col-md-3 {
         padding: 20px;
@@ -39,9 +38,12 @@
         background-color: #0056b3;
         border-color: #0056b3;
     }
+
+    .validation-error {
+        color: red;
+        font-size: 0.9em;
+    }
 </style>
-
-
 
 <section class="content-main">
     <div class="content-header">
@@ -57,19 +59,20 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-md-3">
-                    <form method="post" action="/admin/addCategory">
+                    <form id="categoryForm" method="post" action="/admin/addCategory">
                         <div class="mb-4">
                             <label for="product_name" class="form-label">Name</label>
                             <input type="text" name="name" placeholder="Type here" class="form-control" id="product_name" required/>
+                            <div class="validation-error" id="nameError"></div>
                         </div>
                        
-                      
                         <div class="mb-4">
                             <label class="form-label">Description</label>
-                            <textarea placeholder="Type here" name="description" class="form-control" required></textarea>
+                            <textarea placeholder="Type here" name="description" class="form-control" required id="description"></textarea>
+                            <div class="validation-error" id="descriptionError"></div>
                         </div>
                         <div class="d-grid">
-                            <button class="btn btn-primary" type="submit">Create category</button>
+                            <button class="btn btn-primary" type="submit" id="submitBtn">Create category</button>
                         </div>
                     </form>
                 </div>
@@ -78,8 +81,7 @@
                         <table class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th class="text-center">
-                                    </th>
+                                    <th class="text-center"></th>
                                     <th>Name</th>
                                     <th>Description</th>
                                     <th>Status</th>
@@ -88,7 +90,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <% for(let i=0; i < cat.length; i++) { %>
+                                <% for (let i = 0; i < cat.length; i++) { %>
                                     <tr>
                                         <td>
                                             <!-- Content for the first column, if needed -->
@@ -101,7 +103,7 @@
                                             <% } else { %>
                                                 <span class="badge rounded-pill alert-danger" style="width: 60px;">Unlisted</span>
                                             <% } %>
-                                        </td>                                        
+                                        </td>
                                         <td class="text-start">
                                             <% if (cat[i].isListed === true) { %>
                                                 <button class="btn btn-danger" style="width: 70px;">
@@ -122,7 +124,6 @@
                                 <% } %>
                             </tbody>
                         </table>
-                        
                     </div>
                 </div> <!-- .col// -->
             </div> <!-- .row // -->
@@ -131,3 +132,91 @@
 </section> <!-- content-main end// -->
 
 <%- include("../partials/adminFooter") %>
+
+<script>
+    const nameInput = document.getElementById('product_name');
+    const descriptionInput = document.getElementById('description');
+    const nameError = document.getElementById('nameError');
+    const descriptionError = document.getElementById('descriptionError');
+    const submitBtn = document.getElementById('submitBtn');
+
+    const validateName = (name) => {
+        // Check for leading space and invalid characters
+        const nameRegex = /^[A-Z][a-z]*(?: [A-Z][a-z]*)*$/;
+        return nameRegex.test(name);
+    };
+
+    const validateDescription = (description) => {
+        // Check for at least 8 words
+        const words = description.trim().split(/\s+/);
+        return words.length >= 8;
+    };
+
+    nameInput.addEventListener('input', (e) => {
+        const name = e.target.value.trim();
+        if (!validateName(name)) {
+            nameError.textContent = 'Name should not contain numbers or symbols, start with a capital letter for each word, and have no leading spaces.';
+            submitBtn.disabled = true;
+        } else {
+            nameError.textContent = '';
+            submitBtn.disabled = false;
+        }
+    });
+
+    descriptionInput.addEventListener('input', (e) => {
+        const description = e.target.value;
+        if (!validateDescription(description)) {
+            descriptionError.textContent = 'Description must contain at least 8 words.';
+            submitBtn.disabled = true;
+        } else {
+            descriptionError.textContent = '';
+            submitBtn.disabled = false;
+        }
+    });
+
+    document.getElementById('categoryForm').addEventListener('submit', (e) => {
+        const name = nameInput.value.trim();
+        const description = descriptionInput.value;
+
+        if (!validateName(name)) {
+            e.preventDefault();
+            nameError.textContent = 'Invalid name format.';
+        }
+
+        if (!validateDescription(description)) {
+            e.preventDefault();
+            descriptionError.textContent = 'Description is too short.';
+        }
+    });
+</script>
+<script>
+    document.getElementById('categoryForm').addEventListener('submit', function (e) {
+    const nameInput = document.getElementById('product_name');
+    const descriptionInput = document.getElementById('description');
+    const nameError = document.getElementById('nameError');
+    const descriptionError = document.getElementById('descriptionError');
+
+    let isValid = true; // We'll use this to determine if the form is valid
+
+    // Check if the name field is empty
+    if (nameInput.value.trim() === '') {
+        nameError.textContent = 'Name is required.';
+        isValid = false;
+    } else {
+        nameError.textContent = ''; // Clear the error message
+    }
+
+    // Check if the description field is empty
+    if (descriptionInput.value.trim() === '') {
+        descriptionError.textContent = 'Description is required.';
+        isValid = false;
+    } else {
+        descriptionError.textContent = ''; // Clear the error message
+    }
+
+    if (!isValid) {
+        // Prevent the form from being submitted if there are validation errors
+        e.preventDefault();
+    }
+});
+</script>
