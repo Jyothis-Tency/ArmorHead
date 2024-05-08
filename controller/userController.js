@@ -69,7 +69,7 @@ const userSignupPost = async (req, res) => {
       if (info) {
         req.session.userOtp = otp;
         console.log("inside info");
-        res.status(200).json({ success: true });
+        res.status(200).json({ success: true, message:"Into otp-verify" });
       } else {
         res.status(500).json({ message: "Failed to send OTP" }); // Send JSON error response
       }
@@ -80,7 +80,7 @@ const userSignupPost = async (req, res) => {
     }
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "An error occurred" }); // Send JSON error response
+    res.render("userView/404")
   }
 };
 
@@ -164,41 +164,42 @@ const userLoginPost = async (req, res) => {
   try {
     console.log("userLoginPost triggered");
 
-    console.log(req.body);
+    const { email, password } = req.body; // Extract email and password from the request body
+    console.log(email, password);
 
-    let curEmail = req.body.email;
-    let curPassword = req.body.password;
-
-    console.log(curEmail, curPassword);
-
-    const checkUser = await User.findOne({ email: curEmail });
-    console.log(checkUser);
-    req.session.userData = checkUser;
+    const checkUser = await User.findOne({ email });
     if (checkUser) {
-      const passwordTrue = await bcrypt.compare(
-        curPassword,
+      const isPasswordCorrect = await bcrypt.compare(
+        password,
         checkUser.password
       );
 
-      console.log(passwordTrue);
-
-      if (passwordTrue) {
-        req.session.userData = checkUser;
+      if (isPasswordCorrect) {
+        req.session.userData = checkUser; // Save user data in session
         console.log("Authentication successful");
-        console.log("user logged in");
-        res.redirect("/");
+
+        // Respond with success message
+        return res.status(200).json({ message: "Login successful" });
       } else {
-        console.log("password incorrect");
-        res.redirect("/login");
+        console.log("Password incorrect");
+
+        // Respond with error message
+        return res.status(401).json({ message: "Invalid email or password" });
       }
     } else {
-      console.log("user not found");
-      res.redirect("/login");
+      console.log("User not found");
+
+      // Respond with error message
+      return res.status(401).json({ message: "User not found" });
     }
   } catch (error) {
-    console.error(error);
+    console.error("Error during login:", error);
+
+    // Respond with a server error message
+    res.render("userView/404")
   }
 };
+
 
 const userLogout = async (req, res) => {
   try {

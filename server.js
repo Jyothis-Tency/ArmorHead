@@ -17,13 +17,11 @@ const app = express();
 
 //Database connection
 
-const mongoConnectionString = process.env.MONGO_STRING;
+const mongoConnectionString = process.env.MONGO_STRING_LOCAL;
+// const mongoConnectionString = process.env.MONGO_STRING_CLOUD;
 
 mongoose
-  .connect(mongoConnectionString, {
-    serverSelectionTimeoutMS: 5000, // Timeout after 5 seconds if server is unavailable
-    autoIndex: true, // Automatically build indexes (if needed)
-  })
+  .connect(mongoConnectionString)
   .then(() => {
     console.log("Successfully connected to MongoDB");
   })

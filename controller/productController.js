@@ -22,9 +22,27 @@ const addProducts = async (req, res) => {
   try {
     console.log("addProducts triggered");
     console.log(req.body);
-    const { productName, productDescription, regularPrice, salePrice, small_quantity, medium_quantity, large_quantity, category } = req.body;
-    
-    console.log( productName, productDescription, regularPrice, salePrice, small_quantity, medium_quantity, large_quantity, category );
+    const {
+      productName,
+      productDescription,
+      regularPrice,
+      salePrice,
+      small_quantity,
+      medium_quantity,
+      large_quantity,
+      category,
+    } = req.body;
+
+    console.log(
+      productName,
+      productDescription,
+      regularPrice,
+      salePrice,
+      small_quantity,
+      medium_quantity,
+      large_quantity,
+      category
+    );
     const smallQuantity = parseInt(small_quantity, 10) || 0;
     const mediumQuantity = parseInt(medium_quantity, 10) || 0;
     const largeQuantity = parseInt(large_quantity, 10) || 0;
@@ -319,7 +337,11 @@ const getProductDetailsPage = async (req, res) => {
       `Product Name in complete details of fetched product: ${findProduct.productName}`
     );
     // console.log(findProduct.id, "Hello world");
-    let products = await productHelper.getAllUnblockedProducts();
+    let products = await Product.find({
+      _id: { $ne: id },
+      category: categoryId,
+    });
+    console.log(products);
     if (findProduct) {
       res.render("userView/product-details", {
         data: findProduct,

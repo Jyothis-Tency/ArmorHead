@@ -187,29 +187,6 @@
           </table>
         </div>
       </div>
-      <!-- Pagination navigation -->
-      <div class="pagination-wrap">
-        <% if (currentPage > 1) { %>
-        <a
-          href="/admin/order-list?page=<%= currentPage - 1 %>&limit=<%= limit %>"
-          class="btn btn-primary"
-          >Previous</a
-        >
-        <% } %> <% for (let i = 1; i <= totalPages; i++) { %>
-        <a
-          href="/admin/order-list?page=<%= i %>&limit=<%= limit %>"
-          class="btn <%= i === currentPage ? 'btn-secondary' : 'btn-light' %>"
-        >
-          <%= i %>
-        </a>
-        <% } %> <% if (currentPage < totalPages) { %>
-        <a
-          href="/admin/order-list?page=<%= currentPage + 1 %>&limit=<%= limit %>"
-          class="btn btn-primary"
-          >Next</a
-        >
-        <% } %>
-      </div>
     </div>
   </div>
 </section>

@@ -1,37 +1,73 @@
 <%- include("../partials/userHeader") %>
 
 <main>
-<!-- revised-breadcrumb-area -->
-<section style="background-image: url('/user-assets/img/bg/page-title.png'); height: 150px; padding: 20px 0;">
-  <div style="max-width: 1200px; margin: 0 auto;">
-    <div style="display: flex; justify-content: center; align-items: center; text-align: center;">
-      <div>
-        <h1 style="font-size: 70px; color: #333;">Login</h1>
-        <ul style="list-style: none; padding: 0; display: flex; justify-content: center;">
-          <li style="margin-right: 10px;"><a href="index.html" style="text-decoration: none; color: #007BFF;">Home</a></li>
-          <li style="color: #666;">Sign Up</li>
-        </ul>
+  <!-- revised-breadcrumb-area -->
+  <section
+    style="
+      background-image: url('/user-assets/img/bg/page-title.png');
+      height: 150px;
+      padding: 20px 0;
+    "
+  >
+    <div style="max-width: 1200px; margin: 0 auto">
+      <div
+        style="
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          text-align: center;
+        "
+      >
+        <div>
+          <h1 style="font-size: 70px; color: #333">Login</h1>
+          <ul
+            style="
+              list-style: none;
+              padding: 0;
+              display: flex;
+              justify-content: center;
+            "
+          >
+            <li style="margin-right: 10px">
+              <a href="index.html" style="text-decoration: none; color: #007bff"
+                >Home</a
+              >
+            </li>
+            <li style="color: #666">Sign Up</li>
+          </ul>
+        </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
   <!-- breadcrumb-area-end -->
 
   <!-- login Area Strat-->
-  <section class="login-area pt-100 pb-100" style="padding: 10px;">
+  <section class="login-area pt-100 pb-100" style="padding: 10px">
     <div class="container">
       <div class="row">
         <div class="col-lg-8 offset-lg-2">
           <div class="basic-login">
             <h3 class="text-center mb-60">Login From Here</h3>
-            <form action="/login" method="post" onsubmit="return validateForm()">
-              <label for="name">Email Address <span>**</span></label>
-              <input id="name" name="email" type="email" placeholder="Enter Email address..." oninput="validateEmail()" />
+            <form id="login-form">
+              <label for="email">Email Address <span>**</span></label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="Enter Email address..."
+                oninput="validateEmail()"
+              />
               <span id="email-error" class="error"></span>
               <!-- Error message container -->
 
-              <label for="pass">Password <span>**</span></label>
-              <input id="pass" name="password" type="password" placeholder="Enter password..." oninput="validatePassword()" />
+              <label for="password">Password <span>**</span></label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                placeholder="Enter password..."
+                oninput="validatePassword()"
+              />
               <span id="password-error" class="error"></span>
               <!-- Error message container -->
 
@@ -40,10 +76,16 @@
                   <a href="/forgotPassword">Lost your password?</a>
                 </span>
               </div>
-              <button class="btn theme-btn-2 w-100">Login Now</button>
+              <button type="submit" class="btn theme-btn-2 w-100">
+                Login Now
+              </button>
               <div class="or-divide"><span>or</span></div>
-              <button class="btn theme-btn w-100" onclick="window.location.href='/signup'">Register Now</button>
-
+              <button
+                class="btn theme-btn w-100"
+                onclick="window.location.href='/signup'"
+              >
+                Register Now
+              </button>
             </form>
           </div>
         </div>
@@ -124,49 +166,113 @@
 </style>
 
 <script>
-  // Function to validate the form
-  function validateForm() {
-    console.log("login button");
-    var email = document.getElementById("name").value;
-    var password = document.getElementById("pass").value;
-
-    // Validation for email
-    if (!/^\S+@\S+\.\S+$/.test(email)) {
-      document.getElementById("email-error").innerHTML = "Invalid email format";
-      return false;
-    } else {
-      document.getElementById("email-error").innerHTML = "";
-    }
-
-    // Validation for password
-    if (!/(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{6,}/.test(password)) {
-      document.getElementById("password-error").innerHTML = "Password should be at least 6 characters long and contain at least one digit, one uppercase letter, one lowercase letter, and one special character";
-      return false;
-    } else {
-      document.getElementById("password-error").innerHTML = "";
-    }
-
-    // All validations passed
-    return true;
-  }
-
   // Real-time validation for email input
   function validateEmail() {
-    var email = document.getElementById("name").value;
-    if (!/^\S+@\S+\.\S+$/.test(email)) {
-      document.getElementById("email-error").innerHTML = "Invalid email format";
+    const email = document.getElementById("email").value;
+    const emailError = document.getElementById("email-error");
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Email pattern
+
+    if (!emailPattern.test(email)) {
+      emailError.innerHTML = "Invalid email format";
+      return false;
     } else {
-      document.getElementById("email-error").innerHTML = "";
+      emailError.innerHTML = "";
+      return true;
     }
   }
 
   // Real-time validation for password input
   function validatePassword() {
-    var password = document.getElementById("pass").value;
+    const password = document.getElementById("password").value;
+    const passwordError = document.getElementById("password-error");
+
+    // Password validation pattern
     if (!/(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{6,}/.test(password)) {
-      document.getElementById("password-error").innerHTML = "Password should be at least 6 characters long and contain at least one digit, one uppercase letter, one lowercase letter, and one special character";
+      passwordError.innerHTML =
+        "Password should be at least 6 characters long and contain at least one digit, one uppercase letter, one lowercase letter, and one special character.";
+      return false;
     } else {
-      document.getElementById("password-error").innerHTML = "";
+      passwordError.innerHTML = "";
+      return true;
     }
   }
+
+ $(document).ready(function() {
+  $('#login-form').on('submit', function(e) {
+    e.preventDefault(); // Prevent normal form submission
+
+    // Check both validations before submitting
+    const isEmailValid = validateEmail();
+    const isPasswordValid = validatePassword();
+
+    if (!isEmailValid || !isPasswordValid) {
+      // Show error toast and prevent AJAX request
+      Toastify({
+        text: 'Please correct the errors before submitting.',
+        duration: 3000,
+        gravity: 'top',
+        position: 'center',
+        backgroundColor: 'orange'
+      }).showToast();
+      return; // Do not proceed with form submission
+    }
+
+    // If validations pass, proceed with AJAX submission
+    const email = $('#email').val(); 
+    const password = $('#password').val(); 
+
+    $.ajax({
+      type: 'POST',
+      url: '/login', 
+      data: { email, password }, 
+      success: function(response) {
+        if (response.message === 'Login successful') {
+          Toastify({
+            text: 'Login successful!',
+            duration: 3000,
+            gravity: 'top',
+            position: 'center',
+            backgroundColor: 'green'
+          }).showToast();
+
+          // Redirect after a short delay
+          setTimeout(() => {
+            window.location.href = '/'; 
+          }, 3000);
+        } else if(response.message === 'Failed to send OTP') {
+          Toastify({
+            text: response.message,
+            duration: 3000,
+            gravity: 'top',
+            position: 'center',
+            backgroundColor: 'red'
+          }).showToast();
+        } else {
+          Toastify({
+            text: response.message,
+            duration: 3000,
+            gravity: 'top',
+            position: 'center',
+            backgroundColor: 'red'
+          }).showToast();
+        }
+      },
+      error: function(xhr) {
+        const errorMessage = xhr.responseJSON.message; 
+        Toastify({
+          text: errorMessage,
+          duration: 3000,
+          gravity: 'top',
+          position: 'center',
+          backgroundColor: 'red'
+        }).showToast();
+
+        if (xhr.status === 401) {
+          $('#email-error').text('Invalid email or password.');
+        }
+      }
+    });
+  });
+});
 </script>

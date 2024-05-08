@@ -33,12 +33,14 @@ const getAllUnblockedProducts = async () => {
 
 const stockDecrease = async (cartItems) => {
   try {
-    console.log('stockDecrease triggered');
+    console.log("stockDecrease triggered");
 
     for (let i = 0; i < cartItems.length; i++) {
       const { productId, size, quantity } = cartItems[i];
-      console.log(`productId: ${productId}, size: ${size}, quantity: ${quantity}`);
-      
+      console.log(
+        `productId: ${productId}, size: ${size}, quantity: ${quantity}`
+      );
+
       const product = await Product.findById(productId);
       console.log(product);
 
@@ -66,7 +68,6 @@ const stockDecrease = async (cartItems) => {
           `Insufficient stock for product ${product.productName} in size ${size}`
         );
       }
-
       // Save the product after updating individual size quantity
       await product.save();
     }

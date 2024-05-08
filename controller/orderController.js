@@ -538,7 +538,7 @@ const verifyPayment = async (req, res) => {
     })
     .catch((error) => {
       console.log(error);
-      res.status(500).render("user/404", { loggedIn });
+      res.status(500).render("userView/404", { loggedIn });
     });
 };
 

@@ -1,5 +1,7 @@
 const User = require("../model/userModel");
 const Order = require("../model/orderModel");
+const Product = require("../model/productModel");
+const Category = require("../model/categoryModel");
 const orderHelper = require("../helper/orderHelper");
 const bcrypt = require("bcrypt");
 const PDFDocument = require("pdfkit");
@@ -16,10 +18,160 @@ function dateFormat(date) {
 
 const renderAdmin = async (req, res) => {
   try {
-    console.log("renderAdmin triggered");
-    res.render("adminView/admin-index");
+    if (req.session.admin) {
+      const salesDetails = await Order.find({ orderStatus: "delivered" });
+      const products = await Product.find();
+      const categories = await Category.find();
+      const topSellingProducts = await Order.aggregate([
+        { $unwind: "$orderedItems" },
+        {
+          $group: {
+            _id: "$orderedItems.product",
+            totalQuantity: { $sum: "$orderedItems.quantity" },
+          },
+        },
+        { $sort: { totalQuantity: -1 } },
+        { $limit: 10 },
+      ]);
+      const productIds = topSellingProducts.map((product) =>
+        product._id.toString()
+      );
+      const productsData = await Product.find(
+        { _id: { $in: productIds } },
+        { productName: 1, productImage: 1 }
+      );
+      const topSellingCategories = await Order.aggregate([
+        { $unwind: "$orderedItems" },
+        {
+          $lookup: {
+            from: "products",
+            localField: "orderedItems.product",
+            foreignField: "_id",
+            as: "product",
+          },
+        },
+        { $unwind: "$product" },
+        {
+          $lookup: {
+            from: "categories",
+            localField: "product.category",
+            foreignField: "_id",
+            as: "category",
+          },
+        },
+        { $unwind: "$category" },
+        {
+          $group: {
+            _id: "$category._id",
+            categoryName: { $first: "$category.name" },
+            totalQuantity: { $sum: "$orderedItems.quantity" },
+          },
+        },
+        { $sort: { totalQuantity: -1 } },
+        { $limit: 10 },
+      ]);
+      const categoryIds = topSellingCategories.map((category) => category._id);
+      const topSellingCategoriesData = await Category.find({
+        _id: { $in: categoryIds },
+      });
+      // Count of delivered orders
+      const deliveredOrdersCount = await Order.countDocuments({
+        orderStatus: "delivered",
+      });
+      console.log("salesDetails", salesDetails);
+      res.render("adminView/admin-index", {
+        salesDetails: salesDetails,
+        products: products,
+        categories: categories,
+        productsData: productsData,
+        topSellingCategories: topSellingCategoriesData,
+        topSellingProducts: topSellingProducts,
+        deliveredOrdersCount: deliveredOrdersCount,
+      });
+    } else {
+      res.render("admin/login");
+    }
   } catch (error) {
-    console.error(error);
+    throw new Error("dashboard rendering failed");
+  }
+};
+
+const showChart = async (req, res) => {
+  try {
+    if (req.body.msg) {
+      const monthlySalesData = await Order.aggregate([
+        {
+          $match: { orderStatus: "delivered" },
+        },
+        {
+          $group: {
+            _id: { $month: "$createdAt" },
+            totalAmount: { $sum: "$totalAmount" },
+          },
+        },
+        {
+          $sort: { _id: 1 },
+        },
+      ]);
+      const dailySalesData = await Order.aggregate([
+        {
+          $match: { orderStatus: "delivered" },
+        },
+        {
+          $group: {
+            _id: { $dayOfMonth: "$createdAt" },
+            totalAmount: { $sum: "$totalAmount" },
+          },
+        },
+        {
+          $sort: { _id: 1 },
+        },
+      ]);
+      const yearlySalesData = await Order.aggregate([
+        {
+          $match: { orderStatus: "delivered" },
+        },
+        {
+          $group: {
+            _id: { $year: "$createdAt" },
+            totalAmount: { $sum: "$totalAmount" },
+          },
+        },
+        {
+          $sort: { _id: 1 },
+        },
+      ]);
+      const orderStatuses = await Order.aggregate([
+        {
+          $unwind: "$orderedItems",
+        },
+        {
+          $group: {
+            _id: "$orderedItems.orderStat",
+            count: { $sum: 1 },
+          },
+        },
+      ]);
+      const eachOrderStatusCount = {};
+      orderStatuses.forEach((status) => {
+        eachOrderStatusCount[status._id] = status.count;
+      });
+      console.log(monthlySalesData);
+      console.log(yearlySalesData);
+      console.log(dailySalesData);
+      console.log(orderStatuses);
+      console.log(eachOrderStatusCount);
+      res
+        .status(200)
+        .json({
+          monthlySalesData,
+          dailySalesData,
+          eachOrderStatusCount,
+          yearlySalesData,
+        });
+    }
+  } catch (error) {
+    console.log(error);
   }
 };
 
@@ -160,4 +312,5 @@ module.exports = {
   getLogout,
   salesReportPage,
   salesReport,
+  showChart,
 };
