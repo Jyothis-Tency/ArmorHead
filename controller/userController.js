@@ -2,7 +2,7 @@ const User = require("../model/userModel");
 const Product = require("../model/productModel");
 const Address = require("../model/addressModel");
 const Order = require("../model/orderModel");
-const Wallet = require("../model/walletModel")
+const Wallet = require("../model/walletModel");
 const bcrypt = require("bcrypt");
 const otpHelper = require("../helper/otpHelper");
 const passwordHelper = require("../helper/passwordHelper");
@@ -18,9 +18,7 @@ const renderHome = async (req, res) => {
     console.log("renderHome triggered");
     const userNow = req.session.userData;
     console.log(req.session.userData);
-    const products = await Product.find()
-      .sort({ createdOn: -1 })
-      .limit(4);
+    const products = await Product.find().sort({ createdOn: -1 }).limit(4);
     res.render("userView/index-main", { user: userNow, products });
   } catch (err) {
     console.error(err);
@@ -69,7 +67,7 @@ const userSignupPost = async (req, res) => {
       if (info) {
         req.session.userOtp = otp;
         console.log("inside info");
-        res.status(200).json({ success: true, message:"Into otp-verify" });
+        res.status(200).json({ success: true, message: "Into otp-verify" });
       } else {
         res.status(500).json({ message: "Failed to send OTP" }); // Send JSON error response
       }
@@ -80,7 +78,7 @@ const userSignupPost = async (req, res) => {
     }
   } catch (error) {
     console.log(error);
-    res.render("userView/404")
+    res.render("userView/404");
   }
 };
 
@@ -196,10 +194,9 @@ const userLoginPost = async (req, res) => {
     console.error("Error during login:", error);
 
     // Respond with a server error message
-    res.render("userView/404")
+    res.render("userView/404");
   }
 };
-
 
 const userLogout = async (req, res) => {
   try {
@@ -452,11 +449,13 @@ const cancelOrder = async (req, res) => {
       orderedItemIndex !== -1 &&
       order.orderedItems[orderedItemIndex].orderStat === "confirmed"
     ) {
-      console.log("orderedItemIndex !== -1 && order.orderedItems[orderedItemIndex].orderStat === confirmed");
+      console.log(
+        "orderedItemIndex !== -1 && order.orderedItems[orderedItemIndex].orderStat === confirmed"
+      );
       const orderedItem = order.orderedItems[orderedItemIndex];
       console.log(orderedItem);
-      
-      if (order.paymentMethod === 'razorpay') {
+
+      if (order.paymentMethod === "razorpay") {
         // Update the wallet with the totalAmount for this order
         const wallet = await Wallet.findOne({ user: req.session.userData._id });
         if (!wallet) {
@@ -489,7 +488,7 @@ const cancelOrder = async (req, res) => {
       }
 
       await order.save();
-     
+
       return res
         .status(200)
         .json({ message: "Order cancelled successfully", order });
@@ -598,7 +597,6 @@ const updateAddress = async (req, res) => {
   }
 };
 
-
 const deleteAddress = async (req, res) => {
   try {
     console.log("deleteAddress triggered");
@@ -667,26 +665,52 @@ const updatePassword = async (req, res) => {
 const changePasswordPage = async (req, res) => {
   try {
     console.log("changePasswordPage triggered");
-    res.render("userView/changePassword")
+    res.render("userView/changePassword");
   } catch (error) {
     console.log(error);
   }
-}
+};
 
 const addressPage = async (req, res) => {
   try {
     console.log("addressPage triggered");
     let userId = req.session.userData._id;
     let userAddress = await addressHelper.findAnAddress(userId);
-    console.log("userAddress : ",userAddress);
+    console.log("userAddress : ", userAddress);
     let allAddress = await addressHelper.findAllAddress(userId);
     console.log("allAddress : ", allAddress);
     res.render("userView/address", { allAddress, userAddress });
   } catch (error) {
     console.log(error);
-    res.render("userView/404")
+    res.render("userView/404");
   }
-}
+};
+
+const conformReturnMessage = async (req, res) => {
+  try {
+    console.log("conformReturnMessage triggered");
+
+    const orderId = req.body.orderId;
+    const returnReason = req.body.returnReason;
+    const additionalReason = req.body.additionalReason;
+    console.log(orderId, returnReason, additionalReason);
+
+    req.session.returnMessage = [];
+
+    const returnContent = { orderId, returnReason, additionalReason };
+    req.session.returnMessage.push(returnContent);
+    console.log(req.session.returnMessage);
+    res.status(200).json({
+      success: true,
+      message: "Wait for the confirmation",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to send return confirmation",
+    });
+  }
+};
 
 module.exports = { filterPrice }; // Export the function
 
@@ -714,4 +738,5 @@ module.exports = {
   updatePassword,
   changePasswordPage,
   addressPage,
+  conformReturnMessage,
 };

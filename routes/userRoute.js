@@ -21,7 +21,7 @@ userRoute.get("/login", userController.userLoginGet);
 userRoute.post("/login", userController.userLoginPost);
 userRoute.get("/logout", userController.userLogout);
 userRoute.get("/profile", isLoggedIn, userController.userProfile);
-userRoute.get("/changePassword",isLoggedIn,userController.changePasswordPage)
+userRoute.get("/changePassword", isLoggedIn, userController.changePasswordPage);
 userRoute.get("/forgotPassword", userController.getForgotPassPage);
 userRoute.post("/forgotPassword", userController.postVerifyEmail);
 userRoute.post("/verifyPassOtp", userController.verifyForgotPassOtp);
@@ -31,6 +31,7 @@ userRoute.post("/resetPassword", userController.postNewPassword);
 userRoute.get("/user-profile", isLoggedIn, userController.userProfile);
 userRoute.post("/add-address", isLoggedIn, userController.addAddress);
 userRoute.post("/cancel-order", isLoggedIn, userController.cancelOrder);
+userRoute.post("/conformReturn",isLoggedIn,userController.conformReturnMessage);
 userRoute.post("/return-order", isLoggedIn, userController.returnOrder);
 userRoute.get("/address", isLoggedIn, userController.addressPage);
 userRoute.post("/updateAddress", isLoggedIn, userController.updateAddress);
@@ -50,7 +51,7 @@ userRoute.get("/filter", productController.filterProduct);
 
 // WishList Route
 userRoute.get("/wishlist", isLoggedIn, wishlistController.viewWishlist);
-userRoute.post("/addToWishlist", isLoggedIn, wishlistController.addToWishlist);
+userRoute.post("/addToWishlist", wishlistController.addToWishlist);
 userRoute.post(
   "/removeFromWishlist/:id",
   isLoggedIn,
@@ -59,7 +60,7 @@ userRoute.post(
 
 // Cart Routes
 userRoute.get("/cart", isLoggedIn, cartController.userCart);
-userRoute.post("/addToCart", isLoggedIn, cartController.addToCart);
+userRoute.post("/addToCart", cartController.addToCart);
 userRoute.post(
   "/remove-cart-item/:id",
   isLoggedIn,
@@ -80,8 +81,8 @@ userRoute.get("/order-details", isLoggedIn, orderController.orderDetailsPage);
 userRoute.get("/order-success", isLoggedIn, orderController.orderSuccess);
 
 //Coupon based routes
-userRoute.post('/applyCoupon', isLoggedIn, couponController.applyCoupon)
-userRoute.post('/removeCoupon',isLoggedIn,couponController.removeCoupon)
+userRoute.post("/applyCoupon", isLoggedIn, couponController.applyCoupon);
+userRoute.post("/removeCoupon", isLoggedIn, couponController.removeCoupon);
 
 //Wallet based routes
 userRoute.get("/get-wallet", isLoggedIn, walletController.getWallet);

@@ -1,6 +1,7 @@
 const productHelper = require("../helper/productHelper");
 const Product = require("../model/productModel");
 const Category = require("../model/categoryModel");
+const wishlist = require("../model/wishlistModel");
 const productOffer = require("../model/productOfferModel");
 const categoryOffer = require("../model/categoryOfferModel");
 const User = require("../model/userModel");
@@ -274,7 +275,7 @@ const getShopPage = async (req, res) => {
     }
 
     // Construct the MongoDB query with sorting
-    let query = { isBlocked: false };
+    let query = { totalQuantity: { $ne: 0 }, isBlocked: false };
     let currentProduct;
     if (sortOption) {
       currentProduct = await Product.find(query).sort(sortOption);
@@ -332,6 +333,14 @@ const getProductDetailsPage = async (req, res) => {
     console.log(`This is required id: ${id}`);
     const findProduct = await Product.findOne({ _id: id });
     const categoryId = await Category.findOne({ _id: findProduct.category });
+    const wishlists = await wishlist.findOne({ user: user });
+    let isInWishlist = false
+     isInWishlist =
+      wishlists &&
+      wishlists.products.some(
+        (product) => product.productItemId.toString() === id
+      );
+    console.log("isInWishlist: ", isInWishlist);
     console.log(categoryId);
     console.log(
       `Product Name in complete details of fetched product: ${findProduct.productName}`
@@ -347,6 +356,7 @@ const getProductDetailsPage = async (req, res) => {
         data: findProduct,
         category: categoryId,
         user: user,
+        wishlist: isInWishlist,
         products,
       });
       console.log("getProductDetailsPage success");

@@ -41,6 +41,12 @@ const userCart = async (req, res) => {
 const addToCart = async (req, res) => {
   try {
     const { prodId, quantity, size } = req.body;
+    const loggedIn = req.session.userData;
+    if (loggedIn === undefined) {
+      return res
+        .status(401)
+        .json({ status: "false", message: "User not logged in" });
+    }
     const addedQuantity = parseInt(quantity);
     let user = req.session.userData;
     let response = await cartHelper.addToUserCart(

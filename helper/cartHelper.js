@@ -108,7 +108,7 @@ const addToUserCart = async (userId, productId, quantity, size = "Small") => {
       );
 
       if (quantity > productSize.quantity) {
-        throw new Error("Requested quantity exceeds available quantity");
+        throw new Error("Out of Stock");
       }
       const totalPrice = product.salePrice * quantity;
       cart = new Cart({ user: userId, items: [] });
@@ -142,7 +142,7 @@ const addToUserCart = async (userId, productId, quantity, size = "Small") => {
         );
 
         if (newQuantity > productSize.quantity) {
-          throw new Error("Requested quantity exceeds available quantity");
+          throw new Error("No more stock to add in cart");
         }
 
         existingItem.quantity = newQuantity;

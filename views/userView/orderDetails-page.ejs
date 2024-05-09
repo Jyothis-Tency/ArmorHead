@@ -214,7 +214,7 @@
             <button
               class="return-btn"
               data-order-id="<%= order.orderedItemId %>"
-              onclick="returnOrder('<%= order.orderedItemId %>')"
+              onclick="openReturnModal('<%= order.orderedItemId %>')"
               style="
                 background-color: yellow;
                 color: black;
@@ -248,12 +248,20 @@
     </table>
   </div>
 
-<div class="pagination" style="text-align: center; padding: 20px 0; display: flex; justify-content: center;">
-  <% const totalPages = Math.ceil(totalOrders / limit); %>
-  <% for (let i = 1; i <= totalPages; i++) { %>
-    <a 
-      href="/order-details?page=<%= i %>" 
-      class="<%= i === page ? 'active' : '' %>" 
+  <div
+    class="pagination"
+    style="
+      text-align: center;
+      padding: 20px 0;
+      display: flex;
+      justify-content: center;
+    "
+  >
+    <% const totalPages = Math.ceil(totalOrders / limit); %> <% for (let i = 1;
+    i <= totalPages; i++) { %>
+    <a
+      href="/order-details?page=<%= i %>"
+      class="<%= i === page ? 'active' : '' %>"
       style="
         display: inline-block;
         padding: 10px;
@@ -267,37 +275,174 @@
     >
       <%= i %>
     </a>
-  <% } %>
-</div>
+    <% } %>
+  </div>
 
- <div 
-    class="user-sidebar" 
+  <div
+    class="user-sidebar"
     style="
-      background-color: #2c3e50; 
-      color: white; 
-      padding: 20px; 
-      width: 300px; 
+      background-color: #2c3e50;
+      color: white;
+      padding: 20px;
+      width: 300px;
       height: auto; /* Adjust to fit content */
-      position: fixed; 
+      position: fixed;
       top: 50%; /* Align in the middle vertically */
       transform: translateY(-50%); /* Centering effect */
-      left: 0; 
-      border-radius: 0 10px 10px 0; 
+      left: 0;
+      border-radius: 0 10px 10px 0;
       box-shadow: 2px 0 15px rgba(0, 0, 0, 0.2);
     "
   >
     <!-- User Profile Sidebar -->
     <div class="user-profile-sidebar">
-      <ul style="list-style-type: none; padding: 0; margin: 0;">
-        <li style="margin-bottom: 15px;"><a href="/user-profile" style="color: white; text-decoration: none; font-weight: bold;">Profile Details</a></li>
-          <li style="margin-bottom: 15px;"><a href="/changePassword" style="color: white; text-decoration: none; font-weight: bold;">Change Password</a></li>
-          <li style="margin-bottom: 15px;"><a href="/order-details" style="color: white; text-decoration: none; font-weight: bold;">Order Details</a></li>
-          <li style="margin-bottom: 15px;"><a href="/address" style="color: white; text-decoration: none; font-weight: bold;">Address Management</a></li>
-          <li style="margin-bottom: 15px;"><a href="/get-wallet" style="color: white; text-decoration: none; font-weight: bold;">Wallet</a></li>
+      <ul style="list-style-type: none; padding: 0; margin: 0">
+        <li style="margin-bottom: 15px">
+          <a
+            href="/user-profile"
+            style="color: white; text-decoration: none; font-weight: bold"
+            >Profile Details</a
+          >
+        </li>
+        <li style="margin-bottom: 15px">
+          <a
+            href="/changePassword"
+            style="color: white; text-decoration: none; font-weight: bold"
+            >Change Password</a
+          >
+        </li>
+        <li style="margin-bottom: 15px">
+          <a
+            href="/order-details"
+            style="color: white; text-decoration: none; font-weight: bold"
+            >Order Details</a
+          >
+        </li>
+        <li style="margin-bottom: 15px">
+          <a
+            href="/address"
+            style="color: white; text-decoration: none; font-weight: bold"
+            >Address Management</a
+          >
+        </li>
+        <li style="margin-bottom: 15px">
+          <a
+            href="/get-wallet"
+            style="color: white; text-decoration: none; font-weight: bold"
+            >Wallet</a
+          >
+        </li>
       </ul>
     </div>
   </div>
 
+  <!-- Modal Structure -->
+  <div
+    id="returnModal"
+    style="
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+    "
+  >
+<div
+  class="modal-content"
+  style="
+    text-align: center;
+    padding: 20px; /* Increase padding for a softer look */
+    border-radius: 8px; /* Rounded corners */
+    background-color: white; /* Default white background */
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3); /* Add shadow for depth */
+  "
+>
+  <h2 style="margin-bottom: 20px;">Return Product</h2> <!-- Increased margin -->
+  <p style="margin-bottom: 15px;">Why are you returning this product?</p> <!-- Increased margin -->
+
+  <!-- Radio Buttons for Predefined Reasons -->
+  <div style="margin-bottom: 20px;"> <!-- Increased margin between sections -->
+    <label style="display: block; margin-bottom: 10px;"> <!-- Uniform margin between radio buttons -->
+      <input
+        type="radio"
+        name="returnReason"
+        value="Product Defect"
+        checked
+      />
+      Product Defect
+    </label>
+    <label style="display: block; margin-bottom: 10px;">
+      <input type="radio" name="returnReason" value="Wrong Size or Fit" />
+      Wrong Size or Fit
+    </label>
+    <label style="display: block; margin-bottom: 10px;">
+      <input type="radio" name="returnReason" value="Changed Mind" />
+      Changed Mind
+    </label>
+    <label style="display: block; margin-bottom: 10px;">
+      <input type="radio" name="returnReason" value="Incorrect Product" />
+      Incorrect Product
+    </label>
+  </div>
+
+  <!-- Optional Text Area for Additional Explanation -->
+  <p style="margin-bottom: 10px;">Additional Comments (optional):</p> <!-- Consistent spacing -->
+  <textarea
+    id="additionalReason"
+    rows="3"
+    cols="30"
+    style="
+      padding: 10px; /* Increased padding for comfort */
+      border: 1px solid #ccc;
+      width: 100%; /* Full width */
+      border-radius: 5px; /* Rounded corners for text area */
+    "
+  ></textarea>
+
+  <!-- Modal Buttons -->
+  <div style="margin-top: 20px;"> <!-- Added margin to separate from text area -->
+    <button
+      id="cancelButton"
+      style="
+        padding: 10px 20px;
+        margin: 10px; /* Consistent margin between buttons */
+        background-color: #f44336; /* Red for Cancel */
+        color: white;
+        border: none;
+        border-radius: 5px; /* Rounded corners for buttons */
+        cursor: pointer;
+        transition: background-color 0.3s; /* Smooth hover effect */
+      "
+      onmouseover="this.style.backgroundColor='#d32f2f';" /* Darken on hover */
+      onmouseout="this.style.backgroundColor='#f44336';" /* Revert on mouse out */
+    >
+      Cancel
+    </button>
+    <button
+      id="okayButton"
+      style="
+        padding: 10px 20px;
+        margin: 10px; /* Consistent margin between buttons */
+        background-color: #4CAF50; /* Green for Okay */
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      "
+      onmouseover="this.style.backgroundColor='#388E3C';" /* Darken on hover */
+      onmouseout="this.style.backgroundColor='#4CAF50';" /* Revert on mouse out */
+    >
+      Okay
+    </button>
+  </div>
+</div>
+
+  </div>
 </main>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -305,20 +450,20 @@
 
 <script>
   // Get all pagination links
-  const paginationLinks = document.querySelectorAll('.pagination a');
+  const paginationLinks = document.querySelectorAll(".pagination a");
 
   // Add hover effect with inline CSS changes
-  paginationLinks.forEach(link => {
-    link.addEventListener('mouseover', () => {
+  paginationLinks.forEach((link) => {
+    link.addEventListener("mouseover", () => {
       // Change background color and text color on hover
-      link.style.backgroundColor = '#dcdcdc'; // New hover color
-      link.style.color = '#ffffff'; // Change text color for contrast
+      link.style.backgroundColor = "#dcdcdc"; // New hover color
+      link.style.color = "#ffffff"; // Change text color for contrast
     });
 
-    link.addEventListener('mouseout', () => {
+    link.addEventListener("mouseout", () => {
       // Revert back to original color when hover is removed
-      link.style.backgroundColor = '#e50404'; // Original color
-      link.style.color = '#ffffff'; // Original text color
+      link.style.backgroundColor = "#e50404"; // Original color
+      link.style.color = "#ffffff"; // Original text color
     });
   });
 </script>
@@ -452,41 +597,98 @@
     });
   }
 
-  function returnOrder(orderId) {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "This will return the order and it cannot be undone.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, return it!",
-      cancelButtonText: "No, keep it",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        $.ajax({
-          url: "/return-order",
-          method: "POST",
-          data: { orderId },
-          success: function (response) {
-            Swal.fire({
-              title: "Returned",
-              text: "Your order has been returned.",
-              icon: "success",
-              confirmButtonText: "Okay",
-            });
-            window.location.reload();
-          },
-          error: function (err) {
-            Swal.fire({
-              title: "Error",
-              text: "Failed to return the order. Please try again later.",
-              icon: "error",
-              confirmButtonText: "Okay",
-            });
-          },
-        });
-      }
-    });
+  function openReturnModal(orderId) {
+    const modal = document.getElementById("returnModal");
+    modal.style.display = "block";
+    modal.dataset.orderId = orderId;
   }
+
+  function closeReturnModal() {
+    const modal = document.getElementById("returnModal");
+    modal.style.display = "none";
+  }
+
+  document.getElementById("cancelButton").onclick = closeReturnModal;
+
+  document.getElementById("okayButton").onclick = function () {
+    const modal = document.getElementById("returnModal");
+    const orderId = modal.dataset.orderId;
+    const selectedReason = document.querySelector(
+      "input[name='returnReason']:checked"
+    ).value;
+    const additionalReason = document.getElementById("additionalReason").value;
+
+    $.ajax({
+      type: "POST",
+      url: "/conformReturn", // Adjust endpoint as needed
+      data: {
+        orderId: orderId,
+        returnReason: selectedReason,
+        additionalReason: additionalReason,
+      },
+      success: function (response) {
+        console.log("Return submitted:", response);
+        Toastify({
+          text: response.message,
+          duration: 3000, // Duration in milliseconds
+          close: true, // Show close button
+          gravity: "top", // Display position: 'top', 'bottom', 'left', 'right'
+          position: "center", // Alignment of position: 'left', 'right', 'center'
+          backgroundColor: "green", // Background color
+        }).showToast();
+        setTimeout(() => {
+          closeReturnModal();
+        }, 3000);
+      },
+      error: function (error) {
+        console.error("Error submitting return:", error);
+        Toastify({
+          text: error.message,
+          duration: 3000, // Duration in milliseconds
+          close: true, // Show close button
+          gravity: "top", // Display position: 'top', 'bottom', 'left', 'right'
+          position: "center", // Alignment of position: 'left', 'right', 'center'
+          backgroundColor: "green", // Background color
+        }).showToast();
+      },
+    });
+  };
+
+  // function returnOrder(orderId) {
+  //   Swal.fire({
+  //     title: "Are you sure?",
+  //     text: "This will return the order and it cannot be undone.",
+  //     icon: "warning",
+  //     showCancelButton: true,
+  //     confirmButtonText: "Yes, return it!",
+  //     cancelButtonText: "No, keep it",
+  //   }).then((result) => {
+  //     if (result.isConfirmed) {
+  //       $.ajax({
+  //         url: "/return-order",
+  //         method: "POST",
+  //         data: { orderId },
+  //         success: function (response) {
+  //           Swal.fire({
+  //             title: "Returned",
+  //             text: "Your order has been returned.",
+  //             icon: "success",
+  //             confirmButtonText: "Okay",
+  //           });
+  //           window.location.reload();
+  //         },
+  //         error: function (err) {
+  //           Swal.fire({
+  //             title: "Error",
+  //             text: "Failed to return the order. Please try again later.",
+  //             icon: "error",
+  //             confirmButtonText: "Okay",
+  //           });
+  //         },
+  //       });
+  //     }
+  //   });
+  // }
 </script>
 
 <%- include("../partials/userFooter") %>

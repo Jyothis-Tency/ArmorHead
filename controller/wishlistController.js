@@ -44,9 +44,15 @@ const addToWishlist = async (req, res) => {
   try {
     console.log("addToWishlist triggered");
     let { size, quantity, prodId } = req.body;
-    const userId = req.session.userData._id;
+    console.log(size, quantity, prodId);
+    const user = req.session.userData;
+    console.log("userId", user);
+    if (user === undefined) {
+      console.log("user not logged");
+      throw new Error("user not logged")
+    }
     console.log(`Size: ${size}, Quantity: ${quantity}, Product ID: ${prodId}`);
-    let result = await wishlistHelper.addItemToWishlist(prodId, userId, size);
+    let result = await wishlistHelper.addItemToWishlist(prodId, user._id, size);
     console.log(result);
     res.json({
       status: "true",
@@ -55,7 +61,7 @@ const addToWishlist = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       status: "false",
-      message: "Error occurred while adding item to wishlist",
+      message: error.message,
     });
   }
 };

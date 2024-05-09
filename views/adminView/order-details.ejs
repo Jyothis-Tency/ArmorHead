@@ -54,6 +54,7 @@
                 <th scope="col" style="text-align: center">Sub Total</th>
                 <th scope="col" style="text-align: center">Status</th>
                 <th scope="col" style="text-align: center">Change status</th>
+                <th scope="col" style="text-align: center">Return Request</th> <!-- New Column -->
               </tr>
             </thead>
             <tbody>
@@ -147,6 +148,20 @@
                   >
                     Reopen
                   </button>
+                  <% } %>
+                </td>
+                 <td style="text-align: center"> <!-- New Return Request Column -->
+                  <% 
+                    const returnRequest = specificReturnData.find(
+                      (item) => item.orderId === orderDetails[i]._id.toString()
+                    );
+                  %>
+
+                  <% if (returnRequest) { %>
+                    Return Reason: <%= returnRequest.returnReason %> <br />
+                    Additional Reason: <%= returnRequest.additionalReason || 'N/A' %> <!-- Fallback -->
+                  <% } else { %>
+                   <p> No Return Request</p>
                   <% } %>
                 </td>
               </tr>
