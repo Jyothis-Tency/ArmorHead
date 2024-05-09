@@ -694,6 +694,7 @@ const conformReturnMessage = async (req, res) => {
     const returnReason = req.body.returnReason;
     const additionalReason = req.body.additionalReason;
     console.log(orderId, returnReason, additionalReason);
+    
 
     req.session.returnMessage = [];
 
