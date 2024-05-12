@@ -694,13 +694,26 @@ const conformReturnMessage = async (req, res) => {
     const returnReason = req.body.returnReason;
     const additionalReason = req.body.additionalReason;
     console.log(orderId, returnReason, additionalReason);
-    
 
-    req.session.returnMessage = [];
+    const returnConfirm = await Order.updateOne(
+      { "orderedItems.orderId": new mongoose.Types.ObjectId(orderId) }, // Match order by orderedItems.orderId
+      {
+        $set: {
+          "returnProduct.status": true, // Update at the top level
+          "returnProduct.returnReason": returnReason,
+          "returnProduct.returnMessage": additionalReason,
+        },
+      }
+    );
 
-    const returnContent = { orderId, returnReason, additionalReason };
-    req.session.returnMessage.push(returnContent);
-    console.log(req.session.returnMessage);
+    // Check if any documents were modified
+    if (returnConfirm.modifiedCount === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found or no changes made",
+      });
+    }
+
     res.status(200).json({
       success: true,
       message: "Wait for the confirmation",

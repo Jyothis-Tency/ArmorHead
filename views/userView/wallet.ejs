@@ -1,48 +1,157 @@
 <%- include("../partials/userHeader") %>
 
-<main style="display: flex; flex-direction: row; margin-top: 30px;">
+<main style="display: flex; flex-direction: row; margin-top: 30px">
   <!-- Sidebar -->
-  <div class="user-sidebar" style="
-      background-color: #2c3e50; 
-        color: white; 
-        padding: 20px; 
-        width: 300px; 
-        height: 200px; 
-        margin-top: 250px;
-        position: fixed; 
-        top: 0; 
-        left: 0; 
-        border-radius: 0 10px 10px 0; 
-        box-shadow: 2px 0 15px rgba(0, 0, 0, 0.2); 
-    ">
+  <div
+    class="user-sidebar"
+    style="
+      background-color: #2c3e50;
+      color: white;
+      padding: 20px;
+      width: 300px;
+      height: 200px;
+      margin-top: 250px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      border-radius: 0 10px 10px 0;
+      box-shadow: 2px 0 15px rgba(0, 0, 0, 0.2);
+    "
+  >
     <!-- User Profile Sidebar -->
     <div class="user-profile-sidebar">
-      <ul class="user-profile-menu" style="list-style-type: none; padding: 0; margin: 0;">
-        <li style="margin-bottom: 15px;"><a href="/user-profile" style="color: white; text-decoration: none; font-weight: bold;">Profile Details</a></li>
-        <li style="margin-bottom: 15px;"><a href="/changePassword" style="color: white; text-decoration: none; font-weight: bold;">Change Password</a></li>
-        <li style="margin-bottom: 15px;"><a href="/order-details" style="color: white; text-decoration: none; font-weight: bold;">Order Details</a></li>
-        <li style="margin-bottom: 15px;"><a href="/address" style="color: white; text-decoration: none; font-weight: bold;">Address Management</a></li>
-        <li style="margin-bottom: 15px;"><a href="/get-wallet" style="color: white; text-decoration: none; font-weight: bold;">Wallet</a></li>
+      <ul
+        class="user-profile-menu"
+        style="list-style-type: none; padding: 0; margin: 0"
+      >
+        <li style="margin-bottom: 15px">
+          <a
+            href="/user-profile"
+            style="color: white; text-decoration: none; font-weight: bold"
+            >Profile Details</a
+          >
+        </li>
+        <li style="margin-bottom: 15px">
+          <a
+            href="/changePassword"
+            style="color: white; text-decoration: none; font-weight: bold"
+            >Change Password</a
+          >
+        </li>
+        <li style="margin-bottom: 15px">
+          <a
+            href="/order-details"
+            style="color: white; text-decoration: none; font-weight: bold"
+            >Order Details</a
+          >
+        </li>
+        <li style="margin-bottom: 15px">
+          <a
+            href="/address"
+            style="color: white; text-decoration: none; font-weight: bold"
+            >Address Management</a
+          >
+        </li>
+        <li style="margin-bottom: 15px">
+          <a
+            href="/get-wallet"
+            style="color: white; text-decoration: none; font-weight: bold"
+            >Wallet</a
+          >
+        </li>
       </ul>
     </div>
   </div>
 
   <!-- Main Content with Sidebar Adjustment -->
-  <div style="flex-grow: 1; padding-left: 320px; padding-top: 20px;">
-    <div class="wallet_details_area" style="margin-top: 50px; margin-bottom: 100px; padding-top: 10px;">
+  <div style="flex-grow: 1; padding-left: 320px; padding-top: 20px">
+    <div
+      class="wallet_details_area"
+      style="margin-top: 50px; margin-bottom: 100px; padding-top: 10px"
+    >
       <div class="container">
         <div class="row">
           <div class="col-lg-8 offset-lg-2">
-            <div class="wallet_details" style="background-color: #e3f2fd; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
-              <h2 style="margin-bottom: 20px; text-align: center; color: #000000;">Wallet Details</h2>
-              <% if (walletDetails) { %>
-                <p style="font-size: 18px; margin-bottom: 10px;"><strong>Wallet Balance:</strong> ₹<%= walletDetails %></p>
-                <!-- Additional wallet information can be added here -->
+            <div
+              class="wallet_details"
+              style="
+                background-color: #e3f2fd;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+              "
+            >
+              <h2
+                style="margin-bottom: 20px; text-align: center; color: #000000"
+              >
+                Wallet Details
+              </h2>
+              <% if (walletAmount) { %>
+              <p style="font-size: 18px; margin-bottom: 10px">
+                <strong>Wallet Balance:</strong> ₹<%= walletAmount %>
+              </p>
+              <!-- Additional wallet information can be added here -->
               <% } else { %>
-                <p style="font-size: 18px; margin-bottom: 10px;">No wallet balance available.</p>
+              <p style="font-size: 18px; margin-bottom: 10px">
+                No wallet balance available.
+              </p>
               <% } %>
+              <button
+                type="button"
+                class="btn btn-success"
+                onclick="addMoney()"
+              >
+                Add Money
+              </button>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+          <!-- Wallet Details Table -->
+          <h2>Wallet History</h2>
+          <table
+            class="table"
+            style="
+              width: 100%;
+              margin-bottom: 100px;
+              border-collapse: collapse;
+              border: 1px solid #ddd;
+              border-radius: 10px;
+              overflow: hidden;
+            "
+          >
+            <thead style="background-color: #f5f5f5">
+              <tr>
+                <th style="padding: 12px; text-align: left">Date</th>
+                <th style="padding: 12px; text-align: left">Status</th>
+                <th style="padding: 12px; text-align: left">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (walletDetails && walletDetails.history) { %> <% for (let
+              i=0; i < walletDetails.history.length; i++) { %>
+              <tr>
+                <td>
+                  <%= walletDetails.history[i].date.toLocaleDateString() %>
+                </td>
+                <td><%= walletDetails.history[i].status %></td>
+                <td>
+                  <% if (walletDetails.history[i].status==='debit' ) { %> -<%=
+                  walletDetails.history[i].amount %> <% } else { %> <%=
+                  walletDetails.history[i].amount %> <% } %>
+                </td>
+              </tr>
+              <% } %> <% } else { %>
+              <tr>
+                <td colspan="3">No wallet history found</td>
+              </tr>
+              <% } %>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -50,3 +159,88 @@
 </main>
 
 <%- include("../partials/userFooter") %>
+
+<script>
+  async function addMoney() {
+    console.log("addMoney");
+    const { value: amount } = await Swal.fire({
+      title: "Enter the Amount",
+      input: "number",
+      inputLabel: "Amount",
+      inputPlaceholder: "₹",
+    });
+    $.ajax({
+      url: "/addMoney",
+      method: "post",
+      data: {
+        total: amount,
+      },
+      success: (data) => {
+        console.log("success data:",data);
+        if (data.razorpay) {
+          var options = {
+            key: "rzp_test_ywCWUQCjUZBwUk",
+            amount: data.order.amount,
+            currency: "INR",
+            name: "Reid",
+            description: "Test Transaction",
+            image: "https://example.com/your_logo",
+            order_id: data.order.id,
+            handler: function (response) {
+              verifyPayment(response, data);
+            },
+            prefill: {
+              name: "Customer Name",
+              email: "customer@example.com",
+              contact: "9000090000",
+            },
+
+            theme: {
+              color: "#3399cc",
+            },
+          };
+          console.log(options);
+          var rzp1 = new Razorpay(options);
+          rzp1.open();
+        }
+      },
+    });
+  }
+
+  function verifyPayment(response, order) {
+    console.log("verifyPayment");
+    $.ajax({
+      url: "/payment-verify",
+      method: "post",
+      data: { order, response, from: "wallet" },
+      success: (response) => {
+        console.log("response:",response);
+        if (response) {
+          Toastify({
+            text: "Payment has been succeeded",
+            duration: 3000, // Duration in milliseconds
+            gravity: "top", // Position (top, bottom, left, right)
+            position: "center", // Horizontal position
+            backgroundColor: "green", // Background color
+            stopOnFocus: true, // Prevents dismissing the toast on hover
+          }).showToast();
+          setTimeout(function () {
+            location.reload();
+          }, 3000); // Reload page after 3 seconds
+        } else {
+          Toastify({
+            text: "Something wrong occurred while processing the payment.",
+            duration: 3000,
+            gravity: "top",
+            position: "center",
+            backgroundColor: "linear-gradient(to right, #ff6c6c, #f66262)",
+            stopOnFocus: true,
+          }).showToast();
+          setTimeout(function () {
+            location.reload();
+          }, 3000);
+        }
+      },
+    });
+  }
+</script>

@@ -70,6 +70,10 @@ const orderSchema = mongoose.Schema(
       default: null,
     },
     returnProduct: {
+      status: {
+        type: Boolean,
+        default: false,
+      },
       returnReason: {
         type: String,
         default: null,

@@ -94,18 +94,9 @@ const orderDetailsPage = async (req, res) => {
 
     // Get the order details for the specified page and limit
     const orderDetails = await orderHelper.getOrderDetails(userId, page, limit);
-
+    console.log(orderDetails);
     // Fetch the total number of orders for the user to calculate total pages
     const totalOrders = await Order.countDocuments({ user: userId });
-
-    let isReturnWait = false; // Initialize the variable
-
-    if (req.session.returnMessage) {
-      // Check if there is any value in req.session.returnMessage
-      isReturnWait = true; // Set isReturnWait to true if there's any value
-    }
-
-    // Now you can use isReturnWait to control logic
 
     // Calculate the total number of pages needed
     const totalPages = Math.ceil(totalOrders / limit);
@@ -114,7 +105,6 @@ const orderDetailsPage = async (req, res) => {
       orderDetails,
       page, // Current page number
       totalOrders, // Total number of orders for the user
-      isReturnWait,
       limit, // Limit of orders per page
       totalPages, // Total number of pages needed
     });
@@ -222,35 +212,22 @@ const getOrderDetailsAdmin = async (req, res) => {
           addressDetails: 1,
           orderStatus: "$orderedItems.orderStat",
           totalAmount: 1,
+          "returnProduct.status": 1,
+          "returnProduct.returnReason": 1,
+          "returnProduct.returnMessage": 1,
         },
       },
     ]);
 
-    // Retrieve the returnMessage array from the session, if it exists
-    const returnMessage = req.session.returnMessage || [];
-
-    // Find the object within returnMessage that matches the given orderId
-    const matchingReturnMessage = returnMessage.find(
-      (msg) => msg.orderId === orderId
-    );
-
-    // If there's a match, store the matched object in a variable
-    let specificReturnData = [];
-    if (matchingReturnMessage) {
-      specificReturnData.push(matchingReturnMessage);
-    }
-
     // Pass the order details, returnMessage, and specificReturnData to the view
     res.render("adminView/order-details", {
       orderDetails,
-      specificReturnData,
     });
   } catch (error) {
     console.error("Error in getOrderDetailsAdmin:", error);
     res.status(500).send("Internal Server Error");
   }
 };
-
 
 const updateOrderStatus = async (req, res) => {
   try {
@@ -268,6 +245,19 @@ const updateOrderStatus = async (req, res) => {
         item.orderStat = newStatus;
       }
     });
+
+    if (newStatus === "returned") {
+      const returnConfirm = await Order.updateOne(
+        { "orderedItems.orderId": new mongoose.Types.ObjectId(orderId) }, // Match order by orderedItems.orderId
+        {
+          $set: {
+            "returnProduct.status": false, // Update at the top level
+            "returnProduct.returnReason": "",
+            "returnProduct.returnMessage": "",
+          },
+        }
+      );
+    }
 
     const updatedOrder = await order.save();
 

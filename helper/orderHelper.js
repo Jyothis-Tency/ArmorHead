@@ -126,6 +126,9 @@ const getOrderDetails = async (userId, page = 1, limit = 5) => {
           paymentStatus: "$paymentStatus",
           orderStatus: "$orderStatus",
           orderStat: "$orderedItems.orderStat",
+          returnStatus: "$returnProduct.status",
+          returnReason: "$returnProduct.returnReason",
+          returnMessage: "$returnProduct.returnMessage",
         },
       },
       { $sort: { orderDate: -1 } }, // Sort by order date in descending order

@@ -86,5 +86,7 @@ userRoute.post("/removeCoupon", isLoggedIn, couponController.removeCoupon);
 
 //Wallet based routes
 userRoute.get("/get-wallet", isLoggedIn, walletController.getWallet);
+userRoute.post("/addMoney", isLoggedIn, walletController.addMoneyToWallet)
+userRoute.post("/payment-verify",isLoggedIn,walletController.verifyPayment)
 
 module.exports = userRoute;

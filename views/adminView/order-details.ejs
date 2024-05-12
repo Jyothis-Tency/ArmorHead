@@ -54,7 +54,8 @@
                 <th scope="col" style="text-align: center">Sub Total</th>
                 <th scope="col" style="text-align: center">Status</th>
                 <th scope="col" style="text-align: center">Change status</th>
-                <th scope="col" style="text-align: center">Return Request</th> <!-- New Column -->
+                <th scope="col" style="text-align: center">Return Request</th>
+                <!-- New Column -->
               </tr>
             </thead>
             <tbody>
@@ -150,19 +151,27 @@
                   </button>
                   <% } %>
                 </td>
-                 <td style="text-align: center"> <!-- New Return Request Column -->
-                  <% 
-                    const returnRequest = specificReturnData.find(
-                      (item) => item.orderId === orderDetails[i]._id.toString()
-                    );
-                  %>
-
-                  <% if (returnRequest) { %>
-                    Return Reason: <%= returnRequest.returnReason %> <br />
-                    Additional Reason: <%= returnRequest.additionalReason || 'N/A' %> <!-- Fallback -->
-                  <% } else { %>
-                   <p> No Return Request</p>
-                  <% } %>
+                <td>
+                  <% if(orderDetails[i].returnProduct.status===true){ %>
+                  <span>Return Requested</span>
+                  <button
+                    type="button"
+                    class="open-modal-btn"
+                    data-return-reason="<%= orderDetails[i].returnProduct.returnReason %>"
+                    data-return-message="<%= orderDetails[i].returnProduct.returnMessage %>"
+                    style="
+                      background-color: transparent;
+                      border: none;
+                      color: blue;
+                      padding: 2px;
+                      font-size: 12px;
+                      cursor: pointer;
+                    "
+                  >
+                    Return Reason
+                  </button>
+                  <% }else if (orderDetails[i].returnProduct.status===false){ %>
+                  No Request <% } %>
                 </td>
               </tr>
               <% } %>
@@ -200,14 +209,63 @@
               </tr>
             </tbody>
           </table>
+
         </div>
       </div>
     </div>
   </div>
+            <div
+            class="modal fade"
+            id="returnReasonModal"
+            tabindex="-1"
+            aria-labelledby="modalTitle"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="modalTitle">Return Details</h5>
+                  <button
+                    type="button"
+                    class="close"
+                    data-dismiss="modal"
+                    aria-label="Close"
+                  >
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <strong>Return Reason:</strong>
+                      <p id="modalReturnReason"></p>
+                    </div>
+                    <div class="col-md-6">
+                      <strong>Return Message:</strong>
+                      <p id="modalReturnMessage"></p>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-dismiss="modal"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
 </section>
 
 <%- include("../partials/adminFooter") %>
+<!-- Include jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 
+<!-- Include Bootstrap JavaScript -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
   // Frontend JavaScript code
   function toggleOrderStatus(orderId, newStatus) {
@@ -231,4 +289,21 @@
         console.error("Error updating order status:", error);
       });
   }
+</script>
+<script>
+$(document).ready(function() {
+  // Event listener for clicking on the modal button
+  $('.open-modal-btn').click(function() {
+    // Get the data attributes for return reason and message
+    var returnReason = $(this).data('return-reason');
+    var returnMessage = $(this).data('return-message');
+
+    // Set the content of the modal
+    $('#modalReturnReason').text(returnReason);
+    $('#modalReturnMessage').text(returnMessage);
+
+    // Open the modal
+    $('#returnReasonModal').modal('show');
+  });
+});
 </script>

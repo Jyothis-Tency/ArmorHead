@@ -211,21 +211,25 @@
               Cancel
             </button>
             <% } else if (order.orderStat === 'delivered') { %>
-            <button
-              class="return-btn"
-              data-order-id="<%= order.orderedItemId %>"
-              onclick="openReturnModal('<%= order.orderedItemId %>')"
-              style="
-                background-color: yellow;
-                color: black;
-                padding: 5px 10px;
-                border: none;
-                cursor: pointer;
-                transition: background-color 0.3s;
-              "
-            >
-              Return
-            </button>
+              <% if (order.returnStatus===true) { %>
+    <span>Waiting for confirmation</span>
+  <% } else { %>
+    <button
+      class="return-btn"
+      data-order-id="<%= order.orderedItemId %>"
+      onclick="openReturnModal('<%= order.orderedItemId %>')"
+      style="
+        background-color: yellow;
+        color: black;
+        padding: 5px 10px;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      "
+    >
+      Return
+    </button>
+  <% } %>
             <% } %> <% } else if (order.paymentStatus === 'pending') { %>
             <button
               class="retry-btn"
@@ -617,7 +621,7 @@
       "input[name='returnReason']:checked"
     ).value;
     const additionalReason = document.getElementById("additionalReason").value;
-
+    
     $.ajax({
       type: "POST",
       url: "/conformReturn", // Adjust endpoint as needed
@@ -638,7 +642,9 @@
         }).showToast();
         setTimeout(() => {
           closeReturnModal();
+           window.location.reload();
         }, 3000);
+
       },
       error: function (error) {
         console.error("Error submitting return:", error);
@@ -654,41 +660,6 @@
     });
   };
 
-  // function returnOrder(orderId) {
-  //   Swal.fire({
-  //     title: "Are you sure?",
-  //     text: "This will return the order and it cannot be undone.",
-  //     icon: "warning",
-  //     showCancelButton: true,
-  //     confirmButtonText: "Yes, return it!",
-  //     cancelButtonText: "No, keep it",
-  //   }).then((result) => {
-  //     if (result.isConfirmed) {
-  //       $.ajax({
-  //         url: "/return-order",
-  //         method: "POST",
-  //         data: { orderId },
-  //         success: function (response) {
-  //           Swal.fire({
-  //             title: "Returned",
-  //             text: "Your order has been returned.",
-  //             icon: "success",
-  //             confirmButtonText: "Okay",
-  //           });
-  //           window.location.reload();
-  //         },
-  //         error: function (err) {
-  //           Swal.fire({
-  //             title: "Error",
-  //             text: "Failed to return the order. Please try again later.",
-  //             icon: "error",
-  //             confirmButtonText: "Okay",
-  //           });
-  //         },
-  //       });
-  //     }
-  //   });
-  // }
 </script>
 
 <%- include("../partials/userFooter") %>
