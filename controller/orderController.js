@@ -1,4 +1,5 @@
 const Order = require("../model/orderModel");
+const Product = require("../model/productModel");
 const Address = require("../model/addressModel");
 const Coupon = require("../model/couponModel");
 const cartHelper = require("../helper/cartHelper");
@@ -218,7 +219,7 @@ const getOrderDetailsAdmin = async (req, res) => {
         },
       },
     ]);
-
+    console.log("orderDetails : ", orderDetails);
     // Pass the order details, returnMessage, and specificReturnData to the view
     res.render("adminView/order-details", {
       orderDetails,
@@ -284,6 +285,8 @@ const placeOrder = async (req, res) => {
 
     const userId = req.session.userData._id;
     const selectedAddressId = req.body.selectAddress;
+    const addressData = await Address.findById(selectedAddressId);
+    const coupon = req.session.coupon;
     const paymentMethod = req.body.payment_method.trim().toLowerCase();
     const cartItems = await cartHelper.getAllCartItems(userId);
 
@@ -295,6 +298,18 @@ const placeOrder = async (req, res) => {
       req.session.couponTotal ?? (await cartHelper.totalAmount(userId));
     const orderedDate = orderDate();
 
+    let wallet = await Wallet.findOne({ user: userId });
+    if (!wallet) {
+      wallet = new Wallet({ user: userId });
+      await wallet.save();
+    }
+    req.session.tempOrderDetails = {
+      paymentMethod,
+      totalAmount,
+      cartItems,
+      orderedDate,
+      coupon,
+    };
     if (paymentMethod === "cash on delivery") {
       if (totalAmount < 1000) {
         throw new Error(
@@ -356,42 +371,101 @@ const placeOrder = async (req, res) => {
         res.status(500).json({ error: true, message: error.message });
       }
     } else if (paymentMethod === "wallet") {
-      const isPaymentDone = await walletHelper.payUsingWallet(
-        userId,
-        totalAmount
-      );
-
-      if (isPaymentDone) {
-        const orderDetails = await orderHelper.forOrderPlacing(
-          req.body,
-          totalAmount,
-          cartItems,
+      try {
+        console.log("else if wallet");
+        let isPaymentDone = await walletHelper.payUsingWallet(
           userId,
-          req.session.coupon,
-          selectedAddressId
+          totalAmount
         );
+        if (isPaymentDone) {
+          console.log("if isPaymentDone");
+          const orderDetails = await orderHelper.forOrderPlacing(
+            req.body,
+            totalAmount,
+            cartItems,
+            userId,
+            coupon,
+            addressData
+          );
+          await orderHelper.changeOrderStatus(
+            orderDetails._id,
+            "confirmed",
+            req.body.payment_method
+          );
+          const updatedOrder = await Order.findOneAndUpdate(
+            { _id: orderDetails._id },
+            { paymentStatus: "success" },
+            { new: true }
+          );
+          // await productHelper.stockDecrease(cartItems);
+          for (let i = 0; i < cartItems.length; i++) {
+            const { productId: productId, size, quantity } = cartItems[i];
+            const product = await Product.findById(productId);
+            if (!product) {
+              console.log("!product");
+              return res.json({
+                error: true,
+                message: `Product with ID ${productId} not found`,
+              });
+            }
+            const sizeIndex = product.productSizes.findIndex(
+              (s) => s.size === size
+            );
+            if (sizeIndex === -1) {
+              console.log("sizeIndex === -1");
+              return res.json({
+                error: true,
+                message: `Size ${size} not found for product ${product.productName}`,
+              });
+            }
+            const availableQuantity =
+              product.productSizes[sizeIndex].quantity - quantity;
+            console.log("availableQuantity:", availableQuantity);
+            if (availableQuantity >= 0) {
+              console.log("if availableQuantity >= 0");
+              product.productSizes[sizeIndex].quantity = availableQuantity;
+            } else {
+              console.log("else availableQuantity >= 0");
+              return res.json({
+                error: true,
+                message: `Insufficient stock for product ${product.productName} in size ${size}`,
+              });
+            }
+            await product.save();
+            console.log("product saved");
+          }
 
-        await orderHelper.changeOrderStatus(
-          orderDetails._id,
-          "confirmed",
-          "confirmed",
-          req.body.payment_method
-        );
-
-        // Attempt to decrease stock and handle any errors
-        await productHelper.stockDecrease(cartItems);
-
-        await cartHelper.clearTheCart(userId);
-
-        res.status(202).json({
-          paymentMethod: "wallet",
-          message: "Purchase Done",
-        });
-      } else {
-        res.status(200).json({
-          paymentMethod: "wallet",
-          message: "Balance Insufficient in Wallet",
-        });
+          console.log("cartItems:", cartItems);
+          const productIds = cartItems.map((item) => item.productId);
+          console.log("productIds:", productIds);
+          const products = await Product.find({ _id: { $in: productIds } });
+          console.log("products:", products);
+          for (const product of products) {
+            let totalQuantity = 0;
+            for (const size of product.productSizes) {
+              totalQuantity += size.quantity;
+            }
+            product.totalQuantity = totalQuantity;
+            await product.save();
+          }
+          await cartHelper.clearTheCart(userId);
+          req.session.coupon = null;
+          console.log("wallet over success");
+          res.status(202).json({
+            paymentMethod: "wallet",
+            message: "Purchase Done",
+            totalAmount: totalAmount,
+          });
+        } else {
+          console.log("else isPaymentDone");
+          res.status(200).json({
+            paymentMethod: "wallet",
+            message: "Balance Insufficient in Wallet",
+          });
+        }
+      } catch (error) {
+        console.error("Error processing wallet payment:", error);
+        res.status(500).json({ error: "Failed to process payment" });
       }
     }
   } catch (error) {

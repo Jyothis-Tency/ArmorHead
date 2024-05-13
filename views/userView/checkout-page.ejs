@@ -45,119 +45,133 @@
         <div class="row">
           <div class="col-lg-6">
             <div class="checkbox-form">
-              <h3>Billing Details</h3>
-
-              <div class="row">
-                <% allAddress.forEach(address => { %>
-                <div class="col-md-4">
-                  <!-- Adjust column size as needed -->
-                  <div class="address-container">
+              <h3>Address Details</h3>
+              <div class="accordion" id="addressAccordion">
+                <% allAddress.forEach((address, index) => { %>
+                <div class="card">
+                  <div class="card-header" id="heading<%= index %>">
+                    <h5 class="mb-0">
+                      <button
+                        class="btn btn-link"
+                        type="button"
+                        data-toggle="collapse"
+                        data-target="#collapse<%= index %>"
+                        aria-expanded="true"
+                        aria-controls="collapse<%= index %>"
+                      >
+                        <%= address.firstName %> <%= address.lastName %>
+                      </button>
+                    </h5>
                     <div class="select-address">
-                      <input
-                        type="radio"
-                        id="selectAddress<%= address._id %>"
-                        name="selectAddress"
-                        value="<%= address._id %>"
-                      />
-                      <label for="selectAddress<%= address._id %>"
-                        >Select This Address</label
-                      >
-                    </div>
-                    <div class="checkout-form-list">
-                      <label>First Name<span class="required">*</span></label>
-                      <input
-                        type="text"
-                        name="firstName"
-                        value="<%= address.firstName %>"
-                        disabled
-                      />
-                    </div>
-                    <div class="checkout-form-list">
-                      <label>Last Name<span class="required">*</span></label>
-                      <input
-                        type="text"
-                        name="lastName"
-                        value="<%= address.lastName %>"
-                        disabled
-                      />
-                    </div>
-                    <div class="checkout-form-list">
-                      <label>House / Flat<span class="required">*</span></label>
-                      <input
-                        type="text"
-                        name="house"
-                        value="<%= address.house %>"
-                        disabled
-                      />
-                    </div>
-                    <div class="checkout-form-list">
-                      <label>Locality<span class="required">*</span></label>
-                      <input
-                        type="text"
-                        name="locality"
-                        value="<%= address.locality %>"
-                        disabled
-                      />
-                    </div>
-                    <div class="checkout-form-list">
-                      <label>City<span class="required">*</span></label>
-                      <input
-                        type="text"
-                        name="city"
-                        value="<%= address.city %>"
-                        disabled
-                      />
-                    </div>
-                    <div class="checkout-form-list">
-                      <label>State<span class="required">*</span></label>
-                      <input
-                        type="text"
-                        name="state"
-                        value="<%= address.state %>"
-                        disabled
-                      />
-                    </div>
-                    <div class="checkout-form-list">
-                      <label>Pincode<span class="required">*</span></label>
-                      <input
-                        type="text"
-                        name="pincode"
-                        value="<%= address.pincode %>"
-                        disabled
-                      />
-                    </div>
-                    <div class="checkout-form-list">
-                      <label
-                        >Email Address<span class="required">*</span></label
-                      >
-                      <input
-                        type="email"
-                        name="email"
-                        value="<%= address.email %>"
-                        disabled
-                      />
-                    </div>
-                    <div class="checkout-form-list">
-                      <label>Phone<span class="required">*</span></label>
-                      <input
-                        type="text"
-                        name="phone"
-                        value="<%= address.phone %>"
-                        disabled
-                      />
+                        <input
+                          type="radio"
+                          id="selectAddress<%= address._id %>"
+                          name="selectAddress"
+                          value="<%= address._id %>"
+                        />
+                        <label for="selectAddress<%= address._id %>"
+                          >Select This Address</label
+                        >
+                      </div>
+                  </div>
+
+                  <div
+                    id="collapse<%= index %>"
+                    class="collapse"
+                    aria-labelledby="heading<%= index %>"
+                    data-parent="#addressAccordion"
+                  >
+                    <div class="card-body">
+                      <div class="checkout-form-list">
+                        <label>First Name<span class="required">*</span></label>
+                        <input
+                          type="text"
+                          name="firstName"
+                          value="<%= address.firstName %>"
+                          disabled
+                        />
+                      </div>
+                      <div class="checkout-form-list">
+                        <label>Last Name<span class="required">*</span></label>
+                        <input
+                          type="text"
+                          name="lastName"
+                          value="<%= address.lastName %>"
+                          disabled
+                        />
+                      </div>
+                      <div class="checkout-form-list">
+                        <label
+                          >House / Flat<span class="required">*</span></label
+                        >
+                        <input
+                          type="text"
+                          name="house"
+                          value="<%= address.house %>"
+                          disabled
+                        />
+                      </div>
+                      <div class="checkout-form-list">
+                        <label>Locality<span class="required">*</span></label>
+                        <input
+                          type="text"
+                          name="locality"
+                          value="<%= address.locality %>"
+                          disabled
+                        />
+                      </div>
+                      <div class="checkout-form-list">
+                        <label>City<span class="required">*</span></label>
+                        <input
+                          type="text"
+                          name="city"
+                          value="<%= address.city %>"
+                          disabled
+                        />
+                      </div>
+                      <div class="checkout-form-list">
+                        <label>State<span class="required">*</span></label>
+                        <input
+                          type="text"
+                          name="state"
+                          value="<%= address.state %>"
+                          disabled
+                        />
+                      </div>
+                      <div class="checkout-form-list">
+                        <label>Pincode<span class="required">*</span></label>
+                        <input
+                          type="text"
+                          name="pincode"
+                          value="<%= address.pincode %>"
+                          disabled
+                        />
+                      </div>
+                      <div class="checkout-form-list">
+                        <label
+                          >Email Address<span class="required">*</span></label
+                        >
+                        <input
+                          type="email"
+                          name="email"
+                          value="<%= address.email %>"
+                          disabled
+                        />
+                      </div>
+                      <div class="checkout-form-list">
+                        <label>Phone<span class="required">*</span></label>
+                        <input
+                          type="text"
+                          name="phone"
+                          value="<%= address.phone %>"
+                          disabled
+                        />
+                      </div>
+                      
                     </div>
                   </div>
                 </div>
                 <% }); %>
-              </div>
-
-              <div class="different-address">
-                <div class="ship-different-title">
-                  <h3></h3>
-                </div>
-                <div class="order-notes">
-                  <div class="checkout-form-list"></div>
-                </div>
               </div>
             </div>
           </div>
@@ -240,7 +254,15 @@
                     <button
                       id="couponButton"
                       type="button"
-                      style="background-color: red; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px;"
+                      style="
+                        background-color: red;
+                        color: white;
+                        padding: 10px 20px;
+                        border: none;
+                        border-radius: 5px;
+                        cursor: pointer;
+                        margin-top: 10px;
+                      "
                     >
                       <% if (couponApplied) { %>
                       <!-- Check if appliedCouponCode is truthy -->

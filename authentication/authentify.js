@@ -2,10 +2,10 @@ const User = require("../model/userModel");
 
 const isLoggedIn = async (req, res, next) => {
   try {
-    console.log("isLoggedIn triggered");
+    // console.log("isLoggedIn triggered");
     if (req.session.userData) {
       const user = await User.findOne({ _id: req.session.userData._id });
-      console.log(user);
+      // console.log(user);
       if (user) {
         if (!user.isBlocked) {
           // User is not blocked, proceed
