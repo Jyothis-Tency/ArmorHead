@@ -132,15 +132,16 @@
               </tr>
             </thead>
             <tbody>
-              <% if (walletDetails && walletDetails.history) { %> <% for (let
-              i=0; i < walletDetails.history.length; i++) { %>
+              <% if (walletDetails && walletDetails.history &&
+              walletDetails.history.length > 0) { %> <% for (let i =
+              walletDetails.history.length - 1; i >= 0; i--) { %>
               <tr>
                 <td>
                   <%= walletDetails.history[i].date.toLocaleDateString() %>
                 </td>
                 <td><%= walletDetails.history[i].status %></td>
                 <td>
-                  <% if (walletDetails.history[i].status==='debit' ) { %> -<%=
+                  <% if (walletDetails.history[i].status === 'debit') { %> -<%=
                   walletDetails.history[i].amount %> <% } else { %> <%=
                   walletDetails.history[i].amount %> <% } %>
                 </td>
@@ -176,7 +177,7 @@
         total: amount,
       },
       success: (data) => {
-        console.log("success data:",data);
+        console.log("success data:", data);
         if (data.razorpay) {
           var options = {
             key: "rzp_test_ywCWUQCjUZBwUk",
@@ -214,7 +215,7 @@
       method: "post",
       data: { order, response, from: "wallet" },
       success: (response) => {
-        console.log("response:",response);
+        console.log("response:", response);
         if (response) {
           Toastify({
             text: "Payment has been succeeded",

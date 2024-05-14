@@ -121,7 +121,7 @@ const orderDetailsUser = async (req, res) => {
     const orderId = req.params.orderId;
     const order = await Order.findById(orderId);
     const addressId = order.address;
-    const userAddress = await Address.findById(addressId)
+    const userAddress = await Address.findById(addressId);
     const orderDetails = await Order.aggregate([
       { $match: { _id: new mongoose.Types.ObjectId(orderId) } },
       { $unwind: "$orderedItems" },
@@ -295,6 +295,7 @@ const updateOrderStatus = async (req, res) => {
   try {
     const { orderId } = req.params;
     const { newStatus } = req.body;
+    console.log("newStatus : ", newStatus);
 
     const order = await Order.findOne({ "orderedItems.orderId": orderId });
 
@@ -308,6 +309,31 @@ const updateOrderStatus = async (req, res) => {
       }
     });
 
+    let product;
+    order.orderedItems.forEach((item) => {
+      if (item.orderId.toString() === orderId) {
+        product = item.product;
+      }
+    });
+
+    const productIn = await Product.findOne({ _id: product });
+    const wallet = await Wallet.findOne({ user: order.user });
+    order.orderedItems.forEach((items) => {
+      if (items.orderId.toString() === orderId) {
+        if (newStatus === "returned") {
+          if (wallet) {
+            wallet.walletBalance += items.quantity * productIn.salePrice;
+            wallet.history.push({
+              date: new Date(),
+              status: "credit",
+              amount: items.quantity * productIn.salePrice,
+            });
+          }
+        }
+      }
+    });
+    await wallet.save();
+    console.log("3");
     if (order.orderedItems.length === 1) {
       // If there is only one ordered item, set the orderStatus to the same value as the orderStat
       order.orderStatus = newStatus;

@@ -443,11 +443,21 @@ const cancelOrder = async (req, res) => {
       item.orderId.equals(orderId)
     );
 
+    let product;
+    order.orderedItems.forEach((item) => {
+      if (item.orderId.toString() === orderId) {
+        product = item.product;
+      }
+    });
+    const productIn = await Product.findOne({ _id: product });
+
     console.log(orderedItemIndex);
 
     if (
-      orderedItemIndex !== -1 &&
-      order.orderedItems[orderedItemIndex].orderStat === "confirmed"
+      (orderedItemIndex !== -1 &&
+        order.orderedItems[orderedItemIndex].orderStat === "confirmed") ||
+      order.orderedItems[orderedItemIndex].orderStat === "shipped" ||
+      order.orderedItems[orderedItemIndex].orderStat === "outForDelivery"
     ) {
       console.log(
         "orderedItemIndex !== -1 && order.orderedItems[orderedItemIndex].orderStat === confirmed"
@@ -455,7 +465,10 @@ const cancelOrder = async (req, res) => {
       const orderedItem = order.orderedItems[orderedItemIndex];
       console.log(orderedItem);
 
-      if (order.paymentMethod === "razorpay") {
+      if (
+        order.paymentMethod === "razorpay" ||
+        order.paymentMethod === "wallet"
+      ) {
         // Update the wallet with the totalAmount for this order
         const wallet = await Wallet.findOne({ user: req.session.userData._id });
         if (!wallet) {
@@ -464,8 +477,13 @@ const cancelOrder = async (req, res) => {
         }
         console.log(wallet.walletBalance);
         console.log(order.totalAmount);
-        wallet.walletBalance += order.totalAmount;
-        console.log(wallet.walletBalance);
+        wallet.walletBalance += orderedItem.quantity * productIn.salePrice;
+        console.log("wallet.walletBalance : ", wallet.walletBalance);
+        wallet.history.push({
+          date: new Date(),
+          status: "credit",
+          amount: orderedItem.quantity * productIn.salePrice,
+        });
         await wallet.save();
       }
 

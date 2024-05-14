@@ -1,5 +1,5 @@
-const Wallet = require('../model/walletModel')
-const User = require('../model/userModel')
+const Wallet = require("../model/walletModel");
+const User = require("../model/userModel");
 const walletHelper = require("../helper/walletHelper");
 const Razorpay = require("razorpay");
 let instance = new Razorpay({
@@ -9,14 +9,14 @@ let instance = new Razorpay({
 
 const getWallet = async (req, res) => {
   try {
-    console.log('getWallet triggered');
+    console.log("getWallet triggered");
     let userId = req.session.userData._id;
     console.log(userId);
     const loggedIn = userId;
     let user = await User.findById(userId);
     console.log(user);
     const wallet = await Wallet.findOne({ user: userId });
-    console.log(wallet);
+    console.log("wallet : ", wallet);
     let walletAmount = await walletHelper.getWalletAmount(userId);
     console.log(walletAmount);
     res.render("userView/wallet", {
@@ -82,7 +82,7 @@ const addMoneyToWallet = async (req, res) => {
           console.log(newWallet);
         }
       }
-      
+
       console.log("addWallet success");
       res.json({ order: order, razorpay: true });
     });

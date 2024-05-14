@@ -1,9 +1,9 @@
-const Wallet = require("../model/walletModel")
-const mongoose = require("mongoose")
+const Wallet = require("../model/walletModel");
+const mongoose = require("mongoose");
 
 const getWalletAmount = async (userId) => {
   try {
-    console.log('getWalletAmount triggered');
+    console.log("getWalletAmount triggered");
     // let userId = req.session.user._id;
     const balance = await Wallet.aggregate([
       {
@@ -40,6 +40,11 @@ const payUsingWallet = async (userId, amount) => {
     }
 
     wallet.walletBalance -= amount;
+    wallet.history.push({
+      date: new Date(),
+      status: "debit",
+      amount: amount,
+    });
     await wallet.save();
     // console.log(wallet);
     return true;
