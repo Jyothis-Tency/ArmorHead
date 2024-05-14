@@ -38,6 +38,20 @@ const orderSchema = mongoose.Schema(
           ],
           default: "confirmed",
         },
+        returnPro: {
+          status: {
+            type: Boolean,
+            default: false,
+          },
+          returnReason: {
+            type: String,
+            default: null,
+          },
+          returnMessage: {
+            type: String,
+            default: null,
+          },
+        },
       },
     ],
     address: mongoose.Schema.Types.ObjectId,
@@ -69,7 +83,7 @@ const orderSchema = mongoose.Schema(
       maxlength: 20,
       default: null,
     },
-    returnProduct: {
+    returnProducts: {
       status: {
         type: Boolean,
         default: false,

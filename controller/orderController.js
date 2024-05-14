@@ -83,8 +83,9 @@ const checkoutRender = async (req, res) => {
   }
 };
 
-const orderDetailsPage = async (req, res) => {
+const orderDetailsList = async (req, res) => {
   try {
+    console.log("orderDetailsPage triggered");
     const userId = req.session.userData._id;
 
     // Extract the current page from the request query, defaulting to 1 if not provided
@@ -102,7 +103,7 @@ const orderDetailsPage = async (req, res) => {
     // Calculate the total number of pages needed
     const totalPages = Math.ceil(totalOrders / limit);
 
-    res.render("userView/orderDetails-page", {
+    res.render("userView/orderDetails-list", {
       orderDetails,
       page, // Current page number
       totalOrders, // Total number of orders for the user
@@ -115,13 +116,73 @@ const orderDetailsPage = async (req, res) => {
   }
 };
 
+const orderDetailsUser = async (req, res) => {
+  try {
+    const orderId = req.params.orderId;
+    const order = await Order.findById(orderId);
+    const addressId = order.address;
+    const userAddress = await Address.findById(addressId)
+    const orderDetails = await Order.aggregate([
+      { $match: { _id: new mongoose.Types.ObjectId(orderId) } },
+      { $unwind: "$orderedItems" },
+      {
+        $lookup: {
+          from: "products",
+          localField: "orderedItems.product",
+          foreignField: "_id",
+          as: "productDetails",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "user",
+          foreignField: "_id",
+          as: "userDetails",
+        },
+      },
+      {
+        $lookup: {
+          from: "addresses",
+          localField: "userDetails._id",
+          foreignField: "userId",
+          as: "addressDetails",
+        },
+      },
+      {
+        $project: {
+          orderedItems: 1,
+          orderedItemId: "$orderedItems.orderId",
+          productDetails: 1,
+          userDetails: 1,
+          addressDetails: 1,
+          orderStatus: "$orderedItems.orderStat",
+          paymentStatus: 1,
+          totalAmount: 1,
+          "returnProducts.status": 1,
+          "returnProducts.returnReason": 1,
+          "returnProducts.returnMessage": 1,
+        },
+      },
+    ]);
+    console.log("orderDetails : ", orderDetails, userAddress);
+    // Pass the order details, returnMessage, and specificReturnData to the view
+    res.render("userView/orderDetails-page", {
+      orderDetails,
+      userAddress,
+    });
+  } catch (error) {
+    res.render("userView/404");
+  }
+};
+
 const getOrderListAdmin = async (req, res) => {
   try {
-    const { page = 1, limit = 10 } = req.query;
+    console.log("getOrderListAdmin triggered");
+    const { page = 1, limit = 5 } = req.query;
     const parsedPage = parseInt(page); // Ensure it's a number
     const parsedLimit = parseInt(limit);
     const allOrderDetails = await Order.aggregate([
-      { $unwind: "$orderedItems" },
       {
         $lookup: {
           from: "products",
@@ -143,22 +204,19 @@ const getOrderListAdmin = async (req, res) => {
           _id: 0,
           orderId: "$_id",
           userDetails: 1,
-          orderedItemId: "$orderedItems.orderId",
           productName: { $arrayElemAt: ["$productDetails.productName", 0] },
           productImage: { $arrayElemAt: ["$productDetails.productImage", 0] },
-          quantity: "$orderedItems.quantity",
-          size: "$orderedItems.size",
           orderDate: "$orderDate",
           totalAmount: "$totalAmount",
           paymentMethod: "$paymentMethod",
           orderStatus: "$orderStatus",
-          orderStat: "$orderedItems.orderStat",
         },
       },
       { $sort: { orderDate: -1 } },
       { $skip: (parsedPage - 1) * parsedLimit },
       { $limit: parseInt(parsedLimit) },
     ]);
+    console.log("allOrderDetails", allOrderDetails);
 
     const totalOrders = await Order.countDocuments();
 
@@ -216,6 +274,9 @@ const getOrderDetailsAdmin = async (req, res) => {
           "returnProduct.status": 1,
           "returnProduct.returnReason": 1,
           "returnProduct.returnMessage": 1,
+          returnProStatus: "$orderedItems.returnPro.status",
+          returnProReason: "$orderedItems.returnPro.returnReason",
+          returnProMessage: "$orderedItems.returnPro.returnMessage",
         },
       },
     ]);
@@ -247,15 +308,55 @@ const updateOrderStatus = async (req, res) => {
       }
     });
 
+    if (order.orderedItems.length === 1) {
+      // If there is only one ordered item, set the orderStatus to the same value as the orderStat
+      order.orderStatus = newStatus;
+    } else {
+      // If there are multiple ordered items, set the orderStatus based on the individual item statuses
+      const hasDeliveredItem = order.orderedItems.some(
+        (item) => item.orderStat === "delivered"
+      );
+      const allItemsDelivered = order.orderedItems.every(
+        (item) => item.orderStat === "delivered"
+      );
+      const allItemsCancelled = order.orderedItems.every(
+        (item) => item.orderStat === "cancelled"
+      );
+      const allItemsReturned = order.orderedItems.every(
+        (item) => item.orderStat === "returned"
+      );
+
+      if (allItemsDelivered) {
+        order.orderStatus = "delivered";
+      } else if (hasDeliveredItem) {
+        order.orderStatus = "delivered";
+      } else if (allItemsCancelled) {
+        order.orderStatus = "cancelled";
+      } else if (allItemsReturned) {
+        order.orderStatus = "returned";
+      } else {
+        // If there is a mix of different statuses, set the orderStatus to a suitable value
+        order.orderStatus = "pending";
+      }
+    }
+
     if (newStatus === "returned") {
       const returnConfirm = await Order.updateOne(
         { "orderedItems.orderId": new mongoose.Types.ObjectId(orderId) }, // Match order by orderedItems.orderId
         {
           $set: {
-            "returnProduct.status": false, // Update at the top level
-            "returnProduct.returnReason": "",
-            "returnProduct.returnMessage": "",
+            "returnProducts.status": false, // Update at the top level
+            "returnProducts.returnReason": "",
+            "returnProducts.returnMessage": "",
+            "orderedItems.$[elem].returnPro.status": false,
+            "orderedItems.$[elem].returnPro.returnReason": "",
+            "orderedItems.$[elem].returnPro.returnMessage": "",
           },
+        },
+        {
+          arrayFilters: [
+            { "elem.orderId": new mongoose.Types.ObjectId(orderId) },
+          ],
         }
       );
     }
@@ -389,6 +490,7 @@ const placeOrder = async (req, res) => {
           );
           await orderHelper.changeOrderStatus(
             orderDetails._id,
+            "confirmed",
             "confirmed",
             req.body.payment_method
           );
@@ -638,7 +740,8 @@ const verifyPayment = async (req, res) => {
 module.exports = {
   checkoutRender,
   placeOrder,
-  orderDetailsPage,
+  orderDetailsList,
+  orderDetailsUser,
   getOrderListAdmin,
   getOrderDetailsAdmin,
   updateOrderStatus,

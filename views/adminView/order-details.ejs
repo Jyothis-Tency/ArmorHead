@@ -4,7 +4,6 @@
   <div class="content-header">
     <div>
       <h2 class="content-title card-title">Order detail</h2>
-      <p>Details for Order ID: 3453012</p>
     </div>
   </div>
   <div class="card">
@@ -152,13 +151,13 @@
                   <% } %>
                 </td>
                 <td>
-                  <% if(orderDetails[i].returnProduct.status===true){ %>
+                  <% if(orderDetails[i].returnProStatus===true){ %>
                   <span>Return Requested</span>
                   <button
                     type="button"
                     class="open-modal-btn"
-                    data-return-reason="<%= orderDetails[i].returnProduct.returnReason %>"
-                    data-return-message="<%= orderDetails[i].returnProduct.returnMessage %>"
+                    data-return-reason="<%= orderDetails[i].returnProReason %>"
+                    data-return-message="<%= orderDetails[i].returnProMessage %>"
                     style="
                       background-color: transparent;
                       border: none;
@@ -170,8 +169,8 @@
                   >
                     Return Reason
                   </button>
-                  <% }else if (orderDetails[i].returnProduct.status===false){ %>
-                  No Request <% } %>
+                  <% }else if (orderDetails[i].returnProStatus===false){ %> No
+                  Request <% } %>
                 </td>
               </tr>
               <% } %>
@@ -209,55 +208,50 @@
               </tr>
             </tbody>
           </table>
-
         </div>
       </div>
     </div>
   </div>
-            <div
-            class="modal fade"
-            id="returnReasonModal"
-            tabindex="-1"
-            aria-labelledby="modalTitle"
-            aria-hidden="true"
+  <div
+    class="modal fade"
+    id="returnReasonModal"
+    tabindex="-1"
+    aria-labelledby="modalTitle"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalTitle">Return Details</h5>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
           >
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="modalTitle">Return Details</h5>
-                  <button
-                    type="button"
-                    class="close"
-                    data-dismiss="modal"
-                    aria-label="Close"
-                  >
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-                <div class="modal-body">
-                  <div class="row">
-                    <div class="col-md-6">
-                      <strong>Return Reason:</strong>
-                      <p id="modalReturnReason"></p>
-                    </div>
-                    <div class="col-md-6">
-                      <strong>Return Message:</strong>
-                      <p id="modalReturnMessage"></p>
-                    </div>
-                  </div>
-                </div>
-                <div class="modal-footer">
-                  <button
-                    type="button"
-                    class="btn btn-secondary"
-                    data-dismiss="modal"
-                  >
-                    Close
-                  </button>
-                </div>
-              </div>
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6">
+              <strong>Return Reason:</strong>
+              <p id="modalReturnReason"></p>
+            </div>
+            <div class="col-md-6">
+              <strong>Return Message:</strong>
+              <p id="modalReturnMessage"></p>
             </div>
           </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
 
 <%- include("../partials/adminFooter") %>
@@ -291,19 +285,19 @@
   }
 </script>
 <script>
-$(document).ready(function() {
-  // Event listener for clicking on the modal button
-  $('.open-modal-btn').click(function() {
-    // Get the data attributes for return reason and message
-    var returnReason = $(this).data('return-reason');
-    var returnMessage = $(this).data('return-message');
+  $(document).ready(function () {
+    // Event listener for clicking on the modal button
+    $(".open-modal-btn").click(function () {
+      // Get the data attributes for return reason and message
+      var returnReason = $(this).data("return-reason");
+      var returnMessage = $(this).data("return-message");
 
-    // Set the content of the modal
-    $('#modalReturnReason').text(returnReason);
-    $('#modalReturnMessage').text(returnMessage);
+      // Set the content of the modal
+      $("#modalReturnReason").text(returnReason);
+      $("#modalReturnMessage").text(returnMessage);
 
-    // Open the modal
-    $('#returnReasonModal').modal('show');
+      // Open the modal
+      $("#returnReasonModal").modal("show");
+    });
   });
-});
 </script>

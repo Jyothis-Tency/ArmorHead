@@ -20,6 +20,7 @@ const renderAdmin = async (req, res) => {
   try {
     if (req.session.admin) {
       const salesDetails = await Order.find({ orderStatus: "delivered" });
+      console.log(salesDetails);
       const products = await Product.find();
       const categories = await Category.find();
       const topSellingProducts = await Order.aggregate([
@@ -78,6 +79,7 @@ const renderAdmin = async (req, res) => {
       const deliveredOrdersCount = await Order.countDocuments({
         orderStatus: "delivered",
       });
+      console.log(deliveredOrdersCount);
       console.log("salesDetails", salesDetails);
       res.render("adminView/admin-index", {
         salesDetails: salesDetails,

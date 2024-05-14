@@ -335,7 +335,7 @@ const totalAmount = async (userId) => {
     if (!cart) {
       return 0;
     }
-    const totalPricePlus70 = cart.totalPrice + 70;
+    const totalPricePlus70 = cart.totalPrice;
     return totalPricePlus70;
   } catch (error) {
     throw error;

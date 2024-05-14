@@ -65,17 +65,7 @@
                               <%= allOrderDetails[i].totalAmount.toLocaleString() %>
                             </td>
                             <td style="text-align: center;">
-                                <% if (allOrderDetails[i].orderStat == "cancelled") { %>
                                     <span class="badge rounded-pill alert-danger"><%= allOrderDetails[i].orderStat %></span>
-                                <% } else if (allOrderDetails[i].orderStat == "confirmed") { %>
-                                    <span class="badge rounded-pill alert-warning"><%= allOrderDetails[i].orderStat %></span>
-                                <% } else if (allOrderDetails[i].orderStat == "shipped") { %>
-                                    <span class="badge rounded-pill alert-primary"><%= allOrderDetails[i].orderStat %></span>
-                                <% }else if (allOrderDetails[i].orderStat == "delivered") { %>
-                                    <span class="badge rounded-pill alert-success"><%= allOrderDetails[i].orderStat %></span>
-                                <% }else if (allOrderDetails[i].orderStat == "returned") { %>
-                                    <span class="badge rounded-pill alert-warning"><%= allOrderDetails[i].orderStat %></span>
-                                <% } %> 
                             </td>
                             <td style="text-align: center;"><%= allOrderDetails[i].paymentMethod %></td>
                             <td style="text-align: center;" class="text-end">

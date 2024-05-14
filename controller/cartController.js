@@ -1,5 +1,6 @@
 const User = require("../model/userModel");
 const Cart = require("../model/cartModel");
+const Wishlist = require("../model/wishlistModel")
 const Product = require("../model/productModel");
 const ObjectId = require("mongoose").Types.ObjectId;
 const cartHelper = require("../helper/cartHelper");
@@ -47,6 +48,17 @@ const addToCart = async (req, res) => {
         .status(401)
         .json({ status: "false", message: "User not logged in" });
     }
+        const isInWishlist = await Wishlist.findOne({
+          user: loggedIn._id,
+          "products.productItemId": prodId,
+          "products.size": size,
+        });
+        if (isInWishlist) {
+          await Wishlist.findOneAndUpdate(
+            { user: loggedIn._id },
+            { $pull: { products: { productItemId: prodId, size: size } } }
+          );
+        }
     const addedQuantity = parseInt(quantity);
     let user = req.session.userData;
     let response = await cartHelper.addToUserCart(

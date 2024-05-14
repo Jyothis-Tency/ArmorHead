@@ -1,23 +1,47 @@
 <%- include("../partials/userHeader") %>
 <main>
-<!-- wishlist-breadcrumb -->
-<section style="background-image: url('img/bg/page-title.png'); height: 150px; padding: 20px 0;">
-  <div style="max-width: 1200px; margin: 0 auto;">
-    <div style="display: flex; justify-content: center; align-items: center; text-align: center;">
-      <div>
-        <h1 style="font-size: 70px; color: #333;">Wishlist</h1>
-        <ul style="list-style: none; padding: 0; display: flex; justify-content: center;">
-          <li style="margin-right: 10px;"><a href="index.html" style="text-decoration: none; color: #007BFF;">Home</a></li>
-          <li style="color: #666;">Wishlist</li>
-        </ul>
+  <!-- wishlist-breadcrumb -->
+  <section
+    style="
+      background-image: url('img/bg/page-title.png');
+      height: 150px;
+      padding: 20px 0;
+    "
+  >
+    <div style="max-width: 1200px; margin: 0 auto">
+      <div
+        style="
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          text-align: center;
+        "
+      >
+        <div>
+          <h1 style="font-size: 70px; color: #333">Wishlist</h1>
+          <ul
+            style="
+              list-style: none;
+              padding: 0;
+              display: flex;
+              justify-content: center;
+            "
+          >
+            <li style="margin-right: 10px">
+              <a href="index.html" style="text-decoration: none; color: #007bff"
+                >Home</a
+              >
+            </li>
+            <li style="color: #666">Wishlist</li>
+          </ul>
+        </div>
       </div>
     </div>
-  </div>
-</section>
-<!-- end-wishlist-breadcrumb -->
+  </section>
+  <!-- end-wishlist-breadcrumb -->
 
   <!-- Cart Area Start-->
-  <section class="cart-area pt-100 pb-100" style="padding-top: 10px;">
+  <section class="cart-area pt-100 pb-100" style="padding-top: 10px">
     <div class="container">
       <div class="row">
         <div class="col-12">
@@ -152,14 +176,14 @@
     console.log("Quantity:", quantity);
     console.log("Size:", size);
 
-   $.ajax({
-        type: "POST",
-        url: "/addToCart", // Adjust the URL if needed
-        data: {
-          size: size,
-          quantity: quantity,
-          prodId: prodId,
-        },
+    $.ajax({
+      type: "POST",
+      url: "/addToCart", // Adjust the URL if needed
+      data: {
+        size: size,
+        quantity: quantity,
+        prodId: prodId,
+      },
       success: (res) => {
         // Log the response object
         if (res.status === "true") {
@@ -169,6 +193,8 @@
             icon: "success",
             timer: 2000,
             showConfirmButton: false,
+          }).then(() => {
+            location.reload(); // Reloads the page
           });
         } else if (res.status === "Out of stock") {
           Swal.fire({

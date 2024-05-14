@@ -90,6 +90,7 @@ const forOrderPlacing = async (
     });
 
     await completedOrders.save();
+    console.log(completedOrders);
     console.log("3");
     return completedOrders; // Return the saved order
   } catch (error) {
@@ -103,7 +104,6 @@ const getOrderDetails = async (userId, page = 1, limit = 5) => {
 
     const result = await Order.aggregate([
       { $match: { user: new mongoose.Types.ObjectId(userId) } },
-      { $unwind: "$orderedItems" }, // Unwind orderedItems array
       {
         $lookup: {
           from: "products",
@@ -115,17 +115,13 @@ const getOrderDetails = async (userId, page = 1, limit = 5) => {
       {
         $project: {
           orderId: "$_id",
-          orderedItemId: "$orderedItems.orderId",
           productName: { $arrayElemAt: ["$productDetails.productName", 0] },
           productImage: { $arrayElemAt: ["$productDetails.productImage", 0] },
-          quantity: "$orderedItems.quantity",
-          size: "$orderedItems.size",
           orderDate: "$orderDate",
           totalAmount: "$totalAmount",
           paymentMethod: "$paymentMethod",
           paymentStatus: "$paymentStatus",
           orderStatus: "$orderStatus",
-          orderStat: "$orderedItems.orderStat",
           returnStatus: "$returnProduct.status",
           returnReason: "$returnProduct.returnReason",
           returnMessage: "$returnProduct.returnMessage",
