@@ -180,3 +180,18 @@
     });
   }
 </script>
+<script>
+  const today = new Date().toISOString().split("T")[0];
+  const startingDate = document.getElementById("startingDate");
+  const expiringDate = document.getElementById("expiringDate");
+
+  // Set the minimum date for both input fields to today's date
+  startingDate.min = today;
+  expiringDate.min = today;
+
+  // Add an event listener to the starting date input field
+  startingDate.addEventListener("change", function () {
+    // Set the minimum date for the expiring date input field to the selected starting date
+    expiringDate.min = this.value;
+  });
+</script>

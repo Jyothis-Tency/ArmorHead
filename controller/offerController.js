@@ -7,13 +7,14 @@ const categoryOffer = require("../model/categoryOfferModel");
 const getAllProductOffers = async (req, res) => {
   try {
     console.log("getAllProductOffers");
+    const today = new Date().toISOString().split("T")[0];
     const prodoffers = await productOffer
       .find({
         "productOffer.offerStatus": true,
       })
       .populate("productOffer.product");
     const products = await Product.find({ isBlocked: false });
-    res.render("adminView/productOffer", { prodoffers, products });
+    res.render("adminView/productOffer", { prodoffers, products, today });
   } catch (error) {
     console.error("ERROR!!!!! :", error);
   }

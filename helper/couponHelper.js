@@ -25,8 +25,8 @@ const addCouponToDb = async (couponData) => {
 
     console.log(`Unique coupon code generated: ${couponCode}`);
 
-    if (couponData.discountAmount > 100) {
-      throw new Error("Discount amount cannot exceed 50");
+    if (couponData.discountAmount > 1000) {
+      throw new Error("Discount amount cannot exceed 1000");
     }
 
     const coupon1 = new Coupon({
