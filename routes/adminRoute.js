@@ -15,7 +15,7 @@ adminRoute.get("/login", adminController.getLoginPage);
 adminRoute.post("/login", adminController.verifyLogin);
 adminRoute.get("/logout", adminController.getLogout);
 adminRoute.get("/", isAdmin, adminController.renderAdmin);
-adminRoute.post("/showChart",isAdmin,adminController.showChart);
+adminRoute.post("/showChart", isAdmin, adminController.showChart);
 
 // Customer Management
 adminRoute.get("/users", isAdmin, customerController.getCustomersInfo);

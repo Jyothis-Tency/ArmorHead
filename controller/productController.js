@@ -6,6 +6,7 @@ const productOffer = require("../model/productOfferModel");
 const categoryOffer = require("../model/categoryOfferModel");
 const User = require("../model/userModel");
 const fs = require("fs");
+const sharp = require("sharp");
 const path = require("path");
 
 const getAddProductPage = async (req, res) => {
@@ -21,78 +22,117 @@ const getAddProductPage = async (req, res) => {
 
 const addProducts = async (req, res) => {
   try {
-    console.log("addProducts triggered");
     console.log(req.body);
     const {
       productName,
       productDescription,
-      regularPrice,
-      salePrice,
-      small_quantity,
-      medium_quantity,
-      large_quantity,
       category,
-    } = req.body;
-
-    console.log(
-      productName,
-      productDescription,
       regularPrice,
       salePrice,
       small_quantity,
       medium_quantity,
       large_quantity,
-      category
-    );
+    } = req.body;
+    console.log(req.files);
+    // Backend validation
+    if (
+      !productName ||
+      !productDescription ||
+      !category ||
+      !regularPrice ||
+      !salePrice ||
+      !small_quantity ||
+      !medium_quantity ||
+      !large_quantity
+    ) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    // Additional validation for numeric fields
+    if (
+      isNaN(regularPrice) ||
+      isNaN(salePrice) ||
+      isNaN(small_quantity) ||
+      isNaN(medium_quantity) ||
+      isNaN(large_quantity)
+    ) {
+      return res.status(400).json({ error: "Invalid numeric values" });
+    }
+    // const fetchedProducts = Product.productSizes.find({size:small});
+    // const lessThan = fetchedProducts.find({salePrice})
     const smallQuantity = parseInt(small_quantity, 10) || 0;
     const mediumQuantity = parseInt(medium_quantity, 10) || 0;
     const largeQuantity = parseInt(large_quantity, 10) || 0;
+
+    // Calculate total quantity
+    const totalQuantity = smallQuantity + mediumQuantity + largeQuantity;
+
+    // Check if a product with the same name or image already exists
     const productExists = await Product.findOne({
-      productName: productName,
+      $or: [
+        { productName },
+        { productImage: { $in: req.files.map((file) => file.filename) } },
+      ],
     });
-    console.log(productExists);
-    if (!productExists) {
-      // Calculate total quantity
-      const totalQuantity = smallQuantity + mediumQuantity + largeQuantity;
-      console.log("1");
-      const productSizes = [
-        { size: "Small", quantity: smallQuantity },
-        { size: "Medium", quantity: mediumQuantity },
-        { size: "Large", quantity: largeQuantity },
-        // Add more sizes if needed
-      ];
-      console.log(productSizes);
-      console.log("2");
-      const images = [];
-      if (req.files && req.files.length > 0) {
-        for (let i = 0; i < req.files.length; i++) {
-          images.push(req.files[i].filename);
-        }
+    if (productExists) {
+      if (
+        productExists.productName === productName &&
+        productExists.productImage.includes(req.files[0].filename)
+      ) {
+        return res
+          .status(400)
+          .json({
+            error: "Product with the same name and image already exists",
+          });
       }
-      console.log(images);
-      console.log("3");
-      const newProduct = new Product({
-        productName: productName,
-        productDescription: productDescription,
-        category: category,
-        regularPrice: regularPrice,
-        salePrice: salePrice,
-        productSizes,
-        totalQuantity, // Assign total quantity
-        createdOn: new Date(),
-        productImage: images,
-      });
-      console.log(newProduct);
-      await newProduct.save();
-      console.log(newProduct);
-      console.log("4");
-      res.redirect("/admin/productPage");
-      // res.json("success")
-    } else {
-      res.json("failed");
     }
+
+    const productSizes = [
+      { size: "Small", quantity: smallQuantity },
+      { size: "Medium", quantity: mediumQuantity },
+      { size: "Large", quantity: largeQuantity },
+      // Add more sizes if needed
+    ];
+
+    const images = [];
+    const imagesDir = path.join("D:", "ArmorHead", "public", "uploads", "product-images");
+
+    if (req.files && req.files.length > 0) {
+      for (let i = 0; i < req.files.length; i++) {
+        const imagePath = req.files[i].path; // Use the path provided in req.files
+
+        // Crop the image using sharp
+        const croppedImage = await sharp(imagePath)
+          .extract({ left: 0, top: 0, width: 900, height: 900 })
+          .toFormat("jpeg")
+          .toBuffer();
+
+        // Save the cropped image to a new file
+        const croppedFilename = `cropped_${req.files[i].filename}`;
+        const croppedFilePath = path.join(imagesDir, croppedFilename);
+        await sharp(croppedImage).toFile(croppedFilePath);
+
+        images.push(croppedFilename);
+      }
+    }
+    console.log(images);
+    const newProduct = new Product({
+      productName,
+      productDescription,
+      category,
+      regularPrice,
+      salePrice,
+      productSizes,
+      totalQuantity,
+      productImage: images,
+      createdOn: new Date(),
+    });
+    console.log(newProduct);
+    await newProduct.save();
+    res.status(200).json({ success: "Product added successfully" });
   } catch (error) {
-    console.log(JSON.stringify(error));
+    console.log(error.message);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -334,8 +374,8 @@ const getProductDetailsPage = async (req, res) => {
     const findProduct = await Product.findOne({ _id: id });
     const categoryId = await Category.findOne({ _id: findProduct.category });
     const wishlists = await wishlist.findOne({ user: user });
-    let isInWishlist = false
-     isInWishlist =
+    let isInWishlist = false;
+    isInWishlist =
       wishlists &&
       wishlists.products.some(
         (product) => product.productItemId.toString() === id

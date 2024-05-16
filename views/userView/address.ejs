@@ -1,249 +1,535 @@
 <%- include("../partials/userHeader") %>
 
-<main style="display: flex; flex-direction: row; margin-bottom: 500px; margin-top: 30px;">
+<main
+  style="
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 500px;
+    margin-top: 30px;
+  "
+>
   <!-- Sidebar -->
-  <div class="user-sidebar" style="
-      background-color: #2c3e50; 
-        color: white; 
-        padding: 20px; 
-        width: 300px; 
-        height: 200px; 
-        margin-top: 250px;
-        position: fixed; 
-        top: 0; 
-        left: 0; 
-        border-radius: 0 10px 10px 0; 
-        box-shadow: 2px 0 15px rgba(0, 0, 0, 0.2); 
-    ">
+  <div
+    class="user-sidebar"
+    style="
+      background-color: #2c3e50;
+      color: white;
+      padding: 20px;
+      width: 300px;
+      height: 200px;
+      margin-top: 250px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      border-radius: 0 10px 10px 0;
+      box-shadow: 2px 0 15px rgba(0, 0, 0, 0.2);
+    "
+  >
     <!-- User Profile Sidebar -->
     <div class="user-profile-sidebar">
-      <ul class="user-profile-menu" style="list-style-type: none; padding: 0; margin: 0;">
-        <li style="margin-bottom: 15px;"><a href="/user-profile" style="color: white; text-decoration: none; font-weight: bold;">Profile Details</a></li>
-        <li style="margin-bottom: 15px;"><a href="/changePassword" style="color: white; text-decoration: none; font-weight: bold;">Change Password</a></li>
-        <li style="margin-bottom: 15px;"><a href="/order-details" style="color: white; text-decoration: none; font-weight: bold;">Order Details</a></li>
-        <li style="margin-bottom: 15px;"><a href="/address" style="color: white; text-decoration: none; font-weight: bold;">Address Management</a></li>
-        <li style="margin-bottom: 15px;"><a href="/get-wallet" style="color: white; text-decoration: none; font-weight: bold;">Wallet</a></li>
+      <ul
+        class="user-profile-menu"
+        style="list-style-type: none; padding: 0; margin: 0"
+      >
+        <li style="margin-bottom: 15px">
+          <a
+            href="/user-profile"
+            style="color: white; text-decoration: none; font-weight: bold"
+            >Profile Details</a
+          >
+        </li>
+        <li style="margin-bottom: 15px">
+          <a
+            href="/changePassword"
+            style="color: white; text-decoration: none; font-weight: bold"
+            >Change Password</a
+          >
+        </li>
+        <li style="margin-bottom: 15px">
+          <a
+            href="/order-details"
+            style="color: white; text-decoration: none; font-weight: bold"
+            >Order Details</a
+          >
+        </li>
+        <li style="margin-bottom: 15px">
+          <a
+            href="/address"
+            style="color: white; text-decoration: none; font-weight: bold"
+            >Address Management</a
+          >
+        </li>
+        <li style="margin-bottom: 15px">
+          <a
+            href="/get-wallet"
+            style="color: white; text-decoration: none; font-weight: bold"
+            >Wallet</a
+          >
+        </li>
       </ul>
     </div>
   </div>
 
   <!-- Main Content with Sidebar Adjustment -->
-  <div style="flex-grow: 1; padding-left: 320px; padding-top: 20px; margin-top: 70px;">
-    <div style="text-align: center; margin-bottom: 30px;">
-      <h1 style="color: #34495e; margin-bottom: 20px; margin-right: 750px;">Addresses</h1>
-      <div class="addresses" style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
+  <div
+    style="
+      flex-grow: 1;
+      padding-left: 320px;
+      padding-top: 20px;
+      margin-top: 70px;
+    "
+  >
+    <div style="text-align: center; margin-bottom: 30px">
+      <h1 style="color: #34495e; margin-bottom: 20px; margin-right: 750px">
+        Addresses
+      </h1>
+      <div
+        class="addresses"
+        style="
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 20px;
+        "
+      >
+        <% if (allAddress.length > 0) { %> <% allAddress.forEach((address,
+        index) => { %>
+        <!-- Address Section -->
+        <div
+          style="
+            width: 80%;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 10px;
+          "
+        >
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              background-color: #34495e;
+              border-radius: 5px;
+              padding: 10px;
+            "
+          >
+            <!-- Accordion Toggle Button -->
+            <button
+              id="accordion-button-<%= index %>"
+              onclick="toggleAccordion('<%= index %>')"
+              style="
+                background: none;
+                color: white;
+                border: none;
+                text-align: left;
+                flex: 1;
+              "
+            >
+              Address <%= index + 1 %> (Click to Expand)
+            </button>
 
-        <% if (allAddress.length > 0) { %>
-          <% allAddress.forEach((address, index) => { %>
-            <!-- Address Section -->
-            <div style="width: 80%; border: 1px solid #ccc; border-radius: 10px; padding: 10px;">
-              <div style="display: flex; justify-content: space-between; align-items: center; background-color: #34495e; border-radius: 5px; padding: 10px;">
-                <!-- Accordion Toggle Button -->
-                <button
-                  id="accordion-button-<%= index %>"
-                  onclick="toggleAccordion('<%= index %>')"
-                  style="background: none; color: white; border: none; text-align: left; flex: 1;"
-                >
-                  Address <%= index + 1 %> (Click to Expand)
-                </button>
-
-                <!-- Edit and Delete Buttons -->
-                <div style="display: flex; gap: 10px;">
-                  <button
-                    data-address='<%= JSON.stringify(address) %>'
-                    onclick="startEditAddress('<%= index %>')"
-                    class="edit-address-btn"
-                    style="background-color: #ff6347; color: white; border: none; padding: 10px; border-radius: 5px;"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onclick="deleteAddress('<%= address._id %>')"
-                    style="background-color: red; color: white; border: none; padding: 10px; border-radius: 5px;"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-
-              <!-- Accordion Content (Initially Hidden) -->
-              <div
-                id="accordion-content-<%= index %>"
-                style="display: none; padding: 15px; background-color: #f9f9f9; border-radius: 5px;"
+            <!-- Edit and Delete Buttons -->
+            <div style="display: flex; gap: 10px">
+              <button
+                data-address="<%= JSON.stringify(address) %>"
+                onclick="startEditAddress('<%= index %>')"
+                class="edit-address-btn"
+                style="
+                  background-color: #ff6347;
+                  color: white;
+                  border: none;
+                  padding: 10px;
+                  border-radius: 5px;
+                "
               >
-                <h4 style="color: #34495e; text-align: left;">Address Details</h4>
-                <div class="address-details" id="address-details-<%= index %>">
-                  <p style="color: #666; text-align: left;">First Name: <%= address.firstName %></p>
-                  <p style="color: #666; text-align: left;">Last Name: <%= address.lastName %></p>
-                  <p style="color: #666; text-align: left;">House: <%= address.house %></p>
-                  <p style="color: #666; text-align: left;">Locality: <%= address.locality %></p>
-                  <p style="color: #666; text-align: left;">City: <%= address.city %></p>
-                  <p style="color: #666; text-align: left;">State: <%= address.state %></p>
-                  <p style="color: #666; text-align: left;">Pincode: <%= address.pincode %></p>
-                  <p style="color: #666; text-align: left;">Country: <%= address.country %></p>
-                  <p style="color: #666; text-align: left;">Email: <%= address.email %></p>
-                  <p style="color: #666; text-align: left;">Phone: <%= address.phone %></p>
+                Edit
+              </button>
+              <button
+                onclick="deleteAddress('<%= address._id %>')"
+                style="
+                  background-color: red;
+                  color: white;
+                  border: none;
+                  padding: 10px;
+                  border-radius: 5px;
+                "
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+
+          <!-- Accordion Content (Initially Hidden) -->
+          <div
+            id="accordion-content-<%= index %>"
+            style="
+              display: none;
+              padding: 15px;
+              background-color: #f9f9f9;
+              border-radius: 5px;
+            "
+          >
+            <h4 style="color: #34495e; text-align: left">Address Details</h4>
+            <div class="address-details" id="address-details-<%= index %>">
+              <p style="color: #666; text-align: left">
+                First Name: <%= address.firstName %>
+              </p>
+              <p style="color: #666; text-align: left">
+                Last Name: <%= address.lastName %>
+              </p>
+              <p style="color: #666; text-align: left">
+                House: <%= address.house %>
+              </p>
+              <p style="color: #666; text-align: left">
+                Locality: <%= address.locality %>
+              </p>
+              <p style="color: #666; text-align: left">
+                City: <%= address.city %>
+              </p>
+              <p style="color: #666; text-align: left">
+                State: <%= address.state %>
+              </p>
+              <p style="color: #666; text-align: left">
+                Pincode: <%= address.pincode %>
+              </p>
+              <p style="color: #666; text-align: left">
+                Country: <%= address.country %>
+              </p>
+              <p style="color: #666; text-align: left">
+                Email: <%= address.email %>
+              </p>
+              <p style="color: #666; text-align: left">
+                Phone: <%= address.phone %>
+              </p>
+            </div>
+
+            <!-- Edit Address Form -->
+            <form
+              id="edit-address-form-<%= index %>"
+              class="edit-address-form"
+              style="display: none; margin-top: 10px"
+              action="/edit-address"
+              method="POST"
+            >
+              <input
+                type="hidden"
+                name="addressId"
+                value="<%= address._id %>"
+              />
+
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: repeat(3, 1fr);
+                  gap: 10px;
+                "
+              >
+                <!-- First Row -->
+                <div>
+                  <label for="editFirstName-<%= index %>">First Name:</label>
+                  <input
+                    type="text"
+                    name="firstName"
+                    id="editFirstName-<%= index %>"
+                    value="<%= address.firstName %>"
+                    style="width: 100%; padding: 10px"
+                  />
+                </div>
+                <div>
+                  <label for="editLastName-<%= index %>">Last Name:</label>
+                  <input
+                    type="text"
+                    name="lastName"
+                    id="editLastName-<%= index %>"
+                    value="<%= address.lastName %>"
+                    style="width: 100%; padding: 10px"
+                  />
+                </div>
+                <div>
+                  <label for="editHouse-<%= index %>">House:</label>
+                  <input
+                    type="text"
+                    name="house"
+                    id="editHouse-<%= index %>"
+                    value="<%= address.house %>"
+                    style="width: 100%; padding: 10px"
+                  />
                 </div>
 
-                <!-- Edit Address Form -->
-                <form
-                  id="edit-address-form-<%= index %>"
-                  class="edit-address-form"
-                  style="display: none; margin-top: 10px;"
-                  action="/edit-address" 
-                  method="POST"
-                >
-                  <input type="hidden" name="addressId" value="<%= address._id %>">
+                <!-- Second Row -->
+                <div>
+                  <label for="editLocality-<%= index %>">Locality:</label>
+                  <input
+                    type="text"
+                    name="locality"
+                    id="editLocality-<%= index %>"
+                    value="<%= address.locality %>"
+                    style="width: 100%; padding: 10px"
+                  />
+                </div>
+                <div>
+                  <label for="editCity-<%= index %>">City:</label>
+                  <input
+                    type="text"
+                    name="city"
+                    id="editCity-<%= index %>"
+                    value="<%= address.city %>"
+                    style="width: 100%; padding: 10px"
+                  />
+                </div>
+                <div>
+                  <label for="editState-<%= index %>">State:</label>
+                  <input
+                    type="text"
+                    name="state"
+                    id="editState-<%= index %>"
+                    value="<%= address.state %>"
+                    style="width: 100%; padding: 10px"
+                  />
+                </div>
 
-                  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
-                    <!-- First Row -->
-                    <div>
-                      <label for="editFirstName-<%= index %>">First Name:</label>
-                      <input type="text" name="firstName" id="editFirstName-<%= index %>" value="<%= address.firstName %>" style="width: 100%; padding: 10px;">
-                    </div>
-                    <div>
-                      <label for="editLastName-<%= index %>">Last Name:</label>
-                      <input type="text" name="lastName" id="editLastName-<%= index %>" value="<%= address.lastName %>" style="width: 100%; padding: 10px;">
-                    </div>
-                    <div>
-                      <label for="editHouse-<%= index %>">House:</label>
-                      <input type="text" name="house" id="editHouse-<%= index %>" value="<%= address.house %>" style="width: 100%; padding: 10px;">
-                    </div>
+                <!-- Third Row -->
+                <div>
+                  <label for="editPincode-<%= index %>">Pincode:</label>
+                  <input
+                    type="number"
+                    name="pincode"
+                    id="editPincode-<%= index %>"
+                    value="<%= address.pincode %>"
+                    style="width: 100%; padding: 10px"
+                  />
+                </div>
+                <div>
+                  <label for="editCountry-<%= index %>">Country:</label>
+                  <input
+                    type="text"
+                    name="country"
+                    id="editCountry-<%= index %>"
+                    value="<%= address.country %>"
+                    style="width: 100%; padding: 10px"
+                  />
+                </div>
+                <div>
+                  <label for="editEmail-<%= index %>">Email:</label>
+                  <input
+                    type="email"
+                    name="email"
+                    id="editEmail-<%= index %>"
+                    value="<%= address.email %>"
+                    style="width: 100%; padding: 10px"
+                  />
+                </div>
 
-                    <!-- Second Row -->
-                    <div>
-                      <label for="editLocality-<%= index %>">Locality:</label>
-                      <input type="text" name="locality" id="editLocality-<%= index %>" value="<%= address.locality %>" style="width: 100%; padding: 10px;">
-                    </div>
-                    <div>
-                      <label for="editCity-<%= index %>">City:</label>
-                      <input type="text" name="city" id="editCity-<%= index %>" value="<%= address.city %>" style="width: 100%; padding: 10px;">
-                    </div>
-                    <div>
-                      <label for="editState-<%= index %>">State:</label>
-                      <input type="text" name="state" id="editState-<%= index %>" value="<%= address.state %>" style="width: 100%; padding: 10px;">
-                    </div>
-
-                    <!-- Third Row -->
-                    <div>
-                      <label for="editPincode-<%= index %>">Pincode:</label>
-                      <input type="number" name="pincode" id="editPincode-<%= index %>" value="<%= address.pincode %>" style="width: 100%; padding: 10px;">
-                    </div>
-                    <div>
-                      <label for="editCountry-<%= index %>">Country:</label>
-                      <input type="text" name="country" id="editCountry-<%= index %>" value="<%= address.country %>" style="width: 100%; padding: 10px;">
-                    </div>
-                    <div>
-                      <label for="editEmail-<%= index %>">Email:</label>
-                      <input type="email" name="email" id="editEmail-<%= index %>" value="<%= address.email %>" style="width: 100%; padding: 10px;">
-                    </div>
-                    
-                    <!-- Fourth Row -->
-                    <div>
-                      <label for="editPhone-<%= index %>">Phone:</label>
-                      <input type="tel" name="phone" id="editPhone-<%= index %>" value="<%= address.phone %>" style="width: 100%; padding: 10px;">
-                    </div>
-                  </div>
-
-                  <!-- Save and Cancel Buttons -->
-                  <div style="text-align: center; margin-top: 20px;">
-                    <button
-                      type="submit"
-                      style="background-color: #34495e; color: white; padding: 10px; border-radius: 5px; border: none;"
-                    >
-                      Save Changes
-                    </button>
-                    <button
-                      type="button"
-                      onclick="cancelEdit('<%= index %>')"
-                      style="background-color: #d33; color: white; padding: 10px; border-radius: 5px; border: none;"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </form>
+                <!-- Fourth Row -->
+                <div>
+                  <label for="editPhone-<%= index %>">Phone:</label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    id="editPhone-<%= index %>"
+                    value="<%= address.phone %>"
+                    style="width: 100%; padding: 10px"
+                  />
+                </div>
               </div>
-            </div>
-          <% }); %>
-        <% } else { %>
-          <p style="color: #7f8c8d; text-align: center;">No addresses found</p>
+
+              <!-- Save and Cancel Buttons -->
+              <div style="text-align: center; margin-top: 20px">
+                <button
+                  type="submit"
+                  style="
+                    background-color: #34495e;
+                    color: white;
+                    padding: 10px;
+                    border-radius: 5px;
+                    border: none;
+                  "
+                >
+                  Save Changes
+                </button>
+                <button
+                  type="button"
+                  onclick="cancelEdit('<%= index %>')"
+                  style="
+                    background-color: #d33;
+                    color: white;
+                    padding: 10px;
+                    border-radius: 5px;
+                    border: none;
+                  "
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <% }); %> <% } else { %>
+        <p style="color: #7f8c8d; text-align: center">No addresses found</p>
         <% } %>
 
         <!-- Accordion for Adding a New Address -->
-        <div style="width: 80%; border: 1px solid #ccc; border-radius: 10px; padding: 10px;">
+        <div
+          style="
+            width: 80%;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 10px;
+          "
+        >
           <div
-            style="display: flex; justify-content: space-between; align-items: center; background-color: #34495e; border-radius: 5px; padding: 10px;"
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              background-color: #34495e;
+              border-radius: 5px;
+              padding: 10px;
+            "
           >
             <button
-              id="accordion-button-new"
-              onclick="toggleAccordion('new')"
-              style="background: none; color: white; border: none; text-align: left; flex: 1;"
+              id="accordion-button-add-new"
+              onclick="toggleAccordionForAddAddress('new')"
+              style="
+                background: none;
+                color: white;
+                border: none;
+                text-align: left;
+                flex: 1;
+              "
             >
-              Add Address (Click to Expand)
+              Add New Address (Click to Expand)
             </button>
           </div>
 
           <!-- Accordion Content for Adding a New Address -->
           <div
             id="accordion-content-new"
-                style="display: none; padding: 15px; background-color: #f9f9f9; border-radius: 5px;"
+            style="
+              display: none;
+              padding: 15px;
+              background-color: #f9f9f9;
+              border-radius: 5px;
+            "
           >
             <form id="addAddressForm">
-              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: repeat(3, 1fr);
+                  gap: 10px;
+                "
+              >
                 <!-- First Row -->
                 <div>
                   <label for="firstName">First Name:</label>
-                  <input type="text" name="firstName" required style="padding: 10px;">
+                  <input
+                    type="text"
+                    name="firstName"
+                    required
+                    style="padding: 10px"
+                  />
                 </div>
                 <div>
                   <label for="lastName">Last Name:</label>
-                  <input type="text" name="lastName" required style="padding: 10px;">
+                  <input
+                    type="text"
+                    name="lastName"
+                    required
+                    style="padding: 10px"
+                  />
                 </div>
                 <div>
                   <label for="house">House:</label>
-                  <input type="text" name="house" required style="padding: 10px;">
+                  <input
+                    type="text"
+                    name="house"
+                    required
+                    style="padding: 10px"
+                  />
                 </div>
 
                 <!-- Second Row -->
                 <div>
                   <label for="locality">Locality:</label>
-                  <input type="text" name="locality" required style="padding: 10px;">
+                  <input
+                    type="text"
+                    name="locality"
+                    required
+                    style="padding: 10px"
+                  />
                 </div>
                 <div>
                   <label for="city">City:</label>
-                  <input type="text" name="city" required style="padding: 10px;">
+                  <input
+                    type="text"
+                    name="city"
+                    required
+                    style="padding: 10px"
+                  />
                 </div>
                 <div>
                   <label for="state">State:</label>
-                  <input type="text" name="state" required style="padding: 10px;">
+                  <input
+                    type="text"
+                    name="state"
+                    required
+                    style="padding: 10px"
+                  />
                 </div>
 
                 <!-- Third Row -->
                 <div>
                   <label for="pincode">Pincode:</label>
-                  <input type="number" name="pincode" required style="padding: 10px;">
+                  <input
+                    type="number"
+                    name="pincode"
+                    required
+                    style="padding: 10px"
+                  />
                 </div>
                 <div>
                   <label for="country">Country:</label>
-                  <input type="text" name="country" required style="padding: 10px;">
+                  <input
+                    type="text"
+                    name="country"
+                    required
+                    style="padding: 10px"
+                  />
                 </div>
                 <div>
                   <label for="email">Email:</label>
-                  <input type="email" name="email" required style="padding: 10px;">
+                  <input
+                    type="email"
+                    name="email"
+                    required
+                    style="padding: 10px"
+                  />
                 </div>
 
                 <!-- Fourth Row -->
                 <div>
                   <label for="phone">Phone:</label>
-                  <input type="tel" name="phone" required style="padding: 10px;">
+                  <input
+                    type="tel"
+                    name="phone"
+                    required
+                    style="padding: 10px"
+                  />
                 </div>
               </div>
 
               <!-- Submit Button -->
-              <div style="margin-top: 20px; text-align: center;">
+              <div style="margin-top: 20px; text-align: center">
                 <button
                   type="submit"
-                  style="background-color: #34495e; color: white; padding: 10px; border-radius: 5px; border: none;"
+                  style="
+                    background-color: #34495e;
+                    color: white;
+                    padding: 10px;
+                    border-radius: 5px;
+                    border: none;
+                  "
                 >
                   Add Address
                 </button>
@@ -258,7 +544,6 @@
 
 <%- include("../partials/userFooter") %>
 
-
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
   // Manage the current open accordion index
@@ -269,11 +554,17 @@
     if (currentOpenIndex !== index) {
       // Close previous accordion, if any
       if (currentOpenIndex !== null) {
-        const previousContent = document.getElementById(`accordion-content-${currentOpenIndex}`);
-        const previousButton = document.getElementById(`accordion-button-${currentOpenIndex}`);
+        const previousContent = document.getElementById(
+          `accordion-content-${currentOpenIndex}`
+        );
+        const previousButton = document.getElementById(
+          `accordion-button-${currentOpenIndex}`
+        );
         if (previousContent) {
           previousContent.style.display = "none";
-          previousButton.textContent = `Address ${parseInt(currentOpenIndex) + 1} (Click to Expand)`;
+          previousButton.textContent = `Address ${
+            parseInt(currentOpenIndex) + 1
+          } (Click to Expand)`;
         }
       }
 
@@ -289,6 +580,37 @@
       const button = document.getElementById(`accordion-button-${index}`);
       content.style.display = "none";
       button.textContent = `Address ${parseInt(index) + 1} (Click to Expand)`;
+      currentOpenIndex = null;
+    }
+  }
+  function toggleAccordionForAddAddress(index) {
+    if (currentOpenIndex !== index) {
+      // Close previous accordion, if any
+      if (currentOpenIndex !== null) {
+        const previousContent = document.getElementById(
+          `accordion-content-${currentOpenIndex}`
+        );
+        const previousButton = document.getElementById(
+          `accordion-button-add-${currentOpenIndex}`
+        );
+        if (previousContent) {
+          previousContent.style.display = "none";
+          previousButton.textContent = `Add New Address (Click to Expand)`;
+        }
+      }
+
+      // Open the new accordion
+      const content = document.getElementById(`accordion-content-${index}`);
+      const button = document.getElementById(`accordion-button-add-${index}`);
+      content.style.display = "block";
+      button.textContent = `Add New Address (Click to Collapse)`;
+      currentOpenIndex = index;
+    } else {
+      // Toggle off if the same accordion is clicked again
+      const content = document.getElementById(`accordion-content-${index}`);
+      const button = document.getElementById(`accordion-button-add-${index}`);
+      content.style.display = "none";
+      button.textContent = `Add New Address (Click to Expand)`;
       currentOpenIndex = null;
     }
   }
@@ -329,28 +651,26 @@
               });
           } else {
             // Handle error response from the server
-            swal
-              .fire({
-                title: "Error",
-                text: data.message,
-                icon: "error",
-                confirmButtonColor: "#d33",
-                confirmButtonText: "Okay",
-              });
+            swal.fire({
+              title: "Error",
+              text: data.message,
+              icon: "error",
+              confirmButtonColor: "#d33",
+              confirmButtonText: "Okay",
+            });
           }
         })
         .catch((error) => {
           console.error("Error:", error);
 
           // Handle unexpected errors
-          swal
-            .fire({
-              title: "Error",
-              text: "Failed to communicate with the server",
-              icon: "error",
-              confirmButtonColor: "#d33",
-              confirmButtonText: "Okay",
-            });
+          swal.fire({
+            title: "Error",
+            text: "Failed to communicate with the server",
+            icon: "error",
+            confirmButtonColor: "#d33",
+            confirmButtonText: "Okay",
+          });
         });
     });
   });
@@ -413,28 +733,26 @@
               });
           } else {
             // Handle error response
-            swal
-              .fire({
-                title: "Error",
-                text: data.message,
-                icon: "error",
-                confirmButtonColor: "#d33",
-                confirmButtonText: "Okay",
-              });
+            swal.fire({
+              title: "Error",
+              text: data.message,
+              icon: "error",
+              confirmButtonColor: "#d33",
+              confirmButtonText: "Okay",
+            });
           }
         })
         .catch((error) => {
           console.error("Error:", error);
 
           // Handle unexpected errors
-          swal
-            .fire({
-              title: "Error",
-              text: "Failed to communicate with the server",
-              icon: "error",
-              confirmButtonColor: "#d33",
-              confirmButtonText: "Okay",
-            });
+          swal.fire({
+            title: "Error",
+            text: "Failed to communicate with the server",
+            icon: "error",
+            confirmButtonColor: "#d33",
+            confirmButtonText: "Okay",
+          });
         });
     });
 
@@ -472,28 +790,26 @@
                   });
               } else {
                 // Handle error response from the server
-                swal
-                  .fire({
-                    title: "Error",
-                    text: data.message,
-                    icon: "error",
-                    confirmButtonColor: "#d33",
-                    confirmButtonText: "Okay",
-                  });
+                swal.fire({
+                  title: "Error",
+                  text: data.message,
+                  icon: "error",
+                  confirmButtonColor: "#d33",
+                  confirmButtonText: "Okay",
+                });
               }
             })
             .catch((error) => {
               console.error("Error:", error);
 
               // Handle unexpected errors
-              swal
-                .fire({
-                  title: "Error",
-                  text: "Failed to communicate with the server",
-                  icon: "error",
-                  confirmButtonColor: "#d33",
-                  confirmButtonText: "Okay",
-                });
+              swal.fire({
+                title: "Error",
+                text: "Failed to communicate with the server",
+                icon: "error",
+                confirmButtonColor: "#d33",
+                confirmButtonText: "Okay",
+              });
             });
         }
       });

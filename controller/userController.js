@@ -115,6 +115,7 @@ const otpVerifyPost = async (req, res) => {
       });
 
       await newUser.save();
+      
 
       // Clear the session data
       delete req.session.userOtp;
@@ -470,12 +471,13 @@ const cancelOrder = async (req, res) => {
         order.paymentMethod === "wallet"
       ) {
         // Update the wallet with the totalAmount for this order
-        const wallet = await Wallet.findOne({ user: req.session.userData._id });
+        let wallet = await Wallet.findOne({ user: req.session.userData._id });
         if (!wallet) {
           console.log("!wallet");
-          return res.status(404).json({ error: "Wallet not found" });
+          wallet = new Wallet({ user: req.session.userData._id });
+          await wallet.save();
         }
-        console.log(wallet.walletBalance);
+        
         console.log(order.totalAmount);
         wallet.walletBalance += orderedItem.quantity * productIn.salePrice;
         console.log("wallet.walletBalance : ", wallet.walletBalance);
@@ -485,7 +487,9 @@ const cancelOrder = async (req, res) => {
           amount: orderedItem.quantity * productIn.salePrice,
         });
         await wallet.save();
+        console.log(wallet.walletBalance);
       }
+      
 
       // Update the order item status to "cancelled"
       orderedItem.orderStat = "cancelled";
