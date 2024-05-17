@@ -500,12 +500,76 @@ const getProductDetailsPage = async (req, res) => {
 
 const stockPage = async (req, res) => {
   try {
-    const getAllProducts = await productHelper.getAllProducts();
-    res.render("adminView/stock-page", {
-      data: getAllProducts,
-    });
+    const { page = 1, limit = 6 } = req.query;
+    const parsedPage = parseInt(page);
+    const parsedLimit = parseInt(limit);
+
+    const getAllProducts = await Product.aggregate([
+      {
+        $lookup: {
+          from: "categories",
+          localField: "category",
+          foreignField: "_id",
+          as: "category",
+        },
+      },
+      { $skip: (parsedPage - 1) * parsedLimit },
+      { $limit: parsedLimit },
+    ]);
+
+    const totalProducts = await Product.countDocuments();
+
+    if (req.xhr) {
+      res.json({
+        data: getAllProducts,
+        currentPage: parsedPage,
+        totalPages: Math.ceil(totalProducts / parsedLimit),
+      });
+    } else {
+      res.render("adminView/stock-page", {
+        data: getAllProducts,
+        currentPage: parsedPage,
+        totalPages: Math.ceil(totalProducts / parsedLimit),
+      });
+    }
   } catch (error) {
     console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+const updateStock = async (req, res) => {
+  const { productId, smallQty, mediumQty, largeQty } = req.body;
+
+  try {
+    const product = await Product.findById(productId);
+
+    product.productSizes.forEach((size) => {
+      if (size.size === "Small") {
+        size.quantity = smallQty;
+      } else if (size.size === "Medium") {
+        size.quantity = mediumQty;
+      } else if (size.size === "Large") {
+        size.quantity = largeQty;
+      }
+    });
+
+    let totalQuantity = 0;
+    product.productSizes.forEach((size) => {
+      totalQuantity += size.quantity;
+    });
+    product.totalQuantity = totalQuantity;
+
+    await product.save();
+
+    if (req.xhr) {
+      res.json({ message: "Product quantities updated successfully" });
+    } else {
+      res.setHeader("Refresh", "0;url=/stockPage");
+    }
+  } catch (error) {
+    console.error("Error updating product quantities:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -652,45 +716,6 @@ const filterPrice = async (req, res) => {
   }
 };
 
-const updateStock = async (req, res) => {
-  const { productId, smallQty, mediumQty, largeQty } = req.body;
-
-  try {
-    // Find the product by its ID
-    const product = await Product.findById(productId);
-
-    // Update the quantities
-    product.productSizes.forEach((size) => {
-      if (size.size === "Small") {
-        size.quantity = smallQty;
-      } else if (size.size === "Medium") {
-        size.quantity = mediumQty;
-      } else if (size.size === "Large") {
-        size.quantity = largeQty;
-      }
-    });
-
-    // Recalculate total quantity
-    let totalQuantity = 0;
-    product.productSizes.forEach((size) => {
-      totalQuantity += size.quantity;
-    });
-    product.totalQuantity = totalQuantity;
-
-    // Save the updated product
-    await product.save();
-
-    res.setHeader("Refresh", "0;url=/stockPage"); // Refresh the page after 0 seconds with the root URL (/)
-
-    // res
-    //   .status(200)
-    //   .json({ message: "Product quantities updated successfully" });
-  } catch (error) {
-    console.error("Error updating product quantities:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
-
 module.exports = {
   getAddProductPage,
   addProducts,
@@ -704,7 +729,7 @@ module.exports = {
   getProductDetailsPage,
   getShopPage,
   stockPage,
+  updateStock,
   searchProduct,
   filterProduct,
-  updateStock,
 };

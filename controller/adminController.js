@@ -199,16 +199,18 @@ const verifyLogin = async (req, res) => {
       if (passwordMatch) {
         req.session.admin = true;
         console.log("Admin Logged In");
-        res.redirect("/admin");
+        res.status(200).send("Login successful");
       } else {
         console.log("Password is not correct");
-        res.redirect("/admin/login");
+        res.status(401).send("Incorrect password");
       }
     } else {
       console.log("He's not an admin");
+      res.status(401).send("Not an admin");
     }
   } catch (error) {
     console.log(error.message);
+    res.status(500).send("Internal server error");
   }
 };
 

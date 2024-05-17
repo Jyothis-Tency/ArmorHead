@@ -1,115 +1,218 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="utf-8">
+  <head>
+    <meta charset="utf-8" />
     <title>ArmorHead</title>
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <!-- Favicon -->
-    <link rel="shortcut icon" type="image/x-icon" href="admin-assets/imgs/logo-only.png">
+    <link
+      rel="shortcut icon"
+      type="image/x-icon"
+      href="admin-assets/imgs/logo-only.png"
+    />
     <!-- Template CSS -->
     <link href="/admin-assets/css/main.css" rel="stylesheet" type="text/css" />
-</head>
+  </head>
 
-<body>
-       <main style="height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; padding: 0;">
-        <section class="content-main" style="text-align: center; width: 100%; max-width: 400px;">
-            <div class="card mx-auto" style="max-width: 100%; border: none; box-shadow: none;">
-                <div style="display: flex; justify-content: center; align-items: center; height: 100px;">
-    <img src="admin-assets/imgs/logo.png" alt="Logo" style="width: 200px; height: auto;">
-</div>
-                <div class="card-body">
-                    <h4 class="card-title mb-3 text-center">Login</h4>
-                    <form id="loginForm" method="post" action="/admin/login">
-                        <div class="mb-3">
-                            <input id="email" class="form-control" name="email" placeholder="Enter email" type="text" style="border: 1px solid #ced4da;">
-                            <span id="emailError" class="text-danger"></span>
-                        </div>
-                        <div class="mb-3">
-                            <input id="password" class="form-control" name="password" placeholder="Enter password" type="password">
-                            <span id="passwordError" class="text-danger"></span>
-                        </div>
-                        <!-- <div class="mb-3 d-flex justify-content-between align-items-center">
+  <body>
+    <main
+      style="
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin: 0;
+        padding: 0;
+      "
+    >
+      <section
+        class="content-main"
+        style="text-align: center; width: 100%; max-width: 400px"
+      >
+        <div
+          class="card mx-auto"
+          style="max-width: 100%; border: none; box-shadow: none"
+        >
+          <div
+            style="
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              height: 100px;
+            "
+          >
+            <img
+              src="admin-assets/imgs/logo.png"
+              alt="Logo"
+              style="width: 200px; height: auto"
+            />
+          </div>
+          <div class="card-body">
+            <h4 class="card-title mb-3 text-center">Login</h4>
+            <form id="loginForm" method="post" action="/admin/login">
+              <div class="mb-3">
+                <input
+                  id="email"
+                  class="form-control"
+                  name="email"
+                  placeholder="Enter email"
+                  type="text"
+                  style="border: 1px solid #ced4da"
+                />
+                <span id="emailError" class="text-danger"></span>
+              </div>
+              <div class="mb-3">
+                <input
+                  id="password"
+                  class="form-control"
+                  name="password"
+                  placeholder="Enter password"
+                  type="password"
+                />
+                <span id="passwordError" class="text-danger"></span>
+              </div>
+              <!-- <div class="mb-3 d-flex justify-content-between align-items-center">
                             <label class="form-check">
                                 <input type="checkbox" class="form-check-input">
                                 <span class="form-check-label">Remember me</span>
                             </label>
                             <a href="#" class="font-sm text-muted">Forgot password?</a>
                         </div> -->
-                        <div class="mb-4">
-                            <button id="loginBtn" type="submit" class="btn btn-primary w-100">Login</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </section>
-        <!-- Footer -->
-        <footer class="main-footer text-center" style="font-size: 12px; margin-top: 10px;">
-            <p>
-                <script>
-                    document.write(new Date().getFullYear())
-                </script> © ArmorHead.  All Rights Reserved
-            </p>
-        </footer>
+              <div class="mb-4">
+                <button
+                  id="loginBtn"
+                  type="submit"
+                  class="btn btn-primary w-100"
+                >
+                  Login
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+      <!-- Footer -->
+      <footer
+        class="main-footer text-center"
+        style="font-size: 12px; margin-top: 10px"
+      >
+        <p>
+          <script>
+            document.write(new Date().getFullYear());
+          </script>
+          © ArmorHead. All Rights Reserved
+        </p>
+      </footer>
     </main>
-    
+
     <script src="/admin-assets/js/vendors/jquery-3.6.0.min.js"></script>
     <script src="/admin-assets/js/vendors/bootstrap.bundle.min.js"></script>
     <script src="/admin-assets/js/main.js"></script>
-    
-    <script>
-    const email = document.getElementById("email");
-    const emailError = document.getElementById("emailError");
-    const password = document.getElementById("password");
-    const passwordError = document.getElementById("passwordError");
-    const loginForm = document.getElementById("loginForm");
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"
+    />
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm/toastify-js"
+    ></script>
 
-    function isEmailValid(email) {
+    <script>
+      const email = document.getElementById("email");
+      const emailError = document.getElementById("emailError");
+      const password = document.getElementById("password");
+      const passwordError = document.getElementById("passwordError");
+      const loginForm = document.getElementById("loginForm");
+
+      function isEmailValid(email) {
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return regex.test(email);
-    }
+      }
 
-    function isPasswordValid(password) {
+      function isPasswordValid(password) {
         const hasCapital = /[A-Z]/.test(password);
         const hasCharacter = /[a-zA-Z]/.test(password);
         const hasDigit = /[0-9]/.test(password);
         const hasSymbol = /[!@#\$%\^&\*]/.test(password); // Check for at least one symbol
         return hasCapital && hasCharacter && hasDigit && hasSymbol;
-    }
+      }
 
-    function validateLogin() {
+      function validateLogin() {
         const emailValue = email.value.trim();
         const passwordValue = password.value.trim();
 
         // Validate email
         if (emailValue === "") {
-            emailError.textContent = "Email is required.";
+          emailError.textContent = "Email is required.";
         } else if (!isEmailValid(emailValue)) {
-            emailError.textContent = "Invalid email format.";
+          emailError.textContent = "Invalid email format.";
         } else {
-            emailError.textContent = "";
+          emailError.textContent = "";
         }
 
         // Validate password
         if (passwordValue === "") {
-            passwordError.textContent = "Password is required.";
+          passwordError.textContent = "Password is required.";
         } else if (!isPasswordValid(passwordValue)) {
-            passwordError.textContent = "Password must contain at least one capital letter, one letter, one number, and one symbol (#, $, %, @, &, *).";
+          passwordError.textContent =
+            "Password must contain at least one capital letter, one letter, one number, and one symbol (#, $, %, @, &, *).";
         } else {
-            passwordError.textContent = "";
+          passwordError.textContent = "";
         }
 
-        return emailError.textContent === "" && passwordError.textContent === "";
-    }
+        return (
+          emailError.textContent === "" && passwordError.textContent === ""
+        );
+      }
 
-    email.addEventListener("input", validateLogin);
-    password.addEventListener("input", validateLogin);
+      email.addEventListener("input", validateLogin);
+      password.addEventListener("input", validateLogin);
 
-    loginForm.addEventListener("submit", function (e) {
-        if (!validateLogin()) {
-            e.preventDefault(); // Prevent form submission if validation fails
+      loginForm.addEventListener("submit", function (e) {
+        e.preventDefault(); // Prevent default form submission
+
+        if (validateLogin()) {
+          const emailValue = email.value.trim();
+          const passwordValue = password.value.trim();
+
+          $.ajax({
+            url: "/admin/login",
+            type: "POST",
+            data: {
+              email: emailValue,
+              password: passwordValue,
+            },
+            success: function (response) {
+              Toastify({
+                text: "Login successful",
+                duration: 1000,
+                close: true,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "#4caf50",
+              }).showToast();
+
+              // Redirect to admin dashboard after successful login
+              setTimeout(() => {
+                window.location.href = "/admin";
+              }, 1000);
+            },
+            error: function (xhr, status, error) {
+              Toastify({
+                text: "Login failed: " + xhr.responseText,
+                duration: 3000,
+                close: true,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "#f44336",
+              }).showToast();
+            },
+          });
         }
-    });
+      });
     </script>
-</body>
+  </body>
 </html>

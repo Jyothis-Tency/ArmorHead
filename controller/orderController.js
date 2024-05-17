@@ -214,17 +214,27 @@ const getOrderListAdmin = async (req, res) => {
       },
       { $sort: { orderDate: -1 } },
       { $skip: (parsedPage - 1) * parsedLimit },
-      { $limit: parseInt(parsedLimit) },
+      { $limit: parsedLimit },
     ]);
     console.log("allOrderDetails", allOrderDetails);
 
     const totalOrders = await Order.countDocuments();
 
-    res.render("adminView/order-list", {
-      allOrderDetails,
-      currentPage: parseInt(page),
-      totalPages: Math.ceil(totalOrders / limit),
-    });
+    if (req.xhr) {
+      // If the request is an AJAX request, respond with JSON
+      res.json({
+        allOrderDetails,
+        currentPage: parsedPage,
+        totalPages: Math.ceil(totalOrders / parsedLimit),
+      });
+    } else {
+      // If not an AJAX request, render the template
+      res.render("adminView/order-list", {
+        allOrderDetails,
+        currentPage: parsedPage,
+        totalPages: Math.ceil(totalOrders / limit),
+      });
+    }
   } catch (error) {
     console.error("Error fetching order details:", error);
     res.status(500).json({ error: "Internal Server Error" });
