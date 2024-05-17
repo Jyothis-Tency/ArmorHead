@@ -1,8 +1,9 @@
 const Product = require("../model/productModel");
 
-const getAllProducts = async () => {
+const getAllProducts = async (page = 1, limit = 10) => {
   try {
     console.log("getAllProducts triggered");
+    const startIndex = (page - 1) * limit;
     const result = await Product.aggregate([
       {
         $lookup: {
@@ -12,9 +13,17 @@ const getAllProducts = async () => {
           as: "category",
         },
       },
+      {
+        $skip: startIndex,
+      },
+      {
+        $limit: limit,
+      },
     ]);
     console.log(result);
-    return result;
+    const totalProducts = await Product.countDocuments();
+    const totalPages = Math.ceil(totalProducts / limit);
+    return { products: result, totalPages, currentPage: page };
   } catch (error) {
     console.log(error);
     throw error; // Re-throw the error to be caught by the caller

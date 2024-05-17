@@ -21,100 +21,160 @@ const getAddProductPage = async (req, res) => {
 };
 
 const addProducts = async (req, res) => {
-    try {
-        console.log(req.body);
-        const { productName, productDescription, category, regularPrice, salePrice, small_quantity, medium_quantity, large_quantity } = req.body;
-        console.log(req.files);
-        // Backend validation
-        if (!productName || !productDescription || !category || !regularPrice || !salePrice || !small_quantity || !medium_quantity || !large_quantity) {
-            return res.status(400).json({ error: "Missing required fields" });
-        }
-
-        // Additional validation for numeric fields
-        if (isNaN(regularPrice) || isNaN(salePrice) || isNaN(small_quantity) || isNaN(medium_quantity) || isNaN(large_quantity)) {
-            return res.status(400).json({ error: "Invalid numeric values" });
-        }
-        // const fetchedProducts = Product.productSizes.find({size:small});
-        // const lessThan = fetchedProducts.find({salePrice})
-        const smallQuantity = parseInt(small_quantity, 10) || 0;
-        const mediumQuantity = parseInt(medium_quantity, 10) || 0;
-        const largeQuantity = parseInt(large_quantity, 10) || 0;
-
-        // Calculate total quantity
-        const totalQuantity = smallQuantity + mediumQuantity + largeQuantity;
-
-        // Check if a product with the same name or image already exists
-        const productExists = await Product.findOne({ $or: [{ productName }, { productImage: { $in: req.files.map(file => file.filename) } }] });
-        if (productExists) {
-            if (productExists.productName === productName && productExists.productImage.includes(req.files[0].filename)) {
-                return res.status(400).json({ error: "Product with the same name and image already exists" });
-            }
-        }
-
-        const productSizes = [
-            { size: "Small", quantity: smallQuantity },
-            { size: "Medium", quantity: mediumQuantity },
-            { size: "Large", quantity: largeQuantity }
-            // Add more sizes if needed
-        ];
-
-        const images = [];
-        const imagesDir = path.join(
-          "D:",
-          "ArmorHead",
-          "public",
-          "uploads",
-          "product-images"
-        );
-
-        if (req.files && req.files.length > 0) {
-            for (let i = 0; i < req.files.length; i++) {
-                const imagePath = req.files[i].path; // Use the path provided in req.files
-
-                // Crop the image using sharp
-                const croppedImage = await sharp(imagePath)
-                    .extract({ left: 0, top: 0, width: 900, height: 900 })
-                    .toFormat('jpeg')
-                    .toBuffer();
-
-                // Save the cropped image to a new file
-                const croppedFilename = `cropped_${req.files[i].filename}`;
-                const croppedFilePath = path.join(imagesDir, croppedFilename);
-                await sharp(croppedImage).toFile(croppedFilePath);
-
-                images.push(croppedFilename);
-            }
-        }
-        console.log(images);
-        const newProduct = new Product({
-            productName,
-            productDescription,
-            category,
-            regularPrice,
-            salePrice,
-            productSizes,
-            totalQuantity,
-            productImage: images
-        });
-        console.log(newProduct);
-        await newProduct.save();
-        res.status(200).json({ success: "Product added successfully" });
-    } catch (error) {
-        console.log(error.message);
-        res.status(500).json({ error: "Internal server error" });
+  try {
+    console.log(req.body);
+    const {
+      productName,
+      productDescription,
+      category,
+      regularPrice,
+      salePrice,
+      small_quantity,
+      medium_quantity,
+      large_quantity,
+    } = req.body;
+    console.log(req.files);
+    // Backend validation
+    if (
+      !productName ||
+      !productDescription ||
+      !category ||
+      !regularPrice ||
+      !salePrice ||
+      !small_quantity ||
+      !medium_quantity ||
+      !large_quantity
+    ) {
+      return res.status(400).json({ error: "Missing required fields" });
     }
-}
+
+    // Additional validation for numeric fields
+    if (
+      isNaN(regularPrice) ||
+      isNaN(salePrice) ||
+      isNaN(small_quantity) ||
+      isNaN(medium_quantity) ||
+      isNaN(large_quantity)
+    ) {
+      return res.status(400).json({ error: "Invalid numeric values" });
+    }
+    // const fetchedProducts = Product.productSizes.find({size:small});
+    // const lessThan = fetchedProducts.find({salePrice})
+    const smallQuantity = parseInt(small_quantity, 10) || 0;
+    const mediumQuantity = parseInt(medium_quantity, 10) || 0;
+    const largeQuantity = parseInt(large_quantity, 10) || 0;
+
+    // Calculate total quantity
+    const totalQuantity = smallQuantity + mediumQuantity + largeQuantity;
+
+    // Check if a product with the same name or image already exists
+    const productExists = await Product.findOne({
+      $or: [
+        { productName },
+        { productImage: { $in: req.files.map((file) => file.filename) } },
+      ],
+    });
+    if (productExists) {
+      if (
+        productExists.productName === productName &&
+        productExists.productImage.includes(req.files[0].filename)
+      ) {
+        return res.status(400).json({
+          error: "Product with the same name and image already exists",
+        });
+      }
+    }
+
+    const productSizes = [
+      { size: "Small", quantity: smallQuantity },
+      { size: "Medium", quantity: mediumQuantity },
+      { size: "Large", quantity: largeQuantity },
+      // Add more sizes if needed
+    ];
+
+    const images = [];
+    const imagesDir = path.join(
+      "D:",
+      "ArmorHead",
+      "public",
+      "uploads",
+      "product-images"
+    );
+
+    if (req.files && req.files.length > 0) {
+      for (let i = 0; i < req.files.length; i++) {
+        const imagePath = req.files[i].path; // Use the path provided in req.files
+
+        // Crop the image using sharp
+        const croppedImage = await sharp(imagePath)
+          .extract({ left: 0, top: 0, width: 900, height: 900 })
+          .toFormat("jpeg")
+          .toBuffer();
+
+        // Save the cropped image to a new file
+        const croppedFilename = `cropped_${req.files[i].filename}`;
+        const croppedFilePath = path.join(imagesDir, croppedFilename);
+        await sharp(croppedImage).toFile(croppedFilePath);
+
+        images.push(croppedFilename);
+      }
+    }
+    console.log(images);
+    const newProduct = new Product({
+      productName,
+      productDescription,
+      category,
+      regularPrice,
+      salePrice,
+      productSizes,
+      totalQuantity,
+      productImage: images,
+    });
+    console.log(newProduct);
+    await newProduct.save();
+    res.status(200).json({ success: "Product added successfully" });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
 
 const ProductList = async (req, res) => {
   try {
-    console.log("ProductList triggered");
-    const response = await productHelper.getAllProducts();
+    const page = req.query.page ? parseInt(req.query.page) : 1;
+    const limit = 5; // Set the desired limit here
+
+    const { products, totalPages, currentPage } =
+      await productHelper.getAllProducts(page, limit);
+
     res.render("adminView/products", {
-      data: response,
+      products,
+      totalPages,
+      currentPage,
+      pagination: {
+        page,
+        limit,
+      },
     });
   } catch (error) {
-    console.error(error);
+    console.error("Error in adminProductList:", error);
     res.status(500).send("Internal Server Error");
+  }
+};
+
+const adminSearchProduct = async (req, res) => {
+  try {
+    console.log("inside search");
+    const searchTerm = req.query.search || "";
+    console.log(searchTerm);
+    const product = await Product.find({
+      productName: { $regex: searchTerm, $options: "i" },
+    });
+    console.log(product);
+    res.json({ product });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
@@ -143,7 +203,10 @@ const editProduct = async (req, res) => {
     const smallQuantity = parseInt(data.small_quantity, 10) || 0;
     const mediumQuantity = parseInt(data.medium_quantity, 10) || 0;
     const largeQuantity = parseInt(data.large_quantity, 10) || 0;
-    const totalQuantity = parseInt(data.small_quantity) + parseInt(data.medium_quantity) + parseInt(data.large_quantity);
+    const totalQuantity =
+      parseInt(data.small_quantity) +
+      parseInt(data.medium_quantity) +
+      parseInt(data.large_quantity);
 
     if (req.files && req.files.length > 0) {
       for (let i = 0; i < req.files.length; i++) {
@@ -155,7 +218,7 @@ const editProduct = async (req, res) => {
     const productSizes = [
       { size: "Small", quantity: smallQuantity },
       { size: "Medium", quantity: mediumQuantity },
-      { size: "Large", quantity: largeQuantity }
+      { size: "Large", quantity: largeQuantity },
     ];
 
     const imagesDir = path.join(
@@ -169,7 +232,9 @@ const editProduct = async (req, res) => {
     if (req.files.length > 0) {
       console.log("Yes, images are there");
 
-      const newImages = images.filter(image => !existingProduct.productImage.includes(image));
+      const newImages = images.filter(
+        (image) => !existingProduct.productImage.includes(image)
+      );
       const croppedNewImages = [];
 
       if (newImages.length > 0) {
@@ -178,7 +243,7 @@ const editProduct = async (req, res) => {
 
           const croppedImage = await sharp(imagePath)
             .extract({ left: 0, top: 0, width: 900, height: 900 })
-            .toFormat('jpeg')
+            .toFormat("jpeg")
             .toBuffer();
 
           const croppedFilename = `cropped_${newImages[i]}`;
@@ -200,13 +265,15 @@ const editProduct = async (req, res) => {
             productSizes,
             salePrice: data.salePrice,
             totalQuantity: totalQuantity,
-            $push: { productImage: { $each: croppedNewImages } }
+            $push: { productImage: { $each: croppedNewImages } },
           },
           { new: true }
         );
 
         console.log("Product updated");
-        return res.status(200).json({ success: 'Product updated successfully!' });
+        return res
+          .status(200)
+          .json({ success: "Product updated successfully!" });
       } else {
         console.log("Same images were present");
         const updatedProduct = await Product.findByIdAndUpdate(
@@ -224,7 +291,9 @@ const editProduct = async (req, res) => {
         );
 
         console.log("Product updated");
-        return res.status(200).json({ success: 'Product updated successfully!' });
+        return res
+          .status(200)
+          .json({ success: "Product updated successfully!" });
       }
     } else {
       console.log("No images were present");
@@ -244,13 +313,15 @@ const editProduct = async (req, res) => {
 
       console.log(updatedProduct);
       console.log("Product updated");
-      return res.status(200).json({ success: 'Product updated successfully!' });
+      return res.status(200).json({ success: "Product updated successfully!" });
     }
   } catch (error) {
     console.log(error.message);
-    return res.status(500).json({ error: 'An error occurred while updating the product.' });
+    return res
+      .status(500)
+      .json({ error: "An error occurred while updating the product." });
   }
-}
+};
 
 const deleteSingleImage = async (req, res) => {
   try {
@@ -624,6 +695,7 @@ module.exports = {
   getAddProductPage,
   addProducts,
   ProductList,
+  adminSearchProduct,
   getEditProduct,
   editProduct,
   deleteSingleImage,

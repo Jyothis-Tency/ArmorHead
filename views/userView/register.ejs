@@ -184,9 +184,7 @@
                 "
               >
                 <li style="margin-right: 10px">
-                  <a
-                    href="/"
-                    style="text-decoration: none; color: #007bff"
+                  <a href="/" style="text-decoration: none; color: #007bff"
                     >Home</a
                   >
                 </li>
@@ -290,10 +288,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.11.0/toastify.min.js"></script>
     <script>
       function validateName() {
-        var name = document.getElementById("username").value;
+        var name = document.getElementById("username").value.trim();
         var nameError = document.getElementById("name-error");
-        var nameRegex = /^[a-zA-Z ]{2,30}$/; // Simple regex for names (allows spaces)
-        if (!nameRegex.test(name)) {
+        var nameRegex = /^[a-zA-Z]+(?: [a-zA-Z]+)*$/; // Allows only letters and spaces, with no consecutive spaces
+        if (!name || !nameRegex.test(name)) {
           nameError.textContent =
             "Please enter a valid name (only letters and spaces).";
         } else {
@@ -302,10 +300,10 @@
       }
 
       function validateEmail() {
-        var email = document.getElementById("email-id").value;
+        var email = document.getElementById("email-id").value.trim();
         var emailError = document.getElementById("email-error");
-        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Simple regex for email
-        if (!emailRegex.test(email)) {
+        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/; // Ensures a minimum of 2 characters for the domain name
+        if (!email || !emailRegex.test(email)) {
           emailError.textContent = "Please enter a valid email address.";
         } else {
           emailError.textContent = "";
@@ -313,36 +311,56 @@
       }
 
       function validatePhone() {
-        var phone = document.getElementById("phone").value;
+        var phone = document.getElementById("phone").value.trim();
         var phoneError = document.getElementById("phone-error");
-        var phoneRegex = /^\d{10}$/; // Assumes 10-digit phone numbers
-        if (!phoneRegex.test(phone)) {
-          phoneError.textContent =
-            "Please enter a valid 10-digit phone number.";
+        var phoneRegex = /^\d{3}[-\s]?\d{3}[-\s]?\d{4}$/; // Allows common phone number formats
+        if (!phone || !phoneRegex.test(phone)) {
+          phoneError.textContent = "Please enter a valid phone number.";
         } else {
           phoneError.textContent = "";
         }
       }
 
       function validatePassword() {
-        var password = document.getElementById("pass").value;
+        var password = document.getElementById("pass").value.trim();
+        var username = document.getElementById("username").value.trim();
         var passwordError = document.getElementById("password-error");
+        var errors = [];
+
         var minLength = 8; // Minimum password length
-        if (
-          password.length < minLength ||
-          !/(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{6,}/.test(password)
-        ) {
-          passwordError.textContent = `Password must be at least ${minLength} characters long. Also password should be at least 6 characters long and contain at least one digit, one uppercase letter, one lowercase letter, and one special character.`;
+        if (!password || password.length < minLength) {
+          errors.push(
+            `Password must be at least ${minLength} characters long.`
+          );
+        }
+        if (!/(?=.*\d)/.test(password)) {
+          errors.push("Password must contain at least one digit.");
+        }
+        if (!/(?=.*[a-z])/.test(password)) {
+          errors.push("Password must contain at least one lowercase letter.");
+        }
+        if (!/(?=.*[A-Z])/.test(password)) {
+          errors.push("Password must contain at least one uppercase letter.");
+        }
+        if (!/(?=.*\W)/.test(password)) {
+          errors.push("Password must contain at least one special character.");
+        }
+        if (password.includes(username)) {
+          errors.push("Password should not contain your username.");
+        }
+
+        if (errors.length > 0) {
+          passwordError.textContent = errors.join(" ");
         } else {
           passwordError.textContent = "";
         }
       }
 
       function validateRePassword() {
-        var password = document.getElementById("pass").value;
-        var repassword = document.getElementById("repass").value;
+        var password = document.getElementById("pass").value.trim();
+        var repassword = document.getElementById("repass").value.trim();
         var repasswordError = document.getElementById("repassword-error");
-        if (password !== repassword) {
+        if (!repassword || password !== repassword) {
           repasswordError.textContent = "Passwords do not match.";
         } else {
           repasswordError.textContent = "";
