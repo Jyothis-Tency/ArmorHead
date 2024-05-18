@@ -47,10 +47,13 @@
           <table class="table table-hover" style="text-align: center">
             <thead>
               <tr>
-                <th style="text-align: left">Product</th>
+                <th scope="col" style="text-align: center">Image</th>
+                <th scope="col" style="text-align: center">Name</th>
+                <th scope="col" style="text-align: center">Size</th>
                 <th scope="col" style="text-align: center">Unit Price</th>
                 <th scope="col" style="text-align: center">Quantity</th>
                 <th scope="col" style="text-align: center">Sub Total</th>
+                <th scope="col" style="text-align: center">Payment Method</th>
                 <th scope="col" style="text-align: center">Status</th>
                 <th scope="col" style="text-align: center">Change status</th>
                 <th scope="col" style="text-align: center">Return Request</th>
@@ -71,11 +74,13 @@
                         alt="Item"
                       />
                     </div>
-                    <div class="info">
-                      <%= orderDetails[i].productDetails[0].productName %>, <%=
-                      orderDetails[i].orderedItems.size %>
-                    </div>
                   </a>
+                </td>
+                <td style="text-align: center">
+                  <%= orderDetails[i].productDetails[0].productName %>
+                </td>
+                <td style="text-align: center">
+                  <%= orderDetails[i].orderedItems.size %>
                 </td>
                 <td style="text-align: center">
                   ₹<%= orderDetails[i].productDetails[0].salePrice %>
@@ -86,6 +91,11 @@
                 <td style="text-align: center">
                   ₹<%= orderDetails[i].productDetails[0].salePrice *
                   orderDetails[i].orderedItems.quantity %>
+                </td>
+                <td style="text-align: center">
+                  <span class="badge rounded-pill alert-success text-success"
+                    ><%= orderDetails[i].paymentMethod %></span
+                  >
                 </td>
                 <td style="text-align: center">
                   <%= orderDetails[i].orderStatus %>
@@ -180,13 +190,10 @@
                     <dl class="dlist">
                       <dt>Grand total:</dt>
                       <dd>
-                        <b class="h5"
-                          >₹<%= orderDetails[0].totalAmount
-                          %></b
-                        >
+                        <b class="h5">₹<%= orderDetails[0].totalAmount %></b>
                       </dd>
                     </dl>
-                    <dl class="dlist">
+                    <!-- <dl class="dlist">
                       <dt class="text-muted">Status:</dt>
                       <dd>
                         <span
@@ -194,7 +201,7 @@
                           >Cash On Delivery</span
                         >
                       </dd>
-                    </dl>
+                    </dl> -->
                   </article>
                 </td>
               </tr>

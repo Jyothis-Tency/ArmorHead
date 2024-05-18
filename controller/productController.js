@@ -562,16 +562,13 @@ const updateStock = async (req, res) => {
 
     await product.save();
 
-    if (req.xhr) {
-      res.json({ message: "Product quantities updated successfully" });
-    } else {
-      res.setHeader("Refresh", "0;url=/stockPage");
-    }
+    res.json({ message: "Product quantities updated successfully" });
   } catch (error) {
     console.error("Error updating product quantities:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 
 const searchProduct = async (req, res) => {
   try {

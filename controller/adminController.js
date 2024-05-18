@@ -163,14 +163,12 @@ const showChart = async (req, res) => {
       console.log(dailySalesData);
       console.log(orderStatuses);
       console.log(eachOrderStatusCount);
-      res
-        .status(200)
-        .json({
-          monthlySalesData,
-          dailySalesData,
-          eachOrderStatusCount,
-          yearlySalesData,
-        });
+      res.status(200).json({
+        monthlySalesData,
+        dailySalesData,
+        eachOrderStatusCount,
+        yearlySalesData,
+      });
     }
   } catch (error) {
     console.log(error);
@@ -235,9 +233,12 @@ const salesReportPage = async (req, res) => {
     let totalOrderAmount = 0;
     let totalDiscountAmount = 0;
     for (const order of sales) {
+      console.log("order.totalAmount:", order.totalAmount);
       console.log("order.couponAmount:", order.couponAmount);
       totalOrderAmount += order.totalAmount;
-      totalDiscountAmount += order.couponAmount;
+      if (order.couponAmount !== undefined) {
+        totalDiscountAmount += order.couponAmount;
+      }
     }
     console.log(totalOrderAmount);
     console.log(totalDiscountAmount);

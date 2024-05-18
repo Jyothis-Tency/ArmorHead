@@ -44,7 +44,6 @@
             <th scope="col" style="text-align: center">Name</th>
             <th scope="col" style="text-align: center">Date</th>
             <th scope="col" style="text-align: center">Amount</th>
-            <th scope="col" style="text-align: center">Status</th>
             <th scope="col" style="text-align: center">Payment Type</th>
             <th scope="col" style="text-align: center" class="text-end">
               Action
@@ -84,7 +83,6 @@ $(document).ready(function() {
                             <td style="text-align: center;">${order.userDetails[0].username}</td>
                             <td style="text-align: center;">${new Date(order.orderDate).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
                             <td style="text-align: center;">${order.totalAmount.toLocaleString()}</td>
-                            <td style="text-align: center;"><span class="badge rounded-pill alert-danger">${order.orderStatus}</span></td>
                             <td style="text-align: center;">${order.paymentMethod}</td>
                             <td style="text-align: center;" class="text-end"><a href="/admin/orderDetailsAdmin/${order.orderId}" class="btn btn-md rounded font-sm">Details</a></td>
                         </tr>`;

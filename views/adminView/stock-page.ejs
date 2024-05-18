@@ -1,5 +1,54 @@
 <%- include("../partials/adminHeader") %>
 
+<style>
+  .table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    border: 1px solid #dee2e6;
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Shadow */
+  }
+
+  th,
+  td {
+    padding: 12px;
+    text-align: left;
+    vertical-align: middle;
+  }
+
+  .content-header {
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Shadow */
+    margin-bottom: 20px;
+  }
+
+  .right {
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Shadow */
+    padding: 20px;
+  }
+
+  .pagination {
+    margin-top: 20px;
+    text-align: center; /* Center pagination horizontally */
+  }
+
+  .pagination .btn {
+    margin-right: 5px;
+    border-radius: 20px;
+    padding: 5px 10px;
+  }
+
+  .pagination .btn.active {
+    background-color: #007bff;
+    color: #fff;
+  }
+</style>
+
+
+
 <div class="content-header">
   <div>
     <h2 class="content-title card-title">Stock</h2>
@@ -28,26 +77,37 @@
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"
+/>
+<script
+  type="text/javascript"
+  src="https://cdn.jsdelivr.net/npm/toastify-js"
+></script>
 <script>
   function fetchProducts(page = 1) {
     $.ajax({
-      url: '/admin/stockPage',
-      type: 'GET',
+      url: "/admin/stockPage",
+      type: "GET",
       data: { page: page },
-      success: function(response) {
+      success: function (response) {
         const { data, currentPage, totalPages } = response;
 
         const tbody = $("#productList");
         tbody.empty();
 
-        data.forEach((product, index) => {
-          let smallQty = 0, mediumQty = 0, largeQty = 0;
+        data.forEach((product) => {
+          let smallQty = 0,
+            mediumQty = 0,
+            largeQty = 0;
           product.productSizes.forEach((size) => {
-            if (size.size === 'Small') {
+            if (size.size === "Small") {
               smallQty = size.quantity;
-            } else if (size.size === 'Medium') {
+            } else if (size.size === "Medium") {
               mediumQty = size.quantity;
-            } else if (size.size === 'Large') {
+            } else if (size.size === "Large") {
               largeQty = size.quantity;
             }
           });
@@ -56,20 +116,17 @@
             <tr>
               <td>${product.productName}</td>
               <td>
-                <form class="update-form">
-                  <input type="hidden" name="productId" value="${product._id}">
-                  <input type="number" name="smallQty" value="${smallQty}" required>
+                <input type="number" class="smallQty" value="${smallQty}" required>
               </td>
               <td>
-                <input type="number" name="mediumQty" value="${mediumQty}" required>
+                <input type="number" class="mediumQty" value="${mediumQty}" required>
               </td>
               <td>
-                <input type="number" name="largeQty" value="${largeQty}" required>
+                <input type="number" class="largeQty" value="${largeQty}" required>
               </td>
               <td>${product.totalQuantity}</td>
               <td>
-                <button type="submit" style="background-color: rgb(112, 112, 255); color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">Update</button>
-                </form>
+                <button class="update-btn" data-id="${product._id}" style="background-color: rgb(112, 112, 255); color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">Update</button>
               </td>
             </tr>`;
           tbody.append(productRow);
@@ -78,41 +135,69 @@
         const pagination = $(".pagination");
         pagination.empty();
         for (let i = 1; i <= totalPages; i++) {
-          const pageButton = `<a href="#" class="btn ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</a>`;
+          const pageButton = `<a href="#" class="btn ${
+            i === currentPage ? "active" : ""
+          }" data-page="${i}">${i}</a>`;
           pagination.append(pageButton);
         }
 
-        $(".pagination .btn").click(function(e) {
+        $(".pagination .btn").click(function (e) {
           e.preventDefault();
           const page = $(this).data("page");
           fetchProducts(page);
         });
-
-        $(".update-form").submit(function(e) {
-          e.preventDefault();
-          const form = $(this);
-          $.ajax({
-            url: '/admin/updateStock',
-            type: 'POST',
-            data: form.serialize(),
-            success: function(response) {
-              alert(response.message);
-              fetchProducts(currentPage);
-            },
-            error: function(xhr, status, error) {
-              console.error("Failed to update stock:", error);
-            }
-          });
-        });
       },
-      error: function(xhr, status, error) {
+      error: function (xhr, status, error) {
         console.error("Failed to fetch products:", error);
-      }
+      },
     });
   }
 
-  $(document).ready(function() {
+  function updateProductStock(productId, smallQty, mediumQty, largeQty) {
+    console.log("update button clicked");
+    $.ajax({
+      url: "/admin/updateStock",
+      type: "POST",
+      data: {
+        productId: productId,
+        smallQty: smallQty,
+        mediumQty: mediumQty,
+        largeQty: largeQty,
+      },
+      success: function (response) {
+        Toastify({
+          text: response.message,
+          duration: 1000,
+          close: true,
+          gravity: "top",
+          position: "right",
+          backgroundColor: "#4caf50",
+        }).showToast();
+        const currentPage = $(".pagination .btn.active").data("page");
+        setTimeout(() => {
+          fetchProducts(currentPage);
+        }, 1000);
+      },
+      error: function (xhr, status, error) {
+        console.error("Failed to update stock:", error);
+      },
+    });
+  }
+
+  $(document).ready(function () {
     fetchProducts();
+
+    $(document).on("click", ".update-btn", function () {
+      const button = $(this);
+      const productId = button.data("id");
+      const row = button.closest("tr");
+
+      const smallQty = row.find(".smallQty").val();
+      const mediumQty = row.find(".mediumQty").val();
+      const largeQty = row.find(".largeQty").val();
+
+      updateProductStock(productId, smallQty, mediumQty, largeQty);
+    });
   });
 </script>
 

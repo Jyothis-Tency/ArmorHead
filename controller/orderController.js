@@ -281,6 +281,7 @@ const getOrderDetailsAdmin = async (req, res) => {
           addressDetails: 1,
           orderStatus: "$orderedItems.orderStat",
           totalAmount: 1,
+          paymentMethod: 1,
           "returnProduct.status": 1,
           "returnProduct.returnReason": 1,
           "returnProduct.returnMessage": 1,

@@ -69,7 +69,7 @@ adminRoute.post("/deleteImage", isAdmin, productController.deleteSingleImage);
 adminRoute.get("/blockProduct", isAdmin, productController.getBlockProduct);
 adminRoute.get("/unBlockProduct", isAdmin, productController.getUnblockProduct);
 adminRoute.get("/stockPage", isAdmin, productController.stockPage);
-adminRoute.post("/update-quantity", isAdmin, productController.updateStock);
+adminRoute.post("/updateStock", isAdmin, productController.updateStock);
 
 // Order Management
 adminRoute.get("/order-list", isAdmin, orderController.getOrderListAdmin);
