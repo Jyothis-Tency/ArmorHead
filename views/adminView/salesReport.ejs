@@ -162,6 +162,7 @@
                         </tr>
                     </thead>
                     <tbody id="defaultReport">
+                 
                         <% for( let i=sales.length-1; i >= 0; i-- ) { %>
                             <tr>
                                 <td>
@@ -171,7 +172,12 @@
                                         <%= sales[i]._id %>
                                     </b></td>
                                 <td>
-                                    <%= sales[i].userDetails[0].username %>
+                             <% if (sales[i].userDetails && sales[i].userDetails.length > 0 && sales[i].userDetails[0].username) { %>
+  <%= sales[i].userDetails[0].username %>
+<% } else { %>
+  <p>User does not exist now</p>
+<% } %>
+
                                 </td>
                                 <td>
                                     <%= sales[i].orderDate %>

@@ -105,6 +105,7 @@ adminRoute.post(
 // Coupon Management
 adminRoute.get("/coupon", isAdmin, couponController.getCouponPage);
 adminRoute.post("/add-coupon", isAdmin, couponController.addCoupon);
+adminRoute.post("/editCoupon", isAdmin, couponController.editCoupon);
 adminRoute.post("/deleteCoupon/:id", isAdmin, couponController.deleteCoupon);
 
 //Sales Report Management

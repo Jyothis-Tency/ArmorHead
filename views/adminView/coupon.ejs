@@ -114,6 +114,7 @@
                   <th>Created On</th>
                   <th>Expire On</th>
                   <th>Discount Amount</th>
+                  <th>Edit</th>
                   <th>Delete</th>
                 </tr>
               </thead>
@@ -131,8 +132,26 @@
                   <td class="text-start"><%= coupons[i].discount %></td>
                   <td width="10%">
                     <a
+                      class="btn btn-sm rounded font-sm mt-15 edit-btn"
+                      style="
+                        background-color: blue;
+                        color: white;
+                        padding: 5px 10px;
+                      "
+                      onclick="openEditModal('<%= coupons[i]._id %>','<%= coupons[i].couponName %>','<%= coupons[i].startDate %>','<%= coupons[i].endDate %>','<%= coupons[i].discount %>')"
+                    >
+                      Edit
+                    </a>
+                  </td>
+                  <td width="10%">
+                    <a
                       onclick="deleteCoupon('<%= coupons[i]._id %>')"
-                      class="btn btn-sm btn-danger rounded font-sm mt-15"
+                      class="btn btn-sm rounded font-sm mt-15"
+                      style="
+                        background-color: red;
+                        color: white;
+                        padding: 5px 10px;
+                      "
                       >Delete</a
                     >
                   </td>
@@ -146,10 +165,111 @@
     </div>
   </div>
 </section>
+<div id="editCouponModal" class="modal" style="display: none">
+  <div class="modal-content">
+    <span class="close" onclick="closeEditModal()">&times;</span>
+    <form method="post" action="/admin/edit-coupon">
+      <input
+        type="text"
+        hidden
+        id="edit-coupon-id"
+        name="couponId"
+        value=""
+        placeholder="Type here"
+        class="form-control"
+      />
+      <div class="mb-4">
+        <label for="edit-coupon-name" class="form-label">Coupon Name</label>
+        <input
+          type="text"
+          id="edit-coupon-name"
+          name="couponName"
+          value=""
+          placeholder="Type here"
+          class="form-control"
+        />
+      </div>
+      <div>
+        <label for="edit-startingDate" class="form-label">Start Date</label>
+        <input
+          type="date"
+          name="startDate"
+          value=""
+          class="form-control"
+          required="true"
+          id="edit-startingDate"
+        />
+      </div>
+      <div>
+        <label for="edit-expiringDate" class="form-label">End Date</label>
+        <input
+          type="date"
+          name="endDate"
+          value=""
+          class="form-control"
+          id="edit-expiringDate"
+          required="true"
+        />
+      </div>
+      <div>
+        <label for="edit-discountAmount" class="form-label"
+          >Discount Amount</label
+        >
+        <input
+          type="text"
+          name="discountAmount"
+          value=""
+          placeholder="Type here"
+          class="form-control"
+          id="edit-discountAmount"
+        />
+      </div>
+      <div class="d-grid">
+        <button
+          class="btn btn-primary mt-20"
+          type="button"
+          onclick="editCoupon()"
+        >
+          Edit Coupon
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
 
 <%- include("../partials/adminFooter") %>
 
 <script>
+  // function editCoupon(couponId) {
+  //   console.log("clicked", couponId);
+  //   Swal.fire({
+  //     title: "Are you sure you want to delete this coupon?",
+  //     icon: "warning",
+  //     showCancelButton: true,
+  //     confirmButtonColor: "#3085d6",
+  //     cancelButtonColor: "#d33",
+  //     confirmButtonText: "Yes, delete it!",
+  //     cancelButtonText: "No, cancel",
+  //   }).then((result) => {
+  //     if (result.isConfirmed) {
+  //       $.ajax({
+  //         url: "/admin/editCoupon/" + couponId,
+  //         type: "post",
+  //       })
+  //         .done((res) => {
+  //           if (res) {
+  //             Swal.fire("Successful", `${res.message}`, "success").then(() => {
+  //               location.reload();
+  //             });
+  //           }
+  //         })
+  //         .fail((error) => {
+  //           console.log(error);
+  //         });
+  //     }
+  //   });
+  // }
+
   function deleteCoupon(couponId) {
     console.log("clicked", couponId);
     Swal.fire({
@@ -180,6 +300,64 @@
     });
   }
 </script>
+<script>
+  let eCouponId;
+  function openEditModal(couponId, couponName, startDate, endDate, discount) {
+    // Populate modal inputs with data
+    // document.getElementById("edit-coupon-id").value = couponId;
+    eCouponId = couponId;
+    document.getElementById("edit-coupon-name").value = couponName;
+    document.getElementById("edit-startingDate").value = startDate;
+    document.getElementById("edit-expiringDate").value = endDate;
+    document.getElementById("edit-discountAmount").value = discount;
+
+    // Show the modal
+    document.getElementById("editCouponModal").style.display = "block";
+  }
+
+  function closeEditModal() {
+    // Hide the modal
+    document.getElementById("editCouponModal").style.display = "none";
+  }
+
+  function editCoupon() {
+    console.log("editCoupon triggered");
+    console.log(eCouponId);
+    let eCouponName = document.getElementById("edit-coupon-name").value;
+    let eStartDate = document.getElementById("edit-startingDate").value;
+    let eEndDate = document.getElementById("edit-expiringDate").value;
+    let eDiscount = document.getElementById("edit-discountAmount").value;
+    Swal.fire({
+      title: "Are you sure you want to edit this coupon?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, edit it!",
+      cancelButtonText: "No, cancel",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        $.ajax({
+          url: "/admin/editCoupon",
+          type: "post",
+          data: { eCouponId, eCouponName, eStartDate, eEndDate, eDiscount },
+        })
+          .done((res) => {
+            if (res) {
+              closeEditModal();
+              Swal.fire("Successful", `${res.message}`, "success").then(() => {
+                location.reload();
+              });
+            }
+          })
+          .fail((error) => {
+            console.log(error);
+          });
+      }
+    });
+  }
+</script>
+
 <script>
   const today = new Date().toISOString().split("T")[0];
   const startingDate = document.getElementById("startingDate");

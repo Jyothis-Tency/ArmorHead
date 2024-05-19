@@ -35,6 +35,30 @@ const addCoupon = async (req, res) => {
   }
 };
 
+const editCoupon = async (req, res) => {
+  try {
+    console.log("editCoupon triggered");
+    console.log(req.body);
+    const { eCouponId, eCouponName, eStartDate, eEndDate, eDiscount } = req.body;
+    console.log(eCouponId, eCouponName, eStartDate, eEndDate, eDiscount);
+    await Coupon.updateOne(
+      { _id: eCouponId },
+      {
+        $set: {
+          couponName: eCouponName,
+          createdOn: eStartDate,
+          expiryDate: eEndDate,
+          discount: eDiscount,
+        },
+      }
+    );
+    console.log("coupon edit success");
+    res.status(200).json({ message: "coupon edited successfully" });
+  } catch (error) {
+    res.status(400).json({ message: "coupon edit failed" });
+  }
+};
+
 const deleteCoupon = async (req, res) => {
   try {
     const result = await couponHelper.deleteSelectedCoupon(req.params.id);
@@ -157,7 +181,7 @@ const removeCoupon = async (req, res) => {
     await cart.save();
     req.session.couponTotal = cart.totalPrice;
     console.log("req.session.couponTotal:", req.session.couponTotal);
-    
+
     return res.status(200).json({
       success: true,
       message: "Coupon removed successfully",
@@ -175,6 +199,7 @@ const removeCoupon = async (req, res) => {
 module.exports = {
   getCouponPage,
   addCoupon,
+  editCoupon,
   deleteCoupon,
   //Admin side
   applyCoupon,
