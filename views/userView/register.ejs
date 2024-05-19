@@ -258,6 +258,16 @@
                     required
                   />
                   <span id="repassword-error" class="error"></span>
+                  <label for="refer">Referral Code <span>(Optional)</span></label>
+                  <input
+                    id="refer"
+                    name="referral"
+                    type="text"
+                    placeholder="Enter referral code..."
+                   
+                    
+                  />
+                  <span id="referral-error" class="error"></span>
 
                   <button type="submit" class="btn theme-btn-2 w-100">
                     Register Now
@@ -364,6 +374,23 @@
           repasswordError.textContent = "Passwords do not match.";
         } else {
           repasswordError.textContent = "";
+        }
+      }
+
+      function validateReferralCode(input) {
+        const referralError = document.getElementById("referral-error");
+        const referralCode = input.value.trim();
+
+        // Add your validation logic here
+        // For example, you can check if the referral code is a specific format or length
+
+        if (referralCode.length !== 6 || !/^[A-Z0-9]+$/.test(referralCode)) {
+          referralError.textContent =
+            "Invalid referral code. It should be 6 alphanumeric characters.";
+          input.setCustomValidity("Invalid referral code");
+        } else {
+          referralError.textContent = "";
+          input.setCustomValidity("");
         }
       }
 

@@ -8,6 +8,7 @@ const otpHelper = require("../helper/otpHelper");
 const passwordHelper = require("../helper/passwordHelper");
 const addressHelper = require("../helper/addressHelper");
 const orderHelper = require("../helper/orderHelper");
+const referralHelper = require("../helper/referralHelper");
 const dateFormatHelper = require("../helper/dateFormatHelper");
 const nodemailer = require("nodemailer");
 const email2 = "jyothisgtency@gmail.com";
@@ -39,7 +40,8 @@ const userSignupPost = async (req, res) => {
   try {
     console.log("userSignupPost triggered");
     console.log(req.body);
-    const { username, email, phone, password } = req.body;
+    const { username, email, phone, password, rePassword, referral } = req.body;
+    req.session.referral = referral;
     req.session.userData = { username, email, phone, password };
     console.log(req.session.userData);
     const findUser = await User.findOne({ email });
@@ -106,17 +108,72 @@ const otpVerifyPost = async (req, res) => {
       const hashedPassword = await passwordHelper.securePassword(
         userData.password
       );
-
+      const referralCode = await referralHelper.generateRandomString();
+      let newWalletCode;
+      if (req.session.referral) {
+        const existingUser = await User.findOne({
+          referralCode: req.session.referral,
+        });
+        if (existingUser) {
+          const wallet = await Wallet.findOne({ user: existingUser._id });
+          if (wallet) {
+            wallet.walletBalance += 50;
+            wallet.history.push({
+              date: new Date(),
+              status: "credit",
+              amount: 50,
+            });
+            await wallet.save();
+          } else {
+            const newWallet = new Wallet({
+              user: existingUser._id,
+              walletBalance: 50,
+              history: {
+                date: new Date(),
+                status: "credit",
+                amount: 50,
+              },
+            });
+            await newWallet.save();
+          }
+        }
+      }
       const newUser = new User({
         username: userData.username,
         email: userData.email,
         phone: userData.phone,
         password: hashedPassword,
+        referralCode: referralCode,
       });
 
       await newUser.save();
-      
 
+      const existingUser = await User.findOne({
+        referralCode: req.session.referral,
+      });
+      if (existingUser) {
+        const newUserWallet = new Wallet({
+          user: newUser._id,
+          walletBalance: 50,
+          history: {
+            date: new Date(),
+            status: "credit",
+            amount: 50,
+          },
+        });
+        await newUserWallet.save();
+      } else {
+        const newUserWallet = new Wallet({
+          user: newUser._id,
+          walletBalance: 0,
+          history: {
+            date: new Date(),
+            status: "credit",
+            amount: 50,
+          },
+        });
+        await newUserWallet.save();
+      }
       // Clear the session data
       delete req.session.userOtp;
       delete req.session.userData;
@@ -477,7 +534,7 @@ const cancelOrder = async (req, res) => {
           wallet = new Wallet({ user: req.session.userData._id });
           await wallet.save();
         }
-        
+
         console.log(order.totalAmount);
         wallet.walletBalance += orderedItem.quantity * productIn.salePrice;
         console.log("wallet.walletBalance : ", wallet.walletBalance);
@@ -489,7 +546,6 @@ const cancelOrder = async (req, res) => {
         await wallet.save();
         console.log(wallet.walletBalance);
       }
-      
 
       // Update the order item status to "cancelled"
       orderedItem.orderStat = "cancelled";
@@ -657,6 +713,11 @@ const updatePassword = async (req, res) => {
     const { currentPassword, newPassword } = req.body;
     console.log(currentPassword);
     console.log(newPassword);
+    if (currentPassword === newPassword) {
+      return res
+        .status(400)
+        .json({ error: "Your new password is already in use" });
+    }
 
     // Retrieve the user from the database
     const user = await User.findById(req.session.userData._id); // Assuming you have implemented authentication middleware to set req.user
@@ -677,7 +738,7 @@ const updatePassword = async (req, res) => {
     await user.save();
     console.log("2");
     // Send a success response
-    res.json({ message: "Password updated successfully" });
+    res.status(200).json({ message: "Password updated successfully" });
   } catch (error) {
     console.error("Error updating password:", error);
     res.status(500).json({ error: "Internal Server Error" });
