@@ -294,6 +294,25 @@ const userProfile = async (req, res) => {
   }
 };
 
+const updateUser = async (req, res) => {
+  try {
+    console.log("updateUser triggered");
+    console.log("req.session.userData:",req.session.userData);
+    console.log(req.body);
+    const { userId, username, email, phone } = req.body;
+    await User.updateOne(
+      { _id: userId },
+      { $set: { username: username, email: email, phone: phone } }
+    );
+    req.session.userData.username = username;
+    req.session.userData.email = email;
+    req.session.userData.phone = phone;
+    res.status(200).json({ message: "User Details Changed Successfully" });
+  } catch (error) {
+    res.status(400).json({ message: "User Details changing failed" });
+  }
+};
+
 const addAddress = async (req, res) => {
   try {
     const result = await addressHelper.addAddress(
@@ -837,6 +856,7 @@ module.exports = {
   userLoginPost,
   userLogout,
   userProfile,
+  updateUser,
   addAddress,
   getForgotPassPage,
   postVerifyEmail,

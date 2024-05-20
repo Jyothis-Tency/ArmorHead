@@ -36,7 +36,8 @@ const payUsingWallet = async (userId, amount) => {
     }
 
     if (wallet.walletBalance < amount) {
-      return false;
+      throw new Error('Total Amount is greater than Wallet Amount')
+      
     }
 
     wallet.walletBalance -= amount;

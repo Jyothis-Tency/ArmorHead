@@ -9,7 +9,13 @@ const createOrder = async (req, res) => {
   try {
     console.log("createOrder triggered");
     console.log(req.body.totalPrice);
-    const amount = parseInt(req.body.totalPrice);
+    let amount
+    if (req.session.couponTotal) {
+      amount = parseInt(req.session.couponTotal);
+    } else {
+      amount = parseInt(req.body.totalPrice);
+    }
+     
     console.log(amount);
 
     try {

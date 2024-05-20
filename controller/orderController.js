@@ -10,6 +10,7 @@ const walletHelper = require("../helper/walletHelper");
 const razorpay = require("../middleware/razorpay");
 const Wallet = require("../model/walletModel");
 const mongoose = require("mongoose");
+const { error } = require("node:console");
 
 function orderDate() {
   const date = new Date();
@@ -48,8 +49,7 @@ const checkoutRender = async (req, res) => {
   try {
     console.log("checkoutRender triggered");
     const user = req.session.userData;
-    let couponApplied;
-    couponApplied = req.session.coupon;
+let couponApplied = req.session.coupon || ""; 
     console.log("couponApplied : ", couponApplied);
     cartCount = await cartHelper.getCartCount(user._id);
     let cartItems = await cartHelper.getAllCartItems(user._id);
@@ -65,6 +65,9 @@ const checkoutRender = async (req, res) => {
       usedBy: { $ne: user._id },
     });
     console.log("availableCoupons: ", availableCoupons);
+    let wallet = await Wallet.find({ user: user._id });
+    console.log("wallet:", wallet);
+
     res.render("userView/checkout-page", {
       loginStatus: req.session.userData,
       user,
@@ -76,6 +79,7 @@ const checkoutRender = async (req, res) => {
       currencyFormat: cartHelper.currencyFormat,
       availableCoupons,
       couponApplied,
+      walletDetails: wallet,
     });
   } catch (error) {
     console.log(error);
@@ -182,6 +186,8 @@ const getOrderListAdmin = async (req, res) => {
     const { page = 1, limit = 5 } = req.query;
     const parsedPage = parseInt(page); // Ensure it's a number
     const parsedLimit = parseInt(limit);
+    const skip = (parsedPage - 1) * parsedLimit;
+
     const allOrderDetails = await Order.aggregate([
       {
         $lookup: {
@@ -203,7 +209,7 @@ const getOrderListAdmin = async (req, res) => {
         $project: {
           _id: 0,
           orderId: "$_id",
-          userDetails: 1,
+          userDetails: { $arrayElemAt: ["$userDetails", 0] },
           productName: { $arrayElemAt: ["$productDetails.productName", 0] },
           productImage: { $arrayElemAt: ["$productDetails.productImage", 0] },
           orderDate: "$orderDate",
@@ -213,10 +219,9 @@ const getOrderListAdmin = async (req, res) => {
         },
       },
       { $sort: { orderDate: -1 } },
-      { $skip: (parsedPage - 1) * parsedLimit },
+      { $skip: skip },
       { $limit: parsedLimit },
     ]);
-    console.log("allOrderDetails", allOrderDetails);
 
     const totalOrders = await Order.countDocuments();
 
@@ -232,7 +237,7 @@ const getOrderListAdmin = async (req, res) => {
       res.render("adminView/order-list", {
         allOrderDetails,
         currentPage: parsedPage,
-        totalPages: Math.ceil(totalOrders / limit),
+        totalPages: Math.ceil(totalOrders / parsedLimit),
       });
     }
   } catch (error) {
@@ -282,6 +287,7 @@ const getOrderDetailsAdmin = async (req, res) => {
           orderStatus: "$orderedItems.orderStat",
           totalAmount: 1,
           paymentMethod: 1,
+          paymentStatus: 1,
           "returnProduct.status": 1,
           "returnProduct.returnReason": 1,
           "returnProduct.returnMessage": 1,
@@ -449,9 +455,9 @@ const placeOrder = async (req, res) => {
       coupon,
     };
     if (paymentMethod === "cash on delivery") {
-      if (totalAmount < 1000) {
+      if (totalAmount > 1000) {
         throw new Error(
-          "Order total must be at least 1000 for Cash on Delivery."
+          "Total amount must be at least ₹1000 or below for Cash on Delivery."
         );
       }
 
@@ -599,14 +605,20 @@ const placeOrder = async (req, res) => {
           console.log("else isPaymentDone");
           res.status(200).json({
             paymentMethod: "wallet",
-            message: "Balance Insufficient in Wallet",
+            error: true,
+            message: "Insufficient Balance in Wallet",
           });
         }
       } catch (error) {
         console.error("Error processing wallet payment:", error);
-        res.status(500).json({ error: "Failed to process payment" });
+        res.status(500).json({ error: true, message: error.message });
       }
     }
+    console.log("before delete coupon session :", req.session.coupon);
+    console.log("delete session coupon");
+    req.session.coupon = "Coupon delete";
+    console.log("after delete coupon session:", req.session.coupon);
+    delete req.session.couponTotal;
   } catch (error) {
     console.error("Error during order placement:", error);
     res.status(400).json({ error: true, message: error.message });

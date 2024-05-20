@@ -101,8 +101,11 @@
                   <%= orderDetails[i].orderStatus %>
                 </td>
                 <td>
-                  <% const orderStatus = orderDetails[i].orderStatus; %> <% if
-                  (orderStatus === 'pending') { %>
+                  <% if(orderDetails[i].paymentStatus==="pending") { %>
+                  <p>Payment is pending</p>
+                  <% } else { %> <% const orderStatus =
+                  orderDetails[i].orderStatus; %> <% if (orderStatus ===
+                  'pending') { %>
                   <button
                     class="btn btn-primary"
                     style="width: 140px"
@@ -158,7 +161,7 @@
                   >
                     Reopen
                   </button>
-                  <% } %>
+                  <% } %> <% } %>
                 </td>
                 <td>
                   <% if(orderDetails[i].returnProStatus===true){ %>

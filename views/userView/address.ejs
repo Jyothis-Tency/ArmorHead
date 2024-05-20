@@ -116,7 +116,7 @@
             <!-- Accordion Toggle Button -->
             <button
               id="accordion-button-<%= index %>"
-              onclick="toggleAccordion('<%= index %>')"
+              onclick="toggleAccordion('<%= index %>','<%= address.firstName %>','<%= address.lastName %>')"
               style="
                 background: none;
                 color: white;
@@ -125,7 +125,7 @@
                 flex: 1;
               "
             >
-              Address <%= index + 1 %> (Click to Expand)
+              <%= address.firstName %> <%= address.lastName %> (Click to Expand)
             </button>
 
             <!-- Edit and Delete Buttons -->
@@ -550,7 +550,7 @@
   let currentOpenIndex = null;
 
   // Toggle accordion visibility
-  function toggleAccordion(index) {
+  function toggleAccordion(index, firstName, lastName) {
     if (currentOpenIndex !== index) {
       // Close previous accordion, if any
       if (currentOpenIndex !== null) {
@@ -562,7 +562,7 @@
         );
         if (previousContent) {
           previousContent.style.display = "none";
-          previousButton.textContent = `Address ${
+          previousButton.textContent = `${firstName} ${lastName} ${
             parseInt(currentOpenIndex) + 1
           } (Click to Expand)`;
         }
@@ -572,14 +572,14 @@
       const content = document.getElementById(`accordion-content-${index}`);
       const button = document.getElementById(`accordion-button-${index}`);
       content.style.display = "block";
-      button.textContent = `Address ${parseInt(index) + 1} (Click to Collapse)`;
+      button.textContent = `${firstName} ${lastName} (Click to Collapse)`;
       currentOpenIndex = index;
     } else {
       // Toggle off if the same accordion is clicked again
       const content = document.getElementById(`accordion-content-${index}`);
       const button = document.getElementById(`accordion-button-${index}`);
       content.style.display = "none";
-      button.textContent = `Address ${parseInt(index) + 1} (Click to Expand)`;
+      button.textContent = `${firstName} ${lastName} (Click to Expand)`;
       currentOpenIndex = null;
     }
   }

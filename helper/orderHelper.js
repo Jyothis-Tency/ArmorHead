@@ -90,6 +90,7 @@ const forOrderPlacing = async (
     });
 
     await completedOrders.save();
+
     console.log(completedOrders);
     console.log("3");
     return completedOrders; // Return the saved order

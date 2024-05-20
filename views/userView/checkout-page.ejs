@@ -63,16 +63,16 @@
                       </button>
                     </h5>
                     <div class="select-address">
-                        <input
-                          type="radio"
-                          id="selectAddress<%= address._id %>"
-                          name="selectAddress"
-                          value="<%= address._id %>"
-                        />
-                        <label for="selectAddress<%= address._id %>"
-                          >Select This Address</label
-                        >
-                      </div>
+                      <input
+                        type="radio"
+                        id="selectAddress<%= address._id %>"
+                        name="selectAddress"
+                        value="<%= address._id %>"
+                      />
+                      <label for="selectAddress<%= address._id %>"
+                        >Select This Address</label
+                      >
+                    </div>
                   </div>
 
                   <div
@@ -82,96 +82,279 @@
                     data-parent="#addressAccordion"
                   >
                     <div class="card-body">
-                      <div class="checkout-form-list">
-                        <label>First Name<span class="required">*</span></label>
-                        <input
-                          type="text"
-                          name="firstName"
-                          value="<%= address.firstName %>"
-                          disabled
-                        />
-                      </div>
-                      <div class="checkout-form-list">
-                        <label>Last Name<span class="required">*</span></label>
-                        <input
-                          type="text"
-                          name="lastName"
-                          value="<%= address.lastName %>"
-                          disabled
-                        />
-                      </div>
-                      <div class="checkout-form-list">
-                        <label
-                          >House / Flat<span class="required">*</span></label
+                      <form class="edit-address-form">
+                        <div class="checkout-form-list">
+                          <label
+                            >First Name<span class="required">*</span></label
+                          >
+                          <input
+                            type="text"
+                            name="firstName"
+                            value="<%= address.firstName %>"
+                            disabled
+                          />
+                        </div>
+                        <div class="checkout-form-list">
+                          <label
+                            >Last Name<span class="required">*</span></label
+                          >
+                          <input
+                            type="text"
+                            name="lastName"
+                            value="<%= address.lastName %>"
+                            disabled
+                          />
+                        </div>
+                        <div class="checkout-form-list">
+                          <label
+                            >House / Flat<span class="required">*</span></label
+                          >
+                          <input
+                            type="text"
+                            name="house"
+                            value="<%= address.house %>"
+                            disabled
+                          />
+                        </div>
+                        <div class="checkout-form-list">
+                          <label>Locality<span class="required">*</span></label>
+                          <input
+                            type="text"
+                            name="locality"
+                            value="<%= address.locality %>"
+                            disabled
+                          />
+                        </div>
+                        <div class="checkout-form-list">
+                          <label>City<span class="required">*</span></label>
+                          <input
+                            type="text"
+                            name="city"
+                            value="<%= address.city %>"
+                            disabled
+                          />
+                        </div>
+                        <div class="checkout-form-list">
+                          <label>State<span class="required">*</span></label>
+                          <input
+                            type="text"
+                            name="state"
+                            value="<%= address.state %>"
+                            disabled
+                          />
+                        </div>
+                        <div class="checkout-form-list">
+                          <label>Pincode<span class="required">*</span></label>
+                          <input
+                            type="text"
+                            name="pincode"
+                            value="<%= address.pincode %>"
+                            disabled
+                          />
+                        </div>
+                        <div class="checkout-form-list">
+                          <label
+                            >Email Address<span class="required">*</span></label
+                          >
+                          <input
+                            type="email"
+                            name="email"
+                            value="<%= address.email %>"
+                            disabled
+                          />
+                        </div>
+                        <div class="checkout-form-list">
+                          <label>Phone<span class="required">*</span></label>
+                          <input
+                            type="text"
+                            name="phone"
+                            value="<%= address.phone %>"
+                            disabled
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          class="btn btn-secondary edit-button"
+                          onclick="enableEdit(this)"
                         >
-                        <input
-                          type="text"
-                          name="house"
-                          value="<%= address.house %>"
-                          disabled
-                        />
-                      </div>
-                      <div class="checkout-form-list">
-                        <label>Locality<span class="required">*</span></label>
-                        <input
-                          type="text"
-                          name="locality"
-                          value="<%= address.locality %>"
-                          disabled
-                        />
-                      </div>
-                      <div class="checkout-form-list">
-                        <label>City<span class="required">*</span></label>
-                        <input
-                          type="text"
-                          name="city"
-                          value="<%= address.city %>"
-                          disabled
-                        />
-                      </div>
-                      <div class="checkout-form-list">
-                        <label>State<span class="required">*</span></label>
-                        <input
-                          type="text"
-                          name="state"
-                          value="<%= address.state %>"
-                          disabled
-                        />
-                      </div>
-                      <div class="checkout-form-list">
-                        <label>Pincode<span class="required">*</span></label>
-                        <input
-                          type="text"
-                          name="pincode"
-                          value="<%= address.pincode %>"
-                          disabled
-                        />
-                      </div>
-                      <div class="checkout-form-list">
-                        <label
-                          >Email Address<span class="required">*</span></label
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-primary confirm-edit-button"
+                          style="display: none"
+                          onclick="confirmEdit(this,'<%= address._id %>')"
                         >
-                        <input
-                          type="email"
-                          name="email"
-                          value="<%= address.email %>"
-                          disabled
-                        />
-                      </div>
-                      <div class="checkout-form-list">
-                        <label>Phone<span class="required">*</span></label>
-                        <input
-                          type="text"
-                          name="phone"
-                          value="<%= address.phone %>"
-                          disabled
-                        />
-                      </div>
-                      
+                          Confirm Edit
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-danger cancel-edit-button"
+                          style="display: none"
+                          onclick="cancelEdit(this)"
+                        >
+                          Cancel Edit
+                        </button>
+                      </form>
                     </div>
                   </div>
                 </div>
                 <% }); %>
+              </div>
+              <div class="card">
+                <div class="card-header" id="newAddressHeading">
+                  <h5 class="mb-0">
+                    <button
+                      class="btn btn-link"
+                      type="button"
+                      data-toggle="collapse"
+                      data-target="#collapseNewAddress"
+                      aria-expanded="true"
+                      aria-controls="collapseNewAddress"
+                    >
+                      Add New Address
+                    </button>
+                  </h5>
+                </div>
+                <div
+                  id="collapseNewAddress"
+                  class="collapse"
+                  aria-labelledby="newAddressHeading"
+                  data-parent="#addressAccordion"
+                >
+                  <div class="card-body">
+                    <!-- New address form -->
+                    <form id="addAddressForm">
+                      <div class="form-group">
+                        <label for="firstName"
+                          >First Name<span class="required">*</span></label
+                        >
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="firstName"
+                          name="firstName"
+                          required
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label for="lastName"
+                          >Last Name<span class="required">*</span></label
+                        >
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="lastName"
+                          name="lastName"
+                          required
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label for="house"
+                          >House / Flat<span class="required">*</span></label
+                        >
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="house"
+                          name="house"
+                          required
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label for="locality"
+                          >Locality<span class="required">*</span></label
+                        >
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="locality"
+                          name="locality"
+                          required
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label for="city"
+                          >City<span class="required">*</span></label
+                        >
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="city"
+                          name="city"
+                          required
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label for="state"
+                          >State<span class="required">*</span></label
+                        >
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="state"
+                          name="state"
+                          required
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label for="pincode"
+                          >Pincode<span class="required">*</span></label
+                        >
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="pincode"
+                          name="pincode"
+                          required
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label for="country"
+                          >Country<span class="required">*</span></label
+                        >
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="country"
+                          name="country"
+                          required
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label for="email"
+                          >Email Address<span class="required">*</span></label
+                        >
+                        <input
+                          type="email"
+                          class="form-control"
+                          id="email"
+                          name="email"
+                          required
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label for="phone"
+                          >Phone<span class="required">*</span></label
+                        >
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="phone"
+                          name="phone"
+                          required
+                        />
+                      </div>
+                      <button
+                        type="submit"
+                        class="btn btn-primary"
+                        onclick="addNewAddress(event)"
+                      >
+                        Add Address
+                      </button>
+                    </form>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -265,14 +448,23 @@
                       "
                     >
                       <% if (couponApplied) { %>
-                      <!-- Check if appliedCouponCode is truthy -->
-                      Remove Coupon
-                      <!-- If coupon applied, show Remove Coupon button -->
-                      <% } else { %> Apply Coupon
-                      <!-- If no coupon applied, show Apply Coupon button -->
-                      <% } %>
+                      <!-- If a coupon is applied, show Remove Coupon button -->
+                      Remove Coupon <% } else { %>
+                      <!-- If no coupon is applied, show Apply Coupon button -->
+                      Apply Coupon <% } %>
                     </button>
                     <div id="couponMessage">
+                      <div>
+                        <span>
+                          <% if (availableCoupons.length > 0) { %>
+                          <span style="color: green">Coupon available!!!</span>
+                          <% } else { %>
+                          <span style="color: red"
+                            >No coupons available!!!</span
+                          >
+                          <% } %>
+                        </span>
+                      </div>
                       <p></p>
                     </div>
                   </div>
@@ -340,7 +532,11 @@
                           value="wallet"
                         />
                         <label for="payment_wallet" class="checkbox-label"
-                          >Wallet</label
+                          >Wallet
+                          <span style="color: rgb(106, 204, 68)"
+                            >(Available Wallet Amount : ₹<%=
+                            walletDetails[0].walletBalance %>)</span
+                          ></label
                         >
                       </h5>
                     </div>
@@ -485,7 +681,7 @@
         Swal.fire({
           icon: "error",
           title: "Error",
-          text: errorMessage,
+          text: "An error occured while applying coupon",
         });
       }
     } catch (error) {
@@ -535,7 +731,7 @@
         Swal.fire({
           icon: "error",
           title: "Error",
-          text: errorMessage,
+          text: "An error occured while removing coupon",
         });
       }
     } catch (error) {
@@ -587,9 +783,9 @@
           success: function (response) {
             // Handle success response from the server
             console.log(response);
-
-            // Check if the order was successfully placed
-            if (
+            if (response.error) {
+              showToast(response.message, "error");
+            } else if (
               response.paymentMethod === "wallet" ||
               response.paymentMethod === "Cash on Delivery"
             ) {
@@ -789,6 +985,155 @@
       backgroundColor, // Background color determined by type
       close: true, // Show a close button on the toast
     }).showToast(); // Display the toast
+  }
+</script>
+
+<script>
+  function addNewAddress(event) {
+    event.preventDefault(); // Prevent the default form submission
+
+    // Get the values of the input fields
+    const firstName = document.getElementById("firstName").value;
+    const lastName = document.getElementById("lastName").value;
+    const house = document.getElementById("house").value;
+    const locality = document.getElementById("locality").value;
+    const city = document.getElementById("city").value;
+    const state = document.getElementById("state").value;
+    const pincode = document.getElementById("pincode").value;
+    const country = document.getElementById("country").value;
+    const email = document.getElementById("email").value;
+    const phone = document.getElementById("phone").value;
+
+    // Create an object with the input field values
+    const addressData = {
+      firstName,
+      lastName,
+      house,
+      locality,
+      city,
+      state,
+      pincode,
+      country,
+      email,
+      phone,
+    };
+
+    // Send POST request to add new address
+    fetch("/add-address", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(addressData),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          // Display success message and reload the page
+          Toastify({
+            text: "Address added successfully",
+            duration: 1000,
+            gravity: "top",
+            position: "center",
+            backgroundColor: "green",
+          }).showToast();
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+        } else {
+          // Handle error response
+          Toastify({
+            text: "Address not added",
+            duration: 1000,
+            gravity: "top",
+            position: "center",
+            backgroundColor: "green",
+          }).showToast();
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+
+        // Handle unexpected errors
+        swal.fire({
+          title: "Error",
+          text: "Failed to communicate with the server",
+          icon: "error",
+          confirmButtonColor: "#d33",
+          confirmButtonText: "Okay",
+        });
+      });
+  }
+</script>
+<script>
+  function enableEdit(button) {
+    const form = button.closest("form");
+    const inputs = form.querySelectorAll("input");
+    inputs.forEach((input) => {
+      input.disabled = false;
+    });
+    form.querySelector(".edit-button").style.display = "none";
+    form.querySelector(".confirm-edit-button").style.display = "inline-block";
+    form.querySelector(".cancel-edit-button").style.display = "inline-block";
+  }
+
+  function cancelEdit(button) {
+    const form = button.closest("form");
+    const inputs = form.querySelectorAll("input");
+    inputs.forEach((input) => {
+      input.disabled = true;
+    });
+    form.querySelector(".edit-button").style.display = "inline-block";
+    form.querySelector(".confirm-edit-button").style.display = "none";
+    form.querySelector(".cancel-edit-button").style.display = "none";
+
+    // Optionally reset the form values to original
+    form.reset();
+  }
+
+  function confirmEdit(button, addressId) {
+    const form = button.closest("form");
+    const formData = new FormData(form);
+    const addressData = {};
+    formData.forEach((value, key) => {
+      addressData[key] = value;
+    });
+    addressData.addressId = addressId;
+    // Send POST request to update address
+    fetch("/updateAddress", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(addressData),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          Toastify({
+            text: data.message,
+            duration: 1000,
+            gravity: "top",
+            position: "center",
+            backgroundColor: "green",
+          }).showToast();
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+        } else {
+          // Handle error response from the server
+          Toastify({
+            text: data.message,
+            duration: 1000,
+            gravity: "top",
+            position: "center",
+            backgroundColor: "green",
+          }).showToast();
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   }
 </script>
 

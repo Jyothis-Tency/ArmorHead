@@ -89,8 +89,79 @@
         <!-- Account Details -->
         <div class="account-details" style="margin-bottom: 30px">
           <h3 style="color: #34495e">Account Details</h3>
-          <p>Your Name : <%= loginStatus.username %></p>
-          <p>Email : <%= loginStatus.email %></p>
+          <form id="userDetailsForm">
+            <p>
+              Your Name :
+              <input
+                type="text"
+                id="username"
+                value="<%= loginStatus.username %>"
+                disabled
+              />
+            </p>
+            <p>
+              Email :
+              <input
+                type="email"
+                id="email"
+                value="<%= loginStatus.email %>"
+                disabled
+              />
+            </p>
+            <p>
+              Phone :
+              <input
+                type="tel"
+                id="phone"
+                value="<%= loginStatus.phone %>"
+                disabled
+              />
+            </p>
+            <button
+              type="button"
+              id="editButton"
+              onclick="editUserDetails()"
+              style="
+                width: 170px;
+                background-color: rgb(10, 118, 154);
+                color: white;
+                border-radius: 5px;
+                padding: 10px;
+              "
+            >
+              Edit user details
+            </button>
+            <button
+              type="button"
+              id="confirmEdit"
+              style="
+                display: none;
+                width: 110px;
+                background-color: rgb(78, 233, 78);
+                color: white;
+                border-radius: 5px;
+                padding: 10px;
+              "
+              onclick="confirmEditUserDetails('<%= loginStatus._id %>')"
+            >
+              Confirm Edit
+            </button>
+            <button
+              type="button"
+              id="cancelEdit"
+              style="
+                display: none;
+                width: 110px;
+                background-color: rgb(232, 64, 64);
+                color: white;
+                border-radius: 5px;
+                padding: 10px;
+              "
+              onclick="cancelEditUserDetails()"
+            >
+              Cancel Edit
+            </button>
+          </form>
           <p>
             Referral Code : <%= loginStatus.referralCode %>
             <button
@@ -122,7 +193,7 @@
           <button
             style="
               width: 110px;
-              background-color: red;
+              background-color: rgb(232, 64, 64);
               color: white;
               border-radius: 5px;
               padding: 10px;
@@ -143,6 +214,72 @@
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<script>
+  function editUserDetails() {
+    document.getElementById("username").disabled = false;
+    document.getElementById("email").disabled = false;
+    document.getElementById("phone").disabled = false;
+    document.getElementById("confirmEdit").style.display = "inline-block";
+    document.getElementById("cancelEdit").style.display = "inline-block";
+    document.getElementById("editButton").style.display = "none";
+  }
+
+  function cancelEditUserDetails() {
+    document.getElementById("username").disabled = true;
+    document.getElementById("email").disabled = true;
+    document.getElementById("phone").disabled = true;
+    document.getElementById("confirmEdit").style.display = "none";
+    document.getElementById("cancelEdit").style.display = "none";
+    document.getElementById("editButton").style.display = "inline-block";
+  }
+
+  function confirmEditUserDetails(userId) {
+    const username = document.getElementById("username").value;
+    const email = document.getElementById("email").value;
+    const phone = document.getElementById("phone").value;
+
+    // Ajax call to update user details
+    $.ajax({
+      url: "/updateUser",
+      type: "POST",
+      data: {
+        userId: userId,
+        username: username,
+        email: email,
+        phone: phone,
+      },
+      success: function (response) {
+        // Handle success
+        // alert("User details updated successfully");
+        Toastify({
+          text: response.message,
+          duration: 1000,
+          close: true,
+          gravity: "top",
+          position: "center",
+          backgroundColor: "green",
+        }).showToast();
+        setTimeout(()=>{
+          window.location.reload()
+        },1000)
+        // Optionally, reload the page or perform any other action
+      },
+      error: function (xhr, status, error) {
+        // Handle error
+        console.error(error);
+        alert("Failed to update user details");
+        Toastify({
+          text: error.message,
+          duration: 1000,
+          close: true,
+          gravity: "top",
+          position: "center",
+          backgroundColor: "green",
+        }).showToast();
+      },
+    });
+  }
+</script>
 <script>
   // Get the change password button and modal
   const changePasswordBtn = document.getElementById("changePasswordBtn");
@@ -534,13 +671,13 @@
       .writeText(referralCode)
       .then(() => {
         Toastify({
-            text: "Referral code copied to clipboard!",
-            duration: 1000,
-            close: true,
-            gravity: "top",
-            position: "right",
-            backgroundColor: "green",
-          }).showToast();
+          text: "Referral code copied to clipboard!",
+          duration: 1000,
+          close: true,
+          gravity: "top",
+          position: "center",
+          backgroundColor: "green",
+        }).showToast();
       })
       .catch((err) => {
         console.error("Could not copy text: ", err);
@@ -567,7 +704,7 @@
             duration: 1000,
             close: true,
             gravity: "top",
-            position: "right",
+            position: "center",
             backgroundColor: "#ff0000",
           }).showToast();
         });
@@ -740,7 +877,7 @@
   }
 
   .address-table td:last-child {
-    border-right: 1px solid #ddd;
+    border-center: 1px solid #ddd;
   }
 
   .address-table .address {

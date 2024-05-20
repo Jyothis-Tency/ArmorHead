@@ -27,11 +27,15 @@ const addCoupon = async (req, res) => {
   try {
     console.log("addCoupon triggered");
     console.log(req.body);
+    if (req.body.discountAmount > 500) {
+      throw new Error("Discount amount cannot exceed 500");
+    }
     const coupon = await couponHelper.addCouponToDb(req.body);
     console.log(coupon);
     res.status(200).redirect("/admin/coupon");
   } catch (error) {
     console.error(error);
+    res.status(500).json({ error: true, message: error.message });
   }
 };
 
@@ -39,7 +43,8 @@ const editCoupon = async (req, res) => {
   try {
     console.log("editCoupon triggered");
     console.log(req.body);
-    const { eCouponId, eCouponName, eStartDate, eEndDate, eDiscount } = req.body;
+    const { eCouponId, eCouponName, eStartDate, eEndDate, eDiscount } =
+      req.body;
     console.log(eCouponId, eCouponName, eStartDate, eEndDate, eDiscount);
     await Coupon.updateOne(
       { _id: eCouponId },
