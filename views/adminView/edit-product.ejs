@@ -71,7 +71,7 @@
         <div class="col-lg-6">
             <div class="card mb-4">
                 <div class="card-body">
-                    <form method="post" action="/admin/editProduct/<%= product._id %>" enctype="multipart/form-data" onsubmit="return validateAndSubmit()">
+                    <form id="editProductForm" method="post" enctype="multipart/form-data" onsubmit="return validateAndSubmit()">
                         <div class="mb-4">
                             <label for="product_name" class="form-label">Product Name</label>
                             <input type="text" name="productName" value="<%= product.productName %>" class="form-control border" id="product_name">
@@ -164,17 +164,18 @@
     </div>
 </section>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     const selectedImages = [];
-    const addedImagesContainer = document.getElementById("addedImagesContainer");
-    const imageInput = document.getElementById("imageInput");
-    const inputUpload = document.querySelector(".input-upload");
+    const addedImagesContainer = $("#addedImagesContainer");
+    const imageInput = $("#imageInput");
+    const inputUpload = $(".input-upload");
 
-    inputUpload.addEventListener("click", function() {
+    inputUpload.on("click", function() {
         imageInput.click();
     });
 
-    imageInput.addEventListener("change", handleFileSelect);
+    imageInput.on("change", handleFileSelect);
 
     function handleFileSelect(event) {
         const files = event.target.files;
@@ -184,18 +185,11 @@
 
             selectedImages.push(file);
 
-            const thumbnail = document.createElement("div");
-            thumbnail.classList.add("thumbnail");
+            const thumbnail = $("<div>").addClass("thumbnail");
+            const img = $("<img>").attr("src", URL.createObjectURL(file)).attr("alt", "thumbnail");
+            const removeIcon = $("<span>").addClass("remove-icon").html("&times;");
 
-            const img = document.createElement("img");
-            img.src = URL.createObjectURL(file);
-            img.alt = "thumbnail";
-
-            const removeIcon = document.createElement("span");
-            removeIcon.classList.add("remove-icon");
-            removeIcon.innerHTML = "&times;";
-
-            removeIcon.addEventListener("click", function () {
+            removeIcon.on("click", function () {
                 const index = selectedImages.indexOf(file);
                 if (index !== -1) {
                     selectedImages.splice(index, 1);
@@ -203,9 +197,8 @@
                 thumbnail.remove();
             });
 
-            thumbnail.appendChild(img);
-            thumbnail.appendChild(removeIcon);
-            addedImagesContainer.appendChild(thumbnail);
+            thumbnail.append(img).append(removeIcon);
+            addedImagesContainer.append(thumbnail);
         }
     }
 
@@ -214,49 +207,90 @@
     }
 
     function deleteSingleImage(productId, filename) {
-        fetch("/admin/deleteImage", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
+        $.ajax({
+            url: "/admin/deleteImage",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({ productId, filename }),
+            success: function(data) {
+                if (data.success) {
+                    removeImage(filename);
+                } else {
+                    console.error("Error deleting image:", data.error);
+                }
             },
-            body: JSON.stringify({ productId, filename }),
-        })
-        .then((response) => location.reload())
-        .then((data) => {
-            if (data.success) {
-                removeImage(filename);
-            } else {
-                console.error("Error deleting image:", data.error);
+            error: function(error) {
+                console.error("Error:", error);
             }
-        })
-        .catch((error) => {
-            console.error("Error:", error);
         });
     }
 
     function removeImage(filename) {
-        const imageElement = document.querySelector(`[data-filename="${filename}"]`);
-        if (imageElement) {
+        const imageElement = $(`[data-filename="${filename}"]`);
+        if (imageElement.length) {
             imageElement.closest('.thumbnail').remove();
         }
     }
 
     function validateAndSubmit() {
         if (validateForm()) {
-            document.forms[0].submit();
+            const formData = new FormData(document.getElementById("editProductForm"));
+            for (let i = 0; i < selectedImages.length; i++) {
+                formData.append("images", selectedImages[i]);
+            }
+
+            $.ajax({
+                url: "/admin/editProduct/<%= product._id %>",
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    // Handle success (e.g., show a message or redirect)
+                    console.log("Product updated successfully:", response);
+                    Toastify({
+            text: response.message,
+            duration: 2000,
+            gravity: "top",
+            position: "center",
+            style: {
+              background: "green",
+              color: "white",
+            },
+          }).showToast();
+          setTimeout(() => {
+    window.location.href= "/admin/productPage"
+}, 2000);
+
+                },
+                error: function(error) {
+                    // Handle error (e.g., show an error message)
+                    console.error("Error updating product:", error);
+                    Toastify({
+            text: error.message,
+            duration: 2000,
+            gravity: "top",
+            position: "center",
+            style: {
+              background: "green",
+              color: "white",
+            },
+          }).showToast();
+                }
+            });
         }
         return false;
     }
 
     function validateForm() {
         resetErrorMessages();
-        var isValid = true;
+        let isValid = true;
 
-        var productName = document.getElementsByName("productName")[0].value;
-        var regularPrice = document.getElementsByName("regularPrice")[0].value;
-        var salePrice = document.getElementsByName("salePrice")[0].value;
+        const productName = $("input[name='productName']").val();
+        const regularPrice = $("input[name='regularPrice']").val();
+        const salePrice = $("input[name='salePrice']").val();
 
-        if (productName === "") {
+        if (!productName) {
             displayErrorMessage("productName-error", "Product Name is required");
             isValid = false;
         }
@@ -280,17 +314,11 @@
     }
 
     function displayErrorMessage(elementId, message) {
-        var errorElement = document.getElementById(elementId);
-        errorElement.innerText = message;
-        errorElement.style.display = "block";
+        $("#" + elementId).text(message).show();
     }
 
     function resetErrorMessages() {
-        var errorElements = document.querySelectorAll(".error-message");
-        errorElements.forEach(function (element) {
-            element.innerText = "";
-            element.style.display = "none";
-        });
+        $(".error-message").text("").hide();
     }
 </script>
 

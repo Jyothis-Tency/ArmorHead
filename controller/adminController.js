@@ -19,7 +19,13 @@ function dateFormat(date) {
 const renderAdmin = async (req, res) => {
   try {
     if (req.session.admin) {
-      const salesDetails = await Order.find({ orderStatus: "delivered" });
+      const salesDetails = await orderHelper.getAllDeliveredOrders();
+      let totalOrderAmount = 0;
+      for (const order of salesDetails) {
+        console.log("order.totalAmount:", order.totalAmount);
+        totalOrderAmount += order.totalAmount;
+      }
+      console.log(totalOrderAmount);
       console.log(salesDetails);
       const products = await Product.find();
       const categories = await Category.find();
@@ -83,6 +89,7 @@ const renderAdmin = async (req, res) => {
       console.log("salesDetails", salesDetails);
       res.render("adminView/admin-index", {
         salesDetails: salesDetails,
+        totalOrderAmount:totalOrderAmount,
         products: products,
         categories: categories,
         productsData: productsData,

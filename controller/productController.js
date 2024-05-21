@@ -273,7 +273,7 @@ const editProduct = async (req, res) => {
         console.log("Product updated");
         return res
           .status(200)
-          .json({ success: "Product updated successfully!" });
+          .json({ success: true, message: "Product updated successfully!" });
       } else {
         console.log("Same images were present");
         const updatedProduct = await Product.findByIdAndUpdate(
@@ -293,7 +293,7 @@ const editProduct = async (req, res) => {
         console.log("Product updated");
         return res
           .status(200)
-          .json({ success: "Product updated successfully!" });
+          .json({ success: true, message: "Product updated successfully!" });
       }
     } else {
       console.log("No images were present");
@@ -313,13 +313,15 @@ const editProduct = async (req, res) => {
 
       console.log(updatedProduct);
       console.log("Product updated");
-      return res.status(200).json({ success: "Product updated successfully!" });
+      return res
+        .status(200)
+        .json({ success: true, message: "Product updated successfully!" });
     }
   } catch (error) {
     console.log(error.message);
     return res
       .status(500)
-      .json({ error: "An error occurred while updating the product." });
+      .json({ message: "An error occurred while updating the product." });
   }
 };
 
@@ -373,86 +375,161 @@ const getUnblockProduct = async (req, res) => {
   }
 };
 
+// const getShopPage = async (req, res) => {
+//   try {
+//     console.log("getShopPage triggered");
+
+//     // Retrieve the value of the 'sort' parameter from the query string
+//     console.log(`Received query: ${req.query.sort}`);
+//     let sort;
+
+//     if (req.query.sort) {
+//       sort = req.query.sort;
+//     } else {
+//       sort = "Price:High-Low";
+//     }
+//     // Retrieve sort value from query parameters
+//     req.session.sort = sort;
+//     console.log(sort);
+
+//     // Process the value of 'sort' to define sorting options
+//     let sortOption = {};
+//     if (sort === "Price:High-Low") {
+//       sortOption = { salePrice: -1 }; // High to low
+//     } else if (sort === "Price:Low-High") {
+//       sortOption = { salePrice: 1 }; // Low to high
+//     } else if (sort === "Name:A-Z") {
+//       sortOption = { productName: 1 }; // A to Z
+//     } else if (sort === "Name:Z-A") {
+//       sortOption = { productName: -1 }; // Z to A
+//     } else if (sort === "New-Arrivals") {
+//       sortOption = { createdAt: 1 };
+//     }
+
+//     // Construct the MongoDB query with sorting
+//     let query = { totalQuantity: { $ne: 0 }, isBlocked: false };
+//     let currentProduct;
+//     if (sortOption) {
+//       currentProduct = await Product.find(query).sort(sortOption);
+//     } else {
+//       currentProduct = await Product.find(query);
+//     }
+//     // console.log("Sorted products:", currentProduct);
+
+//     const productOffers = await productOffer
+//       .find({ "productOffer.offerStatus": true })
+//       .populate("productOffer.product");
+//     const categoryOffers = await categoryOffer
+//       .find({ "categoryOffer.offerStatus": true })
+//       .populate("categoryOffer.category");
+
+//     // Paginate the results
+//     const count = await Product.countDocuments(query);
+//     const categories = await Category.find({ isListed: true });
+//     console.log(categories);
+//     const itemsPerPage = 3;
+//     const currentPage = parseInt(req.query.page) || 1;
+//     const startIndex = (currentPage - 1) * itemsPerPage;
+//     const endIndex = startIndex + itemsPerPage;
+//     const totalPages = Math.ceil(count / itemsPerPage);
+//     const productsOnPage = currentProduct.slice(startIndex, endIndex);
+//     const productLength = productsOnPage.length;
+//     console.log(productLength);
+//     console.log(count);
+//     // Render the shop page with the sorted and paginated products
+//     res.render("userView/shop-page", {
+//       // user: user,
+//       sort: sort,
+//       products: productsOnPage,
+//       category: categories,
+//       productOffers: productOffers,
+//       categoryOffers: categoryOffers,
+//       count: count,
+//       productLength: productLength,
+//       totalPages: totalPages,
+//       currentPage: currentPage,
+//       selectedSort: sort, // Pass the selected sort option value to the template
+//     });
+//   } catch (error) {
+//     console.log(error.message);
+//     res.status(500).send("Internal Server Error");
+//   }
+// };
+
 const getShopPage = async (req, res) => {
   try {
     console.log("getShopPage triggered");
 
-    // Retrieve the value of the 'sort' parameter from the query string
-    console.log(`Received query: ${req.query.sort}`);
-    let sort;
+    const {
+      sort = "Price:High-Low",
+      query = "",
+      category = "",
+      page = 1,
+    } = req.query;
 
-    if (req.query.sort) {
-      sort = req.query.sort;
-    } else {
-      sort = "Price:High-Low";
-    }
-    // Retrieve sort value from query parameters
-    req.session.sort = sort;
-    console.log(sort);
-
-    // Process the value of 'sort' to define sorting options
     let sortOption = {};
-    if (sort === "Price:High-Low") {
-      sortOption = { salePrice: -1 }; // High to low
-    } else if (sort === "Price:Low-High") {
-      sortOption = { salePrice: 1 }; // Low to high
-    } else if (sort === "Name:A-Z") {
-      sortOption = { productName: 1 }; // A to Z
-    } else if (sort === "Name:Z-A") {
-      sortOption = { productName: -1 }; // Z to A
-    } else if (sort === "New-Arrivals") {
-      sortOption = { createdAt: 1 };
+    switch (sort) {
+      case "Price:High-Low":
+        sortOption = { salePrice: -1 };
+        break;
+      case "Price:Low-High":
+        sortOption = { salePrice: 1 };
+        break;
+      case "Name:A-Z":
+        sortOption = { productName: 1 };
+        break;
+      case "Name:Z-A":
+        sortOption = { productName: -1 };
+        break;
+      case "New-Arrivals":
+        sortOption = { createdAt: 1 };
+        break;
     }
 
-    // Construct the MongoDB query with sorting
-    let query = { totalQuantity: { $ne: 0 }, isBlocked: false };
-    let currentProduct;
-    if (sortOption) {
-      currentProduct = await Product.find(query).sort(sortOption);
-    } else {
-      currentProduct = await Product.find(query);
+    let queryObj = {
+      productName: { $regex: new RegExp(query, "i") },
+      isBlocked: false,
+    };
+    if (category) {
+      queryObj.category = category;
     }
-    // console.log("Sorted products:", currentProduct);
 
-    const productOffers = await productOffer
-      .find({ "productOffer.offerStatus": true })
-      .populate("productOffer.product");
-    const categoryOffers = await categoryOffer
-      .find({ "categoryOffer.offerStatus": true })
-      .populate("categoryOffer.category");
+    const currentProduct = await Product.find(queryObj).sort(sortOption);
 
-    // Paginate the results
-    const count = await Product.countDocuments(query);
-    const categories = await Category.find({ isListed: true });
-    console.log(categories);
-    const itemsPerPage = 3;
-    const currentPage = parseInt(req.query.page) || 1;
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
+    const itemsPerPage = 2;
+    const count = await Product.countDocuments(queryObj);
     const totalPages = Math.ceil(count / itemsPerPage);
-    const productsOnPage = currentProduct.slice(startIndex, endIndex);
-    const productLength = productsOnPage.length;
-    console.log(productLength);
-    console.log(count);
-    // Render the shop page with the sorted and paginated products
-    res.render("userView/shop-page", {
-      // user: user,
-      sort: sort,
-      products: productsOnPage,
-      category: categories,
-      productOffers: productOffers,
-      categoryOffers: categoryOffers,
-      count: count,
-      productLength: productLength,
-      totalPages: totalPages,
-      currentPage: currentPage,
-      selectedSort: sort, // Pass the selected sort option value to the template
-    });
+    const startIndex = (page - 1) * itemsPerPage;
+    const productsOnPage = await Product.find(queryObj)
+      .sort(sortOption)
+      .skip(startIndex)
+      .limit(itemsPerPage);
+
+    if (req.xhr) {
+      console.log("Sending AJAX response");
+      return res.json({
+        products: productsOnPage,
+        count: count,
+        totalPages: totalPages,
+        currentPage: page,
+      });
+    } else {
+      console.log("Rendering shop page");
+      const categories = await Category.find({ isListed: true });
+      console.log(categories);
+      res.render("userView/shop-page", {
+        products: productsOnPage,
+        categories,
+        totalPages,
+        currentPage: page,
+      });
+    }
   } catch (error) {
-    console.log(error.message);
-    res.status(500).send("Internal Server Error");
+    console.error(error);
+    res.render("error/404");
   }
 };
+
 
 const getProductDetailsPage = async (req, res) => {
   try {
@@ -569,117 +646,116 @@ const updateStock = async (req, res) => {
   }
 };
 
+// const searchProduct = async (req, res) => {
+//   try {
+//     console.log("searchProduct triggered");
+//     const { query } = req.query;
+//     console.log(query);
+//     console.log(req.session.sort);
+//     let products;
+//     if (req.session.category) {
+//       products = await Product.find({
+//         productName: { $regex: new RegExp(query, "i") },
+//         isBlocked: false,
+//         category: req.session.category,
+//       });
+//     } else if (req.session.sort) {
+//       if (req.session.sort === "Price:High-Low") {
+//         products = await Product.find({
+//           productName: { $regex: new RegExp(query, "i") },
+//           isBlocked: false,
+//         }).sort({ salePrice: -1 });
+//       } else if (req.session.sort === "Price:Low-High") {
+//         products = await Product.find({
+//           productName: { $regex: new RegExp(query, "i") },
+//           isBlocked: false,
+//         }).sort({ salePrice: 1 });
+//       } else if (req.session.sort === "Name:A-Z") {
+//         products = await Product.find({
+//           productName: { $regex: new RegExp(query, "i") },
+//           isBlocked: false,
+//         }).sort({ productName: 1 });
+//       } else if (req.session.sort === "Name:Z-A") {
+//         products = await Product.find({
+//           productName: { $regex: new RegExp(query, "i") },
+//           isBlocked: false,
+//         }).sort({ productName: -1 });
+//       } else if (req.session.sort === "New-Arrivals") {
+//         products = await Product.find({
+//           productName: { $regex: new RegExp(query, "i") },
+//           isBlocked: false,
+//         }).sort({ createdAt: 1 });
+//       }
+//     } else {
+//       products = await Product.find({
+//         productName: { $regex: new RegExp(query, "i") },
+//         isBlocked: false,
+//       });
+//     }
 
-const searchProduct = async (req, res) => {
-  try {
-    console.log("searchProduct triggered");
-    const { query } = req.query;
-    console.log(query);
-    console.log(req.session.sort);
-    let products;
-    if (req.session.category) {
-      products = await Product.find({
-        productName: { $regex: new RegExp(query, "i") },
-        isBlocked: false,
-        category: req.session.category,
-      });
-    } else if (req.session.sort) {
-      if (req.session.sort === "Price:High-Low") {
-        products = await Product.find({
-          productName: { $regex: new RegExp(query, "i") },
-          isBlocked: false,
-        }).sort({ salePrice: -1 });
-      } else if (req.session.sort === "Price:Low-High") {
-        products = await Product.find({
-          productName: { $regex: new RegExp(query, "i") },
-          isBlocked: false,
-        }).sort({ salePrice: 1 });
-      } else if (req.session.sort === "Name:A-Z") {
-        products = await Product.find({
-          productName: { $regex: new RegExp(query, "i") },
-          isBlocked: false,
-        }).sort({ productName: 1 });
-      } else if (req.session.sort === "Name:Z-A") {
-        products = await Product.find({
-          productName: { $regex: new RegExp(query, "i") },
-          isBlocked: false,
-        }).sort({ productName: -1 });
-      } else if (req.session.sort === "New-Arrivals") {
-        products = await Product.find({
-          productName: { $regex: new RegExp(query, "i") },
-          isBlocked: false,
-        }).sort({ createdAt: 1 });
-      }
-    } else {
-      products = await Product.find({
-        productName: { $regex: new RegExp(query, "i") },
-        isBlocked: false,
-      });
-    }
+//     console.log(products);
+//     const productOffers = await productOffer
+//       .find({ "productOffer.offerStatus": true })
+//       .populate("productOffer.product");
+//     const categoryOffers = await categoryOffer
+//       .find({ "categoryOffer.offerStatus": true })
+//       .populate("categoryOffer.category");
+//     const categories = await Category.find({ isListed: true });
+//     res.json([products, productOffers, categoryOffers, categories]);
+//   } catch (error) {
+//     console.error("Error searching for products:", error);
+//     res.status(500).json({ error: "Error searching for products" });
+//   }
+// };
 
-    console.log(products);
-    const productOffers = await productOffer
-      .find({ "productOffer.offerStatus": true })
-      .populate("productOffer.product");
-    const categoryOffers = await categoryOffer
-      .find({ "categoryOffer.offerStatus": true })
-      .populate("categoryOffer.category");
-    const categories = await Category.find({ isListed: true });
-    res.json([products, productOffers, categoryOffers, categories]);
-  } catch (error) {
-    console.error("Error searching for products:", error);
-    res.status(500).json({ error: "Error searching for products" });
-  }
-};
+// const filterProduct = async (req, res) => {
+//   try {
+//     console.log("filteredProduct triggered");
+//     const categoryId = req.query.category;
+//     const sort = req.query.sort;
+//     console.log(categoryId);
+//     req.session.category = categoryId;
+//     // console.log(categoryId);
+//     const user = req.session.id;
+//     let products;
 
-const filterProduct = async (req, res) => {
-  try {
-    console.log("filteredProduct triggered");
-    const categoryId = req.query.category;
-    const sort = req.query.sort;
-    console.log(categoryId);
-    req.session.category = categoryId;
-    // console.log(categoryId);
-    const user = req.session.id;
-    let products;
+//     if (categoryId) {
+//       products = await Product.find({
+//         category: categoryId,
+//         isBlocked: false,
+//       });
+//     } else {
+//       products = await Product.find({
+//         isBlocked: false,
+//       });
+//     }
 
-    if (categoryId) {
-      products = await Product.find({
-        category: categoryId,
-        isBlocked: false,
-      });
-    } else {
-      products = await Product.find({
-        isBlocked: false,
-      });
-    }
+//     const count = await Product.countDocuments();
 
-    const count = await Product.countDocuments();
+//     const categories = await Category.find({ isListed: true });
 
-    const categories = await Category.find({ isListed: true });
-
-    const itemsPerPage = 3;
-    const currentPage = parseInt(req.query.page) || 1;
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const totalPages = Math.ceil(products.length / itemsPerPage);
-    const productsOnPage = products.slice(startIndex, endIndex);
-    const productLength = productsOnPage.length;
-    res.render("userView/shop-page", {
-      user: user,
-      products: productsOnPage,
-      sort: sort,
-      category: categories,
-      productLength: productLength,
-      count: count,
-      totalPages: totalPages,
-      currentPage: currentPage,
-    });
-  } catch (error) {
-    console.log(error.message);
-    res.status(500).send("Internal Server Error");
-  }
-};
+//     const itemsPerPage = 3;
+//     const currentPage = parseInt(req.query.page) || 1;
+//     const startIndex = (currentPage - 1) * itemsPerPage;
+//     const endIndex = startIndex + itemsPerPage;
+//     const totalPages = Math.ceil(products.length / itemsPerPage);
+//     const productsOnPage = products.slice(startIndex, endIndex);
+//     const productLength = productsOnPage.length;
+//     res.render("userView/shop-page", {
+//       user: user,
+//       products: productsOnPage,
+//       sort: sort,
+//       category: categories,
+//       productLength: productLength,
+//       count: count,
+//       totalPages: totalPages,
+//       currentPage: currentPage,
+//     });
+//   } catch (error) {
+//     console.log(error.message);
+//     res.status(500).send("Internal Server Error");
+//   }
+// };
 
 const filterPrice = async (req, res) => {
   try {
@@ -727,6 +803,6 @@ module.exports = {
   getShopPage,
   stockPage,
   updateStock,
-  searchProduct,
-  filterProduct,
 };
+// searchProduct,
+// filterProduct,

@@ -127,7 +127,7 @@
                   Sub Total
                 </th>
                 <th scope="col" style="text-align: center; width: 15%">
-                  Status
+                  Order Status
                 </th>
                 <th scope="col" style="text-align: center; width: 20%">
                   Action
@@ -176,9 +176,11 @@
                   ₹<%= orderDetails[i].productDetails[0].salePrice *
                   orderDetails[i].orderedItems.quantity %>
                 </td>
+
                 <td style="text-align: center">
                   <%= orderDetails[i].orderStatus %>
                 </td>
+
                 <td
                   style="
                     padding: 15px;
@@ -231,7 +233,7 @@
                   </button>
                   <% } %> <% } %> <% } else if (orderDetails[i].paymentStatus
                   === 'pending') { %>
-                  <button
+                  <!-- <button
                     class="retry-btn"
                     data-order-id="<%= orderDetails[i].orderedItemId %>"
                     style="
@@ -243,13 +245,53 @@
                     "
                   >
                     Retry
-                  </button>
+                  </button> -->
+                  <p>Payment is Pending</p>
                   <% } %>
                 </td>
               </tr>
               <% } %>
               <tr>
                 <td colspan="6" style="padding-top: 20px; text-align: right">
+                  <dl>
+                    <dt>Coupon:</dt>
+                    <dd>
+                      <% if (orderDetails[0].coupon) { %> <% let couponUsed =
+                      coupons.find(coupon => coupon.couponCode ===
+                      orderDetails[0].coupon); if (couponUsed) { %> ₹<%=
+                      couponUsed.discount %> <% } else { %>
+                      <p>No coupons used</p>
+                      <% } %> <% } else { %>
+                      <p style="color: rgb(255, 0, 0);">No coupons used !!!!</p>
+                      <% } %>
+                    </dd>
+                  </dl>
+                  <dl>
+                    <% if(orderDetails[0].paymentStatus === 'pending'){ %>
+                    <dt>Payment Pending:</dt>
+                    <button
+                      class="retry-btn"
+                      data-order-id="<%= orderDetails[0].orderedItemId %>"
+                      style="
+                        background-color: #426aed;
+                        color: #ffffff;
+                        padding: 5px 10px;
+                        border: none;
+                        cursor: pointer;
+                      "
+                    >
+                      Retry
+                    </button>
+                    <% }else if(orderDetails[0].paymentStatus === 'success'){ %>
+                    <dt>Payment Status:</dt>
+                    <dd>
+                      <span
+                        class="badge rounded-pill alert-success text-success"
+                        >Success</span
+                      >
+                    </dd>
+                    <% } %>
+                  </dl>
                   <!-- <dl class="dlist">
                     <dt>Total:</dt>
                     <dd>₹<%= orderDetails[0].totalAmount %></dd>
@@ -264,7 +306,7 @@
                       <b class="h5">₹<%= orderDetails[0].totalAmount %></b>
                     </dd>
                   </dl>
-                  <dl class="dlist">
+                  <!-- <dl class="dlist">
                     <dt class="text-muted">Status:</dt>
                     <dd>
                       <span
@@ -272,7 +314,7 @@
                         >Cash On Delivery</span
                       >
                     </dd>
-                  </dl>
+                  </dl> -->
                 </td>
               </tr>
             </tbody>

@@ -21,7 +21,7 @@ userRoute.get("/login", userController.userLoginGet);
 userRoute.post("/login", userController.userLoginPost);
 userRoute.get("/logout", userController.userLogout);
 userRoute.get("/profile", isLoggedIn, userController.userProfile);
-userRoute.post("/updateUser",isLoggedIn,userController.updateUser);
+userRoute.post("/updateUser", isLoggedIn, userController.updateUser);
 userRoute.get("/changePassword", isLoggedIn, userController.changePasswordPage);
 userRoute.get("/forgotPassword", userController.getForgotPassPage);
 userRoute.post("/forgotPassword", userController.postVerifyEmail);
@@ -32,7 +32,11 @@ userRoute.post("/resetPassword", userController.postNewPassword);
 userRoute.get("/user-profile", isLoggedIn, userController.userProfile);
 userRoute.post("/add-address", isLoggedIn, userController.addAddress);
 userRoute.post("/cancel-order", isLoggedIn, userController.cancelOrder);
-userRoute.post("/conformReturn",isLoggedIn,userController.conformReturnMessage);
+userRoute.post(
+  "/conformReturn",
+  isLoggedIn,
+  userController.conformReturnMessage
+);
 userRoute.post("/return-order", isLoggedIn, userController.returnOrder);
 userRoute.get("/address", isLoggedIn, userController.addressPage);
 userRoute.post("/updateAddress", isLoggedIn, userController.updateAddress);
@@ -45,10 +49,10 @@ userRoute.post("/change-password", isLoggedIn, userController.updatePassword);
 
 // Products Routes
 userRoute.get("/productDetails/:id", productController.getProductDetailsPage);
-userRoute.get("/shopPage", productController.getShopPage);
-userRoute.get("/search-product", productController.searchProduct);
+userRoute.get("/shop", productController.getShopPage);
+// userRoute.get("/search-product", productController.searchProduct);
 userRoute.post("/filter-price", userController.filterPrice);
-userRoute.get("/filter", productController.filterProduct);
+// userRoute.get("/filter", productController.filterProduct);
 
 // WishList Route
 userRoute.get("/wishlist", isLoggedIn, wishlistController.viewWishlist);
@@ -92,7 +96,7 @@ userRoute.post("/removeCoupon", isLoggedIn, couponController.removeCoupon);
 
 //Wallet based routes
 userRoute.get("/get-wallet", isLoggedIn, walletController.getWallet);
-userRoute.post("/addMoney", isLoggedIn, walletController.addMoneyToWallet)
-userRoute.post("/payment-verify",isLoggedIn,walletController.verifyPayment)
+userRoute.post("/addMoney", isLoggedIn, walletController.addMoneyToWallet);
+userRoute.post("/payment-verify", isLoggedIn, walletController.verifyPayment);
 
 module.exports = userRoute;

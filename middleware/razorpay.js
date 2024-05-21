@@ -9,6 +9,7 @@ const createOrder = async (req, res) => {
   try {
     console.log("createOrder triggered");
     console.log(req.body.totalPrice);
+    console.log("req.session.couponTotal:", req.session.couponTotal);
     let amount
     if (req.session.couponTotal) {
       amount = parseInt(req.session.couponTotal);
@@ -17,6 +18,7 @@ const createOrder = async (req, res) => {
     }
      
     console.log(amount);
+    delete req.session.couponTotal;
 
     try {
       const orderDetails = await razorpay.orders.create({

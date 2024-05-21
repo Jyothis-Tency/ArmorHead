@@ -191,6 +191,39 @@
                 <td colspan="4" style="padding-top: 20px">
                   <article class="float-end">
                     <dl class="dlist">
+                      <dt>Coupon:</dt>
+                      <dd>
+                        <% if (orderDetails[0].coupon) { %> <% let couponUsed =
+                        coupons.find(coupon => coupon.couponCode ===
+                        orderDetails[0].coupon); if (couponUsed) { %>
+                        <p>₹<%= couponUsed.discount %></p>
+                        <% } else { %>
+                        <p>No coupons used</p>
+                        <% } %> <% } else { %>
+                        <p style="color: rgb(255, 0, 0)">
+                          No coupons used !!!!
+                        </p>
+                        <% } %>
+                      </dd>
+                    </dl>
+                    <dl class="dlist">
+                      <dt>Payment Status:</dt>
+                      <dd>
+                        <% if(orderDetails[0].paymentStatus === 'pending'){ %>
+                        <span
+                          class="badge rounded-pill alert-success text-success"
+                          >Pending</span
+                        >
+                        <% }else if(orderDetails[0].paymentStatus ===
+                        'success'){ %>
+                          <span
+                          class="badge rounded-pill alert-success text-success"
+                          >Success</span
+                        >
+                          <% } %>
+                      </dd>
+                    </dl>
+                    <dl class="dlist">
                       <dt>Grand total:</dt>
                       <dd>
                         <b class="h5">₹<%= orderDetails[0].totalAmount %></b>

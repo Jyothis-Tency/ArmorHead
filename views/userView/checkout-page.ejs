@@ -447,11 +447,11 @@
                         margin-top: 10px;
                       "
                     >
-                      <% if (couponApplied) { %>
+                      <% if (!couponApplied) { %>
                       <!-- If a coupon is applied, show Remove Coupon button -->
-                      Remove Coupon <% } else { %>
+                      Apply Coupon <% } else { %>
                       <!-- If no coupon is applied, show Apply Coupon button -->
-                      Apply Coupon <% } %>
+                      Remove Coupon <% } %>
                     </button>
                     <div id="couponMessage">
                       <div>
@@ -871,7 +871,10 @@
 
               // Redirect to appropriate page or handle as required
               createOrderWithStatusPending();
-              window.location.href = "/order-details";
+              
+              setTimeout(() => {
+                window.location.href = "/order-details";
+              }, 2000);
             }
 
             function createOrderWithStatusPending() {
@@ -893,6 +896,7 @@
                   console.log(data);
                   if (data.success) {
                     // Redirect to the appropriate page with the newly created order ID
+
                     window.location.href = "/order-details";
                   } else {
                     console.error("Error: Order creation failed");

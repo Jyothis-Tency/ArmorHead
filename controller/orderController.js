@@ -49,8 +49,8 @@ const checkoutRender = async (req, res) => {
   try {
     console.log("checkoutRender triggered");
     const user = req.session.userData;
-let couponApplied = req.session.coupon || ""; 
-    console.log("couponApplied : ", couponApplied);
+    let couponAppliedd = req.session.coupon || "";
+    console.log("couponApplied : ", couponAppliedd);
     cartCount = await cartHelper.getCartCount(user._id);
     let cartItems = await cartHelper.getAllCartItems(user._id);
     let totalAmount = await cartHelper.totalSubtotal(user._id, cartItems);
@@ -78,7 +78,7 @@ let couponApplied = req.session.coupon || "";
       cartCount,
       currencyFormat: cartHelper.currencyFormat,
       availableCoupons,
-      couponApplied,
+      couponApplied: couponAppliedd,
       walletDetails: wallet,
     });
   } catch (error) {
@@ -166,14 +166,18 @@ const orderDetailsUser = async (req, res) => {
           "returnProducts.status": 1,
           "returnProducts.returnReason": 1,
           "returnProducts.returnMessage": 1,
+          coupon: 1,
         },
       },
     ]);
+    const coupons = await Coupon.find();
+    console.log("coupons:", coupons);
     console.log("orderDetails : ", orderDetails, userAddress);
     // Pass the order details, returnMessage, and specificReturnData to the view
     res.render("userView/orderDetails-page", {
       orderDetails,
       userAddress,
+      coupons,
     });
   } catch (error) {
     res.render("userView/404");
@@ -294,13 +298,16 @@ const getOrderDetailsAdmin = async (req, res) => {
           returnProStatus: "$orderedItems.returnPro.status",
           returnProReason: "$orderedItems.returnPro.returnReason",
           returnProMessage: "$orderedItems.returnPro.returnMessage",
+          coupon: 1,
         },
       },
     ]);
     console.log("orderDetails : ", orderDetails);
+    const coupons = await Coupon.find();
     // Pass the order details, returnMessage, and specificReturnData to the view
     res.render("adminView/order-details", {
       orderDetails,
+      coupons,
     });
   } catch (error) {
     console.error("Error in getOrderDetailsAdmin:", error);
@@ -616,9 +623,8 @@ const placeOrder = async (req, res) => {
     }
     console.log("before delete coupon session :", req.session.coupon);
     console.log("delete session coupon");
-    req.session.coupon = "Coupon delete";
+    req.session.coupon = "";
     console.log("after delete coupon session:", req.session.coupon);
-    delete req.session.couponTotal;
   } catch (error) {
     console.error("Error during order placement:", error);
     res.status(400).json({ error: true, message: error.message });
@@ -630,6 +636,7 @@ const orderSuccess = async (req, res) => {
     console.log("orderSuccess triggered");
     const { paymentMethod, totalAmount, cartItems, orderedDate, coupon } =
       req.session.tempOrderDetails;
+    req.session.coupon = "";
     res.render("userView/orderSuccess-page", {
       cartItems,
       deliveryDate: orderedDate,
@@ -668,6 +675,9 @@ const failedRazorpay = async (req, res) => {
     console.log("inside failedRazorpay");
     let userId = req.session.userData._id;
     let coupon = req.session.coupon;
+    console.log("req.session.coupon:", req.session.coupon);
+    req.session.coupon = "";
+    console.log("req.session.coupon:", req.session.coupon);
     console.log(req.body);
     // Get the selected address ID from the request body
     let selectedAddressId = req.body.selected_address;
@@ -714,7 +724,7 @@ const failedRazorpay = async (req, res) => {
     await cartHelper.clearTheCart(userId);
   } catch (error) {
     console.log(error);
-    res.status(500).render("user/404");
+    res.status(500).render("userView/404");
   }
 };
 

@@ -1,904 +1,233 @@
 <%- include("../partials/userHeader") %>
-<main>
-  <!-- our-shop-breadcrumb -->
-  <section
-    style="
-      background-image: url('/user-assets/img/bg/page-title.png');
-      height: 150px;
-      padding: 20px 0;
-    "
-  >
-    <div style="max-width: 1200px; margin: 0 auto">
-      <div
-        style="
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          text-align: center;
-        "
-      >
-        <div>
-          <h1 style="font-size: 70px; color: #333">Our Shop</h1>
-          <ul
-            style="
-              list-style: none;
-              padding: 0;
-              display: flex;
-              justify-content: center;
-            "
-          >
-            <li style="margin-right: 10px">
-              <a href="/" style="text-decoration: none; color: #007bff">Home</a>
-            </li>
-            <li style="color: #666">Shop</li>
-          </ul>
-        </div>
-      </div>
+
+<div class="shop-container">
+  <div class="shop-title-container">
+    <h1>Shop Page</h1>
+  </div>
+
+  <div class="shop-content">
+    <!-- Side Panel -->
+    <div class="side-panel">
+      <!-- Sorting Options -->
+      <form id="sort-form" class="side-form">
+        <label for="sort">Sort By:</label>
+        <select name="sort" id="sort" class="form-control">
+          <option value="Price:High-Low">Price: High to Low</option>
+          <option value="Price:Low-High">Price: Low to High</option>
+          <option value="Name:A-Z">Name: A to Z</option>
+          <option value="Name:Z-A">Name: Z to A</option>
+          <option value="New-Arrivals">New Arrivals</option>
+        </select>
+      </form>
+
+      <!-- Search Bar -->
+      <form id="search-form" class="side-form">
+        <input
+          type="text"
+          id="search-query"
+          name="query"
+          class="form-control"
+          placeholder="Search products..."
+        />
+        <button type="submit" class="btn btn-primary">Search</button>
+      </form>
+
+      <!-- Category Filter -->
+      <form id="category-form" class="side-form">
+        <label for="category">Filter by Category:</label>
+        <select name="category" id="category" class="form-control">
+          <option value="">All Categories</option>
+          <% categories.forEach(cat => { %>
+          <option value="<%= cat._id %>"><%= cat.name %></option>
+          <% }) %>
+        </select>
+      </form>
     </div>
-  </section>
-  <!-- end-our-shop-breadcrumb -->
 
-  <!-- shop-area start -->
-  <section class="shop-area pt-100 pb-100" style="padding-top: 10px">
-    <div class="container">
-      <div class="row">
-        <div class="col-xl-9 col-lg-8">
-          <div class="row mb-10">
-            <div class="col-xl-5 col-lg-6 col-md-6">
-              <div class="product-showing mb-40">
-                <p>Showing <%= productLength %> of <%= count %> results</p>
-              </div>
-            </div>
-            <div class="col-xl-7 col-lg-6 col-md-6">
-              <div
-                class="shop-tab f-right"
-                style="display: flex; align-items: center"
-              >
-                <ul
-                  class="nav text-center"
-                  id="myTab"
-                  role="tablist"
-                  style="margin-right: 10px"
-                >
-                  <li class="nav-item">
-                    <!-- <h3 class="shop-title" style="margin-top: 10px;">Search by</h3> -->
-                  </li>
-                  <li class="nav-item">
-                    <form
-                      id="searchForm"
-                      style="display: flex; align-items: center"
-                    >
-                      <input
-                        type="text"
-                        id="searchInput"
-                        placeholder="Your keyword..."
-                        style="
-                          padding: 8px;
-                          border: 1px solid #ccc;
-                          border-radius: 4px 0 0 4px;
-                          outline: none;
-                        "
-                      />
-                      <button
-                        type="submit"
-                        style="
-                          height: 37px;
-                          background-color: #007bff;
-                          color: white;
-                          border: none;
-                          border-radius: 0 4px 4px 0;
-                          cursor: pointer;
-                        "
-                      >
-                        <i class="fa fa-search" style="padding: 8px"></i>
-                      </button>
-                    </form>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
+    <!-- Products Listing -->
+    <div id="products" class="products-grid"></div>
+  </div>
 
-          <div class="tab-content" id="myTabContent">
-            <div
-              class="tab-pane fade show active"
-              id="home"
-              role="tabpanel"
-              aria-labelledby="home-tab"
-            >
-              <div class="row">
-                <% for (let i = 0; i < products.length; i++) { %> <% const
-                product = products[i]; %>
-                <div class="col-xl-4 col-lg-6 col-md-6">
-                  <div class="product-wrapper mb-50">
-                    <div class="product-img mb-25">
-                      <a href="/productDetails/<%= product._id %>">
-                        <img
-                          src="/uploads/product-images/<%= product.productImage[0] %>"
-                          alt="<%= product.productName %>"
-                        />
-                        <input
-                          type="hidden"
-                          id="productId"
-                          value="<%= product._id %>"
-                        />
-                      </a>
-                      <!-- <div class="product-action text-center"> <a href="#" title="Shopping Cart" ><i class="flaticon-shopping-cart"></i ></a> <a href="#" title="Quick View" ><i class="flaticon-eye"></i ></a> <a href="#" data-toggle="tooltip" data-placement="right" title="Compare" ><i class="flaticon-compare"></i ></a> </div> -->
-                    </div>
-                    <div class="product-content pr-0">
-                      <h4>
-                        <a href="/productDetails/<%= product._id %>"
-                          ><%= product.productName %></a
-                        >
-                      </h4>
-                      <div class="product-meta">
-                        <div class="pro-price">
-                          <% if (product.totalQuantity === 0) { %>
-                          <span style="font-size: larger; color: red"
-                            >Out of stock!!!!</span
-                          >
-                          <% } else { %>
-                          <span
-                            style="
-                              font-size: larger;
-                              font-weight: bold;
-                              color: goldenrod;
-                            "
-                            >₹<%= product.salePrice %></span
-                          >
-                          <% if (product.regularPrice) { %>
-                          <span class="old-price"
-                            >₹<%= product.regularPrice %></span
-                          >
-                          <% } %> <% } %>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <% } %>
-              </div>
-            </div>
-            <div
-              class="tab-pane fade"
-              id="profile"
-              role="tabpanel"
-              aria-labelledby="profile-tab"
-            ></div>
-          </div>
+  <!-- Pagination -->
+  <div id="pagination" class="pagination-container"></div>
+</div>
 
-          <div class="pagination" style="text-align: center; margin-top: 20px">
-            <ul
-              style="
-                padding: 0;
-                list-style: none;
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-              "
-            >
-              <% if (currentPage > 1) { %>
-              <li style="margin-right: 10px">
-                <a
-                  href="/shopPage?page=<%= currentPage - 1 %>&sort=<%= sort %>"
-                  style="
-                    text-decoration: none;
-                    border: 1px solid #ddd;
-                    padding: 5px 10px;
-                    border-radius: 5px;
-                    background-color: #fff;
-                  "
-                >
-                  <i class="fas fa-angle-double-left" style="color: #333"></i>
-                </a>
-              </li>
-              <% } %> <% for (let i = 1; i <= totalPages; i++) { %>
-              <li
-                style="margin-right: 10px; <%= i === currentPage ? 'font-weight: bold;' : '' %>"
-              >
-                <a
-                  href="/shopPage?page=<%= i %>&sort=<%= sort %>"
-                  style="text-decoration: none; border: 1px solid #ddd; padding: 5px 10px; border-radius: 5px; background-color: <%= i === currentPage ? '#ff6347' : '#fff' %>; color: <%= i === currentPage ? '#fff' : '#333' %>;"
-                >
-                  <%= i %>
-                </a>
-              </li>
-              <% } %> <% if (currentPage < totalPages) { %>
-              <li style="margin-right: 10px">
-                <a
-                  href="/shopPage?page=<%= currentPage + 1 %>&sort=<%= sort %>"
-                  style="
-                    text-decoration: none;
-                    border: 1px solid #ddd;
-                    padding: 5px 10px;
-                    border-radius: 5px;
-                    background-color: #fff;
-                  "
-                >
-                  <i class="fas fa-angle-double-right" style="color: #333"></i>
-                </a>
-              </li>
-              <% } %>
-            </ul>
-          </div>
-        </div>
-
-        <div class="col-xl-3 col-lg-4">
-          <div class="sidebar-shop">
-            <div class="shop-widget">
-              <div class="dropdown">
-                <button class="dropbtn">Sort by</button>
-                <span><%= sort %></span>
-                <div class="dropdown-content">
-                  <a href="/shopPage?sort=Price:High-Low">Price: High-Low</a>
-                  <a href="/shopPage?sort=Price:Low-High">Price: Low-High</a>
-                  <a href="/shopPage?sort=Name:A-Z">Name: A-Z</a>
-                  <a href="/shopPage?sort=Name:Z-A">Name: Z-A</a>
-                  <a href="/shopPage?sort=New-Arrivals">New-Arrivals</a>
-                </div>
-              </div>
-            </div>
-
-            <div class="shop-widget">
-              <div class="widget_list widget_categories">
-                <h2>Product categories</h2>
-                <ul>
-                  <li>
-                    <a href="/filter?sort=<%= sort %>">All Categories</a>
-                  </li>
-                  <% for (let i = 0; i < category.length; i++) { %>
-                  <li>
-                    <a
-                      href="/filter?category=<%= category[i]._id %>&sort=<%= sort %>"
-                    >
-                      <%= category[i].name %>
-                    </a>
-                  </li>
-                  <% } %>
-                </ul>
-              </div>
-            </div>
-            <button id="change-button" hidden>Apply Change</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-  <!-- shop-area end -->
-</main>
 <%- include("../partials/userFooter") %>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
   $(document).ready(function () {
-    $("#slider-range").slider({
-      range: true,
-      min: 0,
-      max: 500,
-      values: [75, 300],
-      slide: function (event, ui) {
-        $("#amount").val("$" + ui.values[0] + " - $" + ui.values[1]);
-      },
+    loadProducts(1); // Initial load
+
+    // Handle sorting change
+    $("#sort").on("change", function () {
+      loadProducts(1); // Reset to page 1 on sort change
     });
-    $("#amount").val(
-      "$" +
-        $("#slider-range").slider("values", 0) +
-        " - $" +
-        $("#slider-range").slider("values", 1)
-    );
-  });
-</script>
 
-<script>
-  const searchForm = document.getElementById("searchForm");
-  const searchInput = document.getElementById("searchInput");
+    // Handle category filter change
+    $("#category").on("change", function () {
+      loadProducts(1); // Reset to page 1 on category change
+    });
 
-  searchForm.addEventListener("submit", async (event) => {
-    event.preventDefault(); // Prevent the default form submission behavior
+    // Handle search form submit
+    $("#search-form").on("submit", function (e) {
+      e.preventDefault();
+      loadProducts(1); // Reset to page 1 on new search
+    });
 
-    const searchQuery = searchInput.value.trim(); // Get the search query from the input field
+    // Handle pagination link click
+    $("#pagination").on("click", ".pagination-link", function (e) {
+      e.preventDefault();
+      const page = $(this).data("page");
+      loadProducts(page);
+    });
 
-    try {
-      const response = await fetch(
-        `/search-product?query=${encodeURIComponent(searchQuery)}`
-      );
+    function loadProducts(page) {
+      const query = $("#search-query").val();
+      const sort = $("#sort").val();
+      const category = $("#category").val();
 
-      if (response.ok) {
-        const [products, categories] = await response.json();
-        // Handle the fetched products and categories data
-        displayProducts(products);
-        displayCategories(categories);
-      } else {
-        console.error("Error searching for products:", response.status);
-      }
-    } catch (error) {
-      console.error("Error searching for products:", error);
+      $.ajax({
+        url: `/shop?page=${page}&query=${query}&sort=${sort}&category=${category}`,
+        method: "GET",
+        success: function (response) {
+          renderProducts(response.products);
+          renderPagination(response.totalPages, response.currentPage);
+        },
+        error: function (err) {
+          console.error("Error loading products:", err);
+        },
+      });
     }
-  });
 
-  // Function to display the fetched products
-  function displayProducts(products) {
-    const tabContent = document.querySelector(".tab-content");
-    const tabPane = tabContent.querySelector(".tab-pane.active");
-    const productList = tabPane.querySelector(".row");
-
-    // Clear the previous products
-    productList.innerHTML = "";
-
-    if (products.length === 0) {
-      productList.innerHTML = "<p>No products found.</p>";
-    } else {
-      let productHTML = "";
-
-      for (let i = 0; i < products.length; i++) {
-        const product = products[i];
-        const productItem = `
-        <div class="col-xl-4 col-lg-6 col-md-6">
-          <div class="product-wrapper mb-50">
-            <div class="product-img mb-25">
-              <a href="/productDetails/${product._id}">
-                <img src="/uploads/product-images/${
-                  product.productImage[1]
-                }" alt="${product.productName}" />
-              </a>
-              
-            </div>
-            <div class="product-content pr-0">
-              <h4><a href="/productDetails/${product._id}">${
-          product.productName
-        }</a></h4>
-              <div class="product-meta">
-                <div class="pro-price">
-                  <span>₹${product.salePrice}</span>
-                  ₹${
-                    product.regularPrice
-                      ? `<span class="old-price">${product.regularPrice}</span>`
-                      : ""
-                  }
+    function renderProducts(products) {
+      const productsHtml = products
+        .map(
+          (product) => `
+                <div class="product-card">
+                    <a href="/productDetails/${product._id}">
+                        <img src="/uploads/product-images/${product.productImage[0]}" alt="${product.productName}" class="product-image">
+                        <div class="product-info">
+                            <h2 class="product-name">${product.productName}</h2>
+                            <p class="product-price">₹${product.salePrice}</p>
+                        </div>
+                    </a>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-        productHTML += productItem;
-      }
-
-      productList.innerHTML = productHTML;
+            `
+        )
+        .join("");
+      $("#products").html(productsHtml);
     }
-  }
+
+    function renderPagination(totalPages, currentPage) {
+      const paginationHtml = Array.from(
+        { length: totalPages },
+        (_, i) => `
+                <a href="#" class="pagination-link ${
+                  currentPage === i + 1 ? "active" : ""
+                }" data-page="${i + 1}">${i + 1}</a>
+            `
+      ).join("");
+      $("#pagination").html(paginationHtml);
+    }
+  });
 </script>
 
 <style>
-  /* Global Styles */
-  body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f8f8f8;
+  .shop-container {
+    padding: 20px;
   }
 
-  /* Container Styles */
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 15px;
+  .shop-title {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .shop-title-container {
+    text-align: center;
   }
 
-  /* Breadcrumb Styles */
-  .breadcrumb-area {
-    height: 120px;
+  .shop-content {
     display: flex;
+  }
+
+  .products-grid {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
     justify-content: center;
-    align-items: center;
   }
 
-  .breadcrumb-text {
-    text-align: center;
+  .side-panel {
+    width: 250px;
+    margin-left: 20px;
+    border-left: 1px solid #ddd;
+    padding-left: 20px;
   }
 
-  .breadcrumb-menu {
-    padding: 0;
-    margin: 10px 0 0 0;
-    list-style: none;
-  }
-
-  .breadcrumb-menu li {
-    display: inline;
-    margin-right: 10px;
-  }
-
-  .breadcrumb-menu li:last-child {
-    font-weight: bold;
-  }
-
-  /* Shop Tab Styles */
-  .shop-tab {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-  }
-
-  .shop-tab .nav-item {
-    margin-right: 20px;
-  }
-
-  .pro-filter {
-    margin-bottom: 0;
-  }
-
-  /* Product Wrapper Styles */
-  .product-wrapper {
-    border-radius: 10px;
-    background-color: #fff;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-    margin-bottom: 30px;
-  }
-
-  .product-img {
-    position: relative;
-    overflow: hidden;
-    border-radius: 10px 10px 0 0;
-  }
-
-  .product-img img {
-    width: 100%;
-    height: auto;
-    border-radius: 10px 10px 0 0;
-  }
-
-  .product-action {
-    position: absolute;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: rgba(255, 255, 255, 0.8);
-    padding: 5px;
-    border-radius: 5px;
-  }
-
-  .product-action a {
-    color: #333;
-    margin: 0 5px;
-  }
-
-  .product-action a:hover {
-    color: #ff6347;
-  }
-
-  .product-content {
-    padding: 20px;
-  }
-
-  .product-content h4 {
-    font-size: 18px;
-    margin-bottom: 10px;
-  }
-
-  .product-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .pro-price {
-    font-weight: bold;
-  }
-
-  .old-price {
-    color: #999;
-    text-decoration: line-through;
-  }
-
-  /* Pagination Styles */
-  .basic-pagination {
-    margin-top: 20px;
-    text-align: center;
-  }
-
-  .basic-pagination ul {
-    padding: 0;
-    margin: 0;
-    list-style: none;
-  }
-
-  .basic-pagination ul li {
-    display: inline-block;
-    margin-right: 10px;
-  }
-
-  .basic-pagination ul li a {
-    display: inline-block;
-    padding: 5px 10px;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    color: #333;
-  }
-
-  .basic-pagination ul li.active a {
-    background-color: #ff6347;
-    color: #fff;
-  }
-
-  /* Sidebar Shop Styles */
-  .sidebar-shop {
-    background-color: #f2f2f2;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-    margin-bottom: 30px;
-  }
-
-  .shop-widget {
-    margin-bottom: 30px;
-  }
-
-  .shop-title {
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 15px;
-  }
-
-  .shop-search input[type="text"] {
-    width: calc(100% - 40px);
-    padding: 6px;
-    border: 1px solid #ddd;
-    border-radius: 5px 0 0 5px;
-    height: 38px; /* Adjusted height */
-  }
-
-  .shop-search button {
-    width: 40px;
-    height: 38px;
-    background-color: #ff6347;
-    border: none;
-    border-radius: 0 5px 5px 0;
-    color: #fff;
-    cursor: pointer;
-  }
-
-  .shop-link li {
-    margin-bottom: 10px;
-  }
-
-  .shop-link a {
-    color: #333;
-    text-decoration: none;
-    font-weight: bold;
-    transition: color 0.3s;
-  }
-
-  .shop-link a:hover {
-    color: #ff6347;
-  }
-
-  .shop-tag li {
-    margin-bottom: 10px;
-  }
-
-  .shop-tag a {
-    background-color: #f2f2f2;
-    color: #333;
-    padding: 5px 10px;
-    border-radius: 5px;
-    text-decoration: none;
-    transition: background-color 0.3s;
-  }
-
-  .shop-tag a:hover {
-    background-color: #ff6347;
-    color: #fff;
-  }
-
-  .shop-sidebar-product li {
+  .side-form {
     margin-bottom: 20px;
   }
 
-  .side-pro-img img {
+  .form-control {
     width: 100%;
-    height: auto;
-    border-radius: 5px;
-  }
-
-  .side-pro-content {
-    padding: 10px;
-  }
-
-  .side-pro-content h5 {
-    font-size: 16px;
-    margin-bottom: 5px;
-  }
-
-  .side-pro-price span {
-    font-weight: bold;
-    color: #ff6347;
-  }
-
-  .shop-sidebar-banner img {
-    width: 100%;
-    border-radius: 10px;
-  }
-  .sort-form {
-    display: inline-block;
-    margin-right: 10px; /* Adjust as needed */
-  }
-
-  .sort-form select {
-    padding: 5px; /* Adjust as needed */
-    font-size: 14px; /* Adjust as needed */
-    border: 1px solid #ccc; /* Adjust as needed */
-    border-radius: 5px; /* Adjust as needed */
-    background-color: #fff; /* Adjust as needed */
-    transition: border-color 0.3s; /* Add transition effect */
-  }
-
-  .sort-form select:hover {
-    border-color: #999; /* Change border color on hover */
-  }
-  .filter-button {
-    background-color: red;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 10px;
-    cursor: pointer;
-  }
-  .custom-checkbox-label {
-    display: block;
-    position: relative;
-    padding-left: 30px;
-    margin-bottom: 10px;
-    cursor: pointer;
-  }
-
-  .custom-checkbox-label input {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-  }
-
-  .custom-checkbox-icon {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 20px;
-    width: 20px;
-    background-color: #fff;
-    border: 2px solid #ccc;
-  }
-
-  .custom-checkbox-label:hover .custom-checkbox-icon {
-    background-color: #f0f0f0;
-  }
-
-  .custom-checkbox-label input:checked + .custom-checkbox-icon {
-    background-color: red;
-  }
-
-  .custom-checkbox-label input:checked + .custom-checkbox-icon::after {
-    content: "";
-    position: absolute;
-    left: 6px;
-    top: 2px;
-    width: 8px;
-    height: 13px;
-    border: solid #fff;
-    border-width: 0 3px 3px 0;
-    transform: rotate(45deg);
-  }
-</style>
-
-<style>
-  /* Price Filter Styles */
-  .shop-widget {
-    font-family: Arial, sans-serif;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    padding: 10px;
-    margin-bottom: 20px;
-  }
-
-  .shop-title {
-    font-size: 16px;
-    margin-bottom: 10px;
-  }
-
-  #slider-range {
-    width: 100%;
-    height: 10px;
     margin-top: 10px;
   }
 
-  #amount {
-    width: 100%;
-    border: none;
-    background: transparent;
-    color: #333;
-    font-weight: bold;
-    text-align: center;
-    margin-top: 5px;
-  }
-
-  #change-button {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-
-  #change-button:hover {
-    background-color: #0056b3;
-  }
-</style>
-
-<style>
-  /* Style for the slider container */
-  .price-filter {
-    margin-bottom: 20px;
-  }
-
-  /* Style for the slider track */
-  #slider-range {
-    background-color: #e0e0e0;
-    border-radius: 20px;
-    height: 15px;
-    width: 100%;
-    position: relative;
-  }
-
-  /* Style for the slider handle */
-  #slider-range .ui-slider-handle {
-    background-color: #fff;
-    border: 2px solid #2196f3;
-    border-radius: 50%;
-    height: 25px;
-    width: 25px;
-    position: absolute;
-    top: -5px;
-    cursor: pointer;
-    outline: none;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  }
-
-  /* Style for the slider value input */
-  #amount {
-    background-color: transparent;
-    border: none;
-    color: #2196f3;
-    font-size: 16px;
-    font-weight: bold;
-    width: 100%;
-    box-sizing: border-box;
+  .product-card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 250px;
     text-align: center;
   }
 
-  /* Style for the range selection */
-  #slider-range .ui-slider-range {
-    background-color: #2196f3;
-    border-radius: 20px;
-    height: 100%;
-    position: absolute;
-  }
-</style>
-
-<style>
-  /* Dropdown Button */
-  .dropbtn {
-    background-color: #333;
-    color: #fff;
-    padding: 12px 16px;
-    font-size: 16px;
-    border: none;
-    cursor: pointer;
-    border-radius: 4px;
-    font-family: "Segoe UI", Thaloma, Geneva, Verdana, sans-serif;
-    transition: background-color 0.3s ease;
+  .product-image {
+    width: 100%;
+    height: auto;
   }
 
-  /* Dropdown button on hover */
-  .dropbtn:hover {
-    background-color: #555;
+  .product-info {
+    padding: 15px;
   }
 
-  /* Dropdown container */
-  .dropdown {
-    position: relative;
-    display: inline-block;
-  }
-
-  /* Dropdown content (hidden by default) */
-  .dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #f1f1f1;
-    min-width: 200px;
-    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
-    z-index: 1;
-    border-radius: 4px;
-    font-family: "Segoe UI", Thaloma, Geneva, Verdana, sans-serif;
-  }
-
-  /* Links inside the dropdown */
-  .dropdown-content a {
-    color: #333;
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-    transition: background-color 0.3s ease;
-  }
-
-  /* Change color of dropdown links on hover */
-  .dropdown-content a:hover {
-    background-color: #ddd;
-  }
-
-  /* Show the dropdown menu on hover */
-  .dropdown:hover .dropdown-content {
-    display: block;
-  }
-</style>
-
-<style>
-  .widget_list.widget_categories {
-    background-color: #fff;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-    padding: 20px;
-  }
-
-  .widget_list.widget_categories h2 {
+  .product-name {
     font-size: 18px;
-    font-weight: 600;
-    color: #333;
-    margin-top: 0;
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #e0e0e0;
+    margin: 10px 0;
   }
 
-  .widget_list.widget_categories ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
+  .product-price {
+    font-size: 16px;
+    color: #888;
   }
 
-  .widget_list.widget_categories ul li {
-    margin-bottom: 10px;
-  }
-
-  .widget_list.widget_categories ul li:last-child {
-    margin-bottom: 0;
-  }
-
-  .widget_list.widget_categories ul li a {
+  .pagination-container {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+  }
+
+  .pagination-link {
+    margin: 0 5px;
+    padding: 5px 10px;
     text-decoration: none;
-    color: #555;
-    transition: color 0.3s ease;
-    font-size: 14px;
-    font-weight: 500;
-    padding: 8px 12px;
-    border-radius: 6px;
+    color: #007bff;
   }
 
-  .widget_list.widget_categories ul li a:hover {
-    color: #333;
-    background-color: #f5f5f5;
+  .pagination-link.active {
+    font-weight: bold;
+    color: #000;
   }
 
-  .widget_list.widget_categories ul li a span {
-    background-color: #e0e0e0;
-    color: #666;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 12px;
-    font-weight: 500;
+  .btn-primary {
+    background-color: #007bff;
+    border: none;
+    padding: 10px 15px;
+    color: #fff;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
   }
 </style>
