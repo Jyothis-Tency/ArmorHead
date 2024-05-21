@@ -2,7 +2,7 @@
 
 <div class="shop-container">
   <div class="shop-title-container">
-    <h1>Shop Page</h1>
+    <h1 class="shop-title">Shop Page</h1>
   </div>
 
   <div class="shop-content">
@@ -49,6 +49,7 @@
   </div>
 
   <!-- Pagination -->
+  <div id="currentpage" style="background-color:red center; margin-top: 20px"></div>
   <div id="pagination" class="pagination-container"></div>
 </div>
 
@@ -93,6 +94,7 @@
         success: function (response) {
           renderProducts(response.products);
           renderPagination(response.totalPages, response.currentPage);
+          renderCurrentPage(response.currentPage);
         },
         error: function (err) {
           console.error("Error loading products:", err);
@@ -109,7 +111,8 @@
                         <img src="/uploads/product-images/${product.productImage[0]}" alt="${product.productName}" class="product-image">
                         <div class="product-info">
                             <h2 class="product-name">${product.productName}</h2>
-                            <p class="product-price">₹${product.salePrice}</p>
+                            <p class="product-sale-price">₹${product.salePrice}</p>
+                        <p class="product-regular-price">₹${product.regularPrice}</p>          
                         </div>
                     </a>
                 </div>
@@ -130,6 +133,16 @@
       ).join("");
       $("#pagination").html(paginationHtml);
     }
+    function renderCurrentPage(currentPage) {
+      const currentPageHtml = `
+    <div style="text-align: center; margin-top: 20px;">
+      <p style="display: inline-block; padding: 10px 15px; background-color: red; color: #fff; border: 1px solid #007bff; border-radius: 5px;">
+        Current Page: ${currentPage}
+      </p>
+    </div>
+  `;
+      $("#currentpage").html(currentPageHtml);
+    }
   });
 </script>
 
@@ -142,6 +155,7 @@
     text-align: center;
     margin-bottom: 20px;
   }
+
   .shop-title-container {
     text-align: center;
   }
@@ -189,7 +203,7 @@
     height: auto;
   }
 
-  .product-info {
+ .product-info {
     padding: 15px;
   }
 
@@ -198,9 +212,16 @@
     margin: 10px 0;
   }
 
-  .product-price {
+  .product-sale-price {
     font-size: 16px;
-    color: #888;
+    color: #007bff;
+    font-weight: bold;
+  }
+
+  .product-regular-price {
+    font-size: 14px;
+    color: #ff0000;
+    text-decoration: line-through;
   }
 
   .pagination-container {
@@ -211,14 +232,24 @@
 
   .pagination-link {
     margin: 0 5px;
-    padding: 5px 10px;
+    padding: 10px 15px;
     text-decoration: none;
-    color: #007bff;
+    color: #ff0000;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  .pagination-link:hover {
+    background-color: #ff0000;
+    color: #fff;
   }
 
   .pagination-link.active {
     font-weight: bold;
-    color: #000;
+    background-color: #007bff;
+    color: #fff;
+    border-color: #007bff;
   }
 
   .btn-primary {
@@ -229,5 +260,10 @@
     cursor: pointer;
     width: 100%;
     margin-top: 10px;
+    transition: background-color 0.3s;
+  }
+
+  .btn-primary:hover {
+    background-color: #0056b3;
   }
 </style>

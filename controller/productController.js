@@ -482,7 +482,7 @@ const getShopPage = async (req, res) => {
         sortOption = { productName: -1 };
         break;
       case "New-Arrivals":
-        sortOption = { createdAt: 1 };
+        sortOption = { createdAt: -1 };
         break;
     }
 
@@ -496,7 +496,7 @@ const getShopPage = async (req, res) => {
 
     const currentProduct = await Product.find(queryObj).sort(sortOption);
 
-    const itemsPerPage = 2;
+    const itemsPerPage = 8;
     const count = await Product.countDocuments(queryObj);
     const totalPages = Math.ceil(count / itemsPerPage);
     const startIndex = (page - 1) * itemsPerPage;

@@ -462,9 +462,9 @@ const placeOrder = async (req, res) => {
       coupon,
     };
     if (paymentMethod === "cash on delivery") {
-      if (totalAmount > 1000) {
+      if (totalAmount < 1000) {
         throw new Error(
-          "Total amount must be at least ₹1000 or below for Cash on Delivery."
+          "Total amount must be at least ₹1000 or above for Cash on Delivery."
         );
       }
 

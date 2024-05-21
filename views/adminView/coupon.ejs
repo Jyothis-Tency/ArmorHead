@@ -165,9 +165,37 @@
     </div>
   </div>
 </section>
-<div id="editCouponModal" class="modal" style="display: none">
-  <div class="modal-content">
-    <span class="close" onclick="closeEditModal()">&times;</span>
+<div
+  id="editCouponModal"
+  class="modal"
+  style="
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    height: auto;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    padding: 20px;
+  "
+>
+  <div class="modal-content" style="position: relative">
+    <span
+      class="close"
+      onclick="closeEditModal()"
+      style="
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        cursor: pointer;
+        font-size: 20px;
+      "
+      >&times;</span
+    >
     <form method="post" action="/admin/edit-coupon">
       <input
         type="text"
@@ -362,14 +390,19 @@
   const today = new Date().toISOString().split("T")[0];
   const startingDate = document.getElementById("startingDate");
   const expiringDate = document.getElementById("expiringDate");
+  const editStartingDate = document.getElementById("edit-startingDate");
+  const editExpiringDate = document.getElementById("edit-expiringDate");
 
   // Set the minimum date for both input fields to today's date
   startingDate.min = today;
   expiringDate.min = today;
+  editStartingDate.min = today;
+  editExpiringDate.min = today;
 
   // Add an event listener to the starting date input field
   startingDate.addEventListener("change", function () {
     // Set the minimum date for the expiring date input field to the selected starting date
     expiringDate.min = this.value;
+    editExpiringDate.min = this.value
   });
 </script>

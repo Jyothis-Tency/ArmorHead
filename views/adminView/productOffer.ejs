@@ -28,7 +28,7 @@
         <th scope="col"><b>Offer Name</b></th>
         <th scope="col"><b>Product</b></th>
         <!-- <th scope="col"><b>Brand</b></th> -->
-        <th scope="col"><b>Discount</b></th>
+        <th scope="col"><b>Discount(%)</b></th>
         <th scope="col"><b>Starting Date</b></th>
         <th scope="col"><b>Ending Date</b></th>
         <th scope="col"><b>Delete</b></th>
@@ -41,7 +41,7 @@
         <td><%= i + 1 %></td>
         <td><%= prodoffers[i].name %></td>
         <td><%= prodoffers[i].productOffer.product.productName %></td>
-        <td><%= prodoffers[i].discount %> ₹</td>
+        <td><%= prodoffers[i].discount %> </td>
         <td><%= prodoffers[i].startingDate.toLocaleDateString() %></td>
         <td><%= prodoffers[i].endingDate.toLocaleDateString() %></td>
         <td width="10%">
@@ -118,7 +118,7 @@
             </select>
           </div>
           <div class="mb-3">
-            <label for="recipient-name" class="col-form-label">Discount </label>
+            <label for="recipient-name" class="col-form-label">Discount %</label>
             <input
               type="text"
               class="form-control"
@@ -218,7 +218,7 @@
           </div>
           <div class="mb-3">
             <label for="editOfferDiscount" class="col-form-label"
-              >Discount Amount</label
+              >Discount %</label
             >
             <input
               type="text"
@@ -269,6 +269,26 @@
 </div>
 
 <%- include("../partials/adminFooter") %>
+<script>
+  const today = new Date().toISOString().split("T")[0];
+  const startingDate = document.getElementById("startingDate");
+  const expiringDate = document.getElementById("expiringDate");
+  const editStartingDate = document.getElementById("editOfferStartDate");
+  const editExpiringDate = document.getElementById("editOfferEndDate");
+
+  // Set the minimum date for both input fields to today's date
+  startingDate.min = today;
+  expiringDate.min = today;
+  editStartingDate.min = today;
+  editExpiringDate.min = today;
+
+  // Add an event listener to the starting date input field
+  startingDate.addEventListener("change", function () {
+    // Set the minimum date for the expiring date input field to the selected starting date
+    expiringDate.min = this.value;
+    editExpiringDate.min = this.value
+  });
+</script>
 
 <script>
   document
