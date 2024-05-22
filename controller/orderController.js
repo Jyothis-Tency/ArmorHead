@@ -96,7 +96,7 @@ const orderDetailsList = async (req, res) => {
     const page = parseInt(req.query.page, 10) || 1;
 
     // Define the limit for the number of orders to display per page
-    const limit = 3;
+    const limit = 6;
 
     // Get the order details for the specified page and limit
     const orderDetails = await orderHelper.getOrderDetails(userId, page, limit);

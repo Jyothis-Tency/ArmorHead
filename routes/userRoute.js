@@ -74,7 +74,7 @@ userRoute.post(
 userRoute.post("/quantity-change", isLoggedIn, cartController.incDecQuantity);
 userRoute.post("/clear-cart", isLoggedIn, cartController.clearCart);
 
-// Purchase Routes
+// Order Routes
 userRoute.get("/checkoutPage", isLoggedIn, orderController.checkoutRender);
 userRoute.post("/place-order", isLoggedIn, orderController.placeOrder);
 userRoute.post("/createOrder", isLoggedIn, razorpay.createOrder);

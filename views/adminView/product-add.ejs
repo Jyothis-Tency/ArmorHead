@@ -244,98 +244,102 @@
     }
   }
 
- function validateAndSubmit() {
-  if (validateForm()) {
-    // If validation passes, submit the form
-    document.forms[0].submit(); // Assuming this is the first (and only) form on your page
-  }
-}
-
-function validateForm() {
-  // Reset previous error messages
-  resetErrorMessages();
-
-  let isValid = true;
-
-  const productName = document.getElementById("product_name").value.trim();
-  const regularPrice = document.getElementsByName("regularPrice")[0].value.trim();
-  const salePrice = document.getElementsByName("salePrice")[0].value.trim();
-  const smallQuantity = document.getElementsByName("small_quantity")[0].value.trim();
-  const mediumQuantity = document.getElementsByName("medium_quantity")[0].value.trim();
-  const largeQuantity = document.getElementsByName("large_quantity")[0].value.trim();
-
-  // Check if product name is not empty and contains more than just spaces
-  if (productName === "") {
-    displayErrorMessage("productName-error", "Product Name is required");
-    isValid = false;
-  } else if (!/\S/.test(productName)) {
-    displayErrorMessage("productName-error", "Product Name cannot contain only spaces");
-    isValid = false;
-  }
-
-  // Check if prices are positive numbers
-  if (isNaN(regularPrice) || regularPrice <= 0) {
-    displayErrorMessage("regularPrice-error", "Regular price must be a positive number");
-    isValid = false;
-  }
-
-  if (isNaN(salePrice) || salePrice <= 0) {
-    displayErrorMessage("salePrice-error", "Sale price must be a positive number");
-    isValid = false;
-  }
-
-  // Check if sale price is less than regular price
-  if (parseFloat(salePrice) >= parseFloat(regularPrice)) {
-    displayErrorMessage("salePrice-error", "Sale price must be less than Regular price");
-    isValid = false;
-  }
-
-  // Check if quantities are positive integers
-  if (!/^[1-9]\d*$/.test(smallQuantity)) {
-    displayErrorMessage("smallQuantity-error", "Small quantity must be a positive integer");
-    isValid = false;
-  }
-
-  if (!/^[1-9]\d*$/.test(mediumQuantity)) {
-    displayErrorMessage("mediumQuantity-error", "Medium quantity must be a positive integer");
-    isValid = false;
-  }
-
-  if (!/^[1-9]\d*$/.test(largeQuantity)) {
-    displayErrorMessage("largeQuantity-error", "Large quantity must be a positive integer");
-    isValid = false;
-  }
-
-  // Check if any non-image file is selected
-  const imageInput = document.getElementById("imageInput");
-  const files = imageInput.files;
-  const allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
-
-  for (let i = 0; i < files.length; i++) {
-    const file = files[i];
-    if (!allowedExtensions.test(file.name)) {
-      displayErrorMessage("imageInput-error", "Only .jpg, .jpeg, and .png files are allowed");
-      isValid = false;
-      break;
+  function validateAndSubmit() {
+    console.log("1");
+    if (validateForm()) {
+      // If validation passes, submit the form
+      document.forms[0].submit(); // Assuming this is the first (and only) form on your page
     }
   }
 
-  return isValid;
-}
+  function validateForm() {
+    // Reset previous error messages
+    resetErrorMessages();
 
-function displayErrorMessage(elementId, message) {
-  const errorElement = document.getElementById(elementId);
-  errorElement.innerText = message;
-  errorElement.style.display = "block";
-}
+    var isValid = true;
 
-function resetErrorMessages() {
-  const errorElements = document.querySelectorAll(".error-message");
-  errorElements.forEach(function (element) {
-    element.innerText = "";
-    element.style.display = "none";
-  });
-}
+    var productName = document.getElementById("product_name").value;
+    var regularPrice = document.getElementsByName("regularPrice")[0].value;
+    var salePrice = document.getElementsByName("salePrice")[0].value;
+    var smallQuantity = document.getElementsByName("small_quantity")[0].value;
+    var mediumQuantity = document.getElementsByName("medium_quantity")[0].value;
+    var largeQuantity = document.getElementsByName("large_quantity")[0].value;
+
+    // Check if product name is not empty
+    if (productName.trim() === "") {
+      displayErrorMessage("productName-error", "Product Name is required");
+      isValid = false;
+    }
+
+    // Check if prices are positive numbers
+    if (isNaN(regularPrice) || regularPrice <= 0) {
+      displayErrorMessage(
+        "regularPrice-error",
+        "Regular price must be a positive number"
+      );
+      isValid = false;
+    }
+
+    if (isNaN(salePrice) || salePrice <= 0) {
+      displayErrorMessage(
+        "salePrice-error",
+        "Sale price must be a positive number"
+      );
+      isValid = false;
+    }
+
+    // Check if sale price is less than regular price
+    if (parseFloat(salePrice) >= parseFloat(regularPrice)) {
+      displayErrorMessage(
+        "salePrice-error",
+        "Sale price must be less than Regular price"
+      );
+      isValid = false;
+    }
+
+    // Check if quantities are positive integers
+    if (!/^[1-9]\d*$/.test(smallQuantity)) {
+      displayErrorMessage(
+        "smallQuantity-error",
+        "Small quantity must be a positive integer"
+      );
+      isValid = false;
+    }
+
+    if (!/^[1-9]\d*$/.test(mediumQuantity)) {
+      displayErrorMessage(
+        "mediumQuantity-error",
+        "Medium quantity must be a positive integer"
+      );
+      isValid = false;
+    }
+
+    if (!/^[1-9]\d*$/.test(largeQuantity)) {
+      displayErrorMessage(
+        "largeQuantity-error",
+        "Large quantity must be a positive integer"
+      );
+      isValid = false;
+    }
+
+    // Additional checks can be added for other fields if needed
+
+    return isValid;
+  }
+
+  function displayErrorMessage(elementId, message) {
+    var errorElement = document.getElementById(elementId);
+    errorElement.innerText = message;
+    errorElement.style.display = "block";
+  }
+
+  function resetErrorMessages() {
+    var errorElements = document.querySelectorAll(".error-message");
+    errorElements.forEach(function (element) {
+      element.innerText = "";
+      element.style.display = "none";
+    });
+  }
 </script>
 
 <%- include("../partials/adminFooter") %>

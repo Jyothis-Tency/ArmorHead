@@ -258,14 +258,14 @@
                     required
                   />
                   <span id="repassword-error" class="error"></span>
-                  <label for="refer">Referral Code <span>(Optional)</span></label>
+                  <label for="refer"
+                    >Referral Code <span>(Optional)</span></label
+                  >
                   <input
                     id="refer"
                     name="referral"
                     type="text"
                     placeholder="Enter referral code..."
-                   
-                    
                   />
                   <span id="referral-error" class="error"></span>
 
@@ -301,6 +301,7 @@
         var name = document.getElementById("username").value.trim();
         var nameError = document.getElementById("name-error");
         var nameRegex = /^[a-zA-Z]+(?: [a-zA-Z]+)*$/; // Allows only letters and spaces, with no consecutive spaces
+
         if (!name || !nameRegex.test(name)) {
           nameError.textContent =
             "Please enter a valid name (only letters and spaces).";
@@ -313,6 +314,7 @@
         var email = document.getElementById("email-id").value.trim();
         var emailError = document.getElementById("email-error");
         var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/; // Ensures a minimum of 2 characters for the domain name
+
         if (!email || !emailRegex.test(email)) {
           emailError.textContent = "Please enter a valid email address.";
         } else {
@@ -324,6 +326,7 @@
         var phone = document.getElementById("phone").value.trim();
         var phoneError = document.getElementById("phone-error");
         var phoneRegex = /^\d{3}[-\s]?\d{3}[-\s]?\d{4}$/; // Allows common phone number formats
+
         if (!phone || !phoneRegex.test(phone)) {
           phoneError.textContent = "Please enter a valid phone number.";
         } else {
@@ -370,6 +373,7 @@
         var password = document.getElementById("pass").value.trim();
         var repassword = document.getElementById("repass").value.trim();
         var repasswordError = document.getElementById("repassword-error");
+
         if (!repassword || password !== repassword) {
           repasswordError.textContent = "Passwords do not match.";
         } else {
@@ -377,22 +381,22 @@
         }
       }
 
-      function validateReferralCode(input) {
-        const referralError = document.getElementById("referral-error");
-        const referralCode = input.value.trim();
+      // function validateReferralCode(input) {
+      //   const referralError = document.getElementById("referral-error");
+      //   const referralCode = input.value.trim();
 
-        // Add your validation logic here
-        // For example, you can check if the referral code is a specific format or length
+      //   // Add your validation logic here
+      //   // For example, you can check if the referral code is a specific format or length
 
-        if (referralCode.length !== 6 || !/^[A-Z0-9]+$/.test(referralCode)) {
-          referralError.textContent =
-            "Invalid referral code. It should be 6 alphanumeric characters.";
-          input.setCustomValidity("Invalid referral code");
-        } else {
-          referralError.textContent = "";
-          input.setCustomValidity("");
-        }
-      }
+      //   if (referralCode.length !== 6 || !/^[A-Z0-9]+$/.test(referralCode)) {
+      //     referralError.textContent =
+      //       "Invalid referral code. It should be 6 alphanumeric characters.";
+      //     input.setCustomValidity("Invalid referral code");
+      //   } else {
+      //     referralError.textContent = "";
+      //     input.setCustomValidity("");
+      //   }
+      // }
 
       $(document).ready(function () {
         $("#signupForm").on("submit", function (event) {

@@ -17,7 +17,7 @@ const app = express();
 
 //Database connection
 
-const mongoConnectionString = process.env.MONGO_STRING_LOCAL;
+const mongoConnectionString = process.env.MONGO_STRING;
 // const mongoConnectionString = process.env.MONGO_STRING_CLOUD;
 
 mongoose
