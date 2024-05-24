@@ -18,7 +18,6 @@ const app = express();
 //Database connection
 
 const mongoConnectionString = process.env.MONGO_STRING;
-// const mongoConnectionString = process.env.MONGO_STRING_CLOUD;
 
 mongoose
   .connect(mongoConnectionString)
@@ -60,4 +59,3 @@ app.listen(PORT, () => {
   console.log(`User Side : http://localhost:${PORT}`);
   console.log(`Admin Side : http://localhost:${PORT}/admin/login`);
 });
-
