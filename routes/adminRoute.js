@@ -8,7 +8,7 @@ const orderController = require("../controller/orderController");
 const offerController = require("../controller/offerController");
 const couponController = require("../controller/couponController");
 
-const { isAdmin } = require("../authentication/authentify");
+const { isAdmin } = require("../authentication/authenticator");
 
 //Admin Actions
 adminRoute.get("/login", adminController.getLoginPage);

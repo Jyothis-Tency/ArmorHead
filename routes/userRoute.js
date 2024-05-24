@@ -8,7 +8,7 @@ const wishlistController = require("../controller/wishlistController");
 const couponController = require("../controller/couponController");
 const walletController = require("../controller/walletController");
 const razorpay = require("../middleware/razorpay");
-const { isLoggedIn } = require("../authentication/authentify");
+const { isLoggedIn } = require("../authentication/authenticator");
 
 // User actions
 userRoute.get("/", userController.renderHome);
