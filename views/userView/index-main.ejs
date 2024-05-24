@@ -147,14 +147,7 @@
                   <% for (let i = 0; i < products.length; i++) { %> <% const
                   product = products[i]; %>
 
-                  <div
-                    class="pro-item"
-                    style="
-                      width: calc(25% - 15px); /* Reduced width */
-                      margin-right: 15px; /* Reduced margin */
-                      float: left;
-                    "
-                  >
+                  <div class="pro-item">
                     <div class="product-wrapper mb-30">
                       <!-- Reduced bottom margin -->
                       <div class="product-img mb-15">
@@ -254,153 +247,6 @@
     </div>
   </section>
   <!-- features-area end -->
-
-  <!-- latest-blog-area start -->
-  <!-- <section class="latest-blog-area pt-95 pb-60 box-90">
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-xl-12">
-          <div class="area-title text-center mb-50">
-            <h2>News Feeds</h2>
-            <p>Check it out every updates</p>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-xl-4 col-lg-6 col-md-6">
-          <div class="latest-news mb-40">
-            <div class="news__thumb mb-25">
-              <img src="img/blog/latest/lb4.jpg" alt="" />
-            </div>
-            <div class="news__caption white-bg">
-              <div class="news-meta mb-15">
-                <span><i class="far fa-calendar-check"></i> Sep 15, 2018 </span>
-                <span
-                  ><a href="#"><i class="far fa-user"></i> Diboli</a></span
-                >
-                <span
-                  ><a href="#"
-                    ><i class="far fa-comments"></i> 23 Comments</a
-                  ></span
-                >
-              </div>
-              <h2>
-                <a href="blog-details.html"
-                  >Inspiration Is Under Construction Business & Fashion 2019. In
-                  this situation we do that..</a
-                >
-              </h2>
-              <p>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-                enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                nisi ut aliquip ex ea commodo..
-              </p>
-            </div>
-          </div>
-        </div>
-        <div class="col-xl-4 col-lg-6 col-md-6">
-          <div class="latest-news mb-40">
-            <div class="news__thumb mb-25">
-              <img src="img/blog/latest/lb5.jpg" alt="" />
-            </div>
-            <div class="news__caption white-bg">
-              <div class="news-meta mb-15">
-                <span><i class="far fa-calendar-check"></i> Sep 15, 2018 </span>
-                <span
-                  ><a href="#"><i class="far fa-user"></i> Joly</a></span
-                >
-                <span
-                  ><a href="#"
-                    ><i class="far fa-comments"></i> 23 Comments</a
-                  ></span
-                >
-              </div>
-              <h2>
-                <a href="blog-details.html"
-                  >Inspiration Is Under Construction Business & Fashion 2019. In
-                  this situation we do that..</a
-                >
-              </h2>
-              <p>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-                enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                nisi ut aliquip ex ea commodo..
-              </p>
-            </div>
-          </div>
-        </div>
-        <div class="col-xl-4 col-lg-6 col-md-6">
-          <div class="latest-news mb-40">
-            <div class="news__thumb mb-25">
-              <img src="img/blog/latest/lb6.jpg" alt="" />
-            </div>
-            <div class="news__caption white-bg">
-              <div class="news-meta mb-15">
-                <span><i class="far fa-calendar-check"></i> Sep 15, 2018 </span>
-                <span
-                  ><a href="#"><i class="far fa-user"></i> Joly</a></span
-                >
-                <span
-                  ><a href="#"
-                    ><i class="far fa-comments"></i> 23 Comments</a
-                  ></span
-                >
-              </div>
-              <h2>
-                <a href="blog-details.html"
-                  >Inspiration Is Under Construction Business & Fashion 2019. In
-                  this situation we do that..</a
-                >
-              </h2>
-              <p>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-                enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                nisi ut aliquip ex ea commodo..
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section> -->
-  <!-- latest-blog-area end -->
-
-  <!-- subscribe-area start -->
-  <!-- <section class="subscribe-area box-105">
-    <div class="subscribe-inner black-bg pt-70 pb-20">
-      <div class="container-fluid">
-        <div class="row">
-          <div class="col-xl-5">
-            <div class="subscribe d-flex fix">
-              <div class="subscribe-icon">
-                <img src="img/icon/subscribe.png" alt="" />
-              </div>
-              <div class="area-title white-color mb-50">
-                <h2>Newsletter</h2>
-                <p>Subsribe here for get every single updates</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-xl-7">
-            <div class="subscribe fix">
-              <div class="subscribe-form mb-50">
-                <form action="#">
-                  <input type="text" placeholder="Enter your email address" />
-                  <button class="btn theme-btn" type="submit">
-                    subscribe now
-                  </button>
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section> -->
-  <!-- subscribe-area end -->
 </main>
 <script>
   const sliderActive = document.querySelector(".custom-slider-active");
@@ -411,150 +257,22 @@
 
   let currentSlide = 0;
 
-  function showSlide(n) {
-    currentSlide = (n + slides.length) % slides.length;
-    sliderActive.style.transform = `translateX(-${
-      currentSlide * slideWidth
-    }px)`;
-  }
+  prevBtn.addEventListener("click", () => {
+    currentSlide =
+      currentSlide === 0 ? slides.length - 1 : currentSlide - 1;
+    sliderActive.style.transform = `translateX(-${currentSlide * slideWidth}px)`;
+  });
 
-  prevBtn.addEventListener("click", () => showSlide(currentSlide - 1));
-  nextBtn.addEventListener("click", () => showSlide(currentSlide + 1));
+  nextBtn.addEventListener("click", () => {
+    currentSlide =
+      currentSlide === slides.length - 1 ? 0 : currentSlide + 1;
+    sliderActive.style.transform = `translateX(-${currentSlide * slideWidth}px)`;
+  });
+
+  window.addEventListener("resize", () => {
+    slideWidth = slides[0].offsetWidth; // Update the width on resize
+    sliderActive.style.transform = `translateX(-${currentSlide * slideWidth}px)`;
+  });
 </script>
+
 <%- include("../partials/userFooter") %>
-<style>
-  /* Global Styles */
-  body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f8f8f8;
-  }
-
-  /* Container Styles */
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 15px;
-  }
-
-  /* Banner Styles */
-  .banner-area {
-    padding-top: 30px;
-  }
-
-  .banner-2 {
-    position: relative;
-    margin-bottom: 30px;
-  }
-
-  .banner-trend span,
-  .banner-look span {
-    display: block;
-  }
-
-  .banner-look img {
-    margin-top: 15px;
-  }
-
-  /* Product Area Styles */
-  .product-area {
-    padding-top: 70px;
-    padding-bottom: 40px;
-  }
-
-  .area-title {
-    margin-bottom: 50px;
-  }
-
-  .product-tab {
-    margin-bottom: 40px;
-  }
-
-  .product-tab-content {
-    margin-bottom: 20px;
-  }
-
-  .product-content h4 a {
-    color: #000;
-  }
-
-  .pro-price span {
-    color: #ff6347;
-  }
-
-  .product-wishlist {
-    margin-top: 10px;
-  }
-
-  /* Features Area Styles */
-  .features-area {
-    padding-top: 100px;
-    padding-bottom: 50px;
-  }
-
-  .features {
-    display: flex;
-    justify-content: center;
-  }
-
-  .single-seatures {
-    width: 20%;
-    margin-bottom: 50px;
-  }
-
-  .single-seatures i {
-    font-size: 40px;
-    margin-bottom: 15px;
-  }
-
-  /* Latest Blog Area Styles */
-  .latest-blog-area {
-    padding-top: 95px;
-    padding-bottom: 60px;
-  }
-
-  .area-title h2 {
-    margin-bottom: 50px;
-  }
-
-  .news__caption h2 a {
-    color: #000;
-  }
-
-  /* Subscribe Area Styles */
-  .subscribe-area {
-    padding-top: 70px;
-    padding-bottom: 20px;
-  }
-
-  .subscribe-inner {
-    padding-top: 70px;
-    padding-bottom: 20px;
-  }
-
-  .subscribe-icon img {
-    width: 60px;
-    height: auto;
-    margin-right: 20px;
-  }
-
-  .pro-item {
-    width: calc(33.33% - 10px);
-    margin-right: 20px;
-    float: left;
-  }
-  .product-wrapper {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-  }
-  .product-img {
-    width: 100%;
-    height: auto;
-  }
-  .product-content {
-    font-size: 14px;
-  }
-</style>
