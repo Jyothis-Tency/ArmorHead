@@ -34,6 +34,7 @@ const addProducts = async (req, res) => {
       large_quantity,
     } = req.body;
     console.log(req.files);
+
     // Backend validation
     if (
       !productName ||
@@ -58,8 +59,7 @@ const addProducts = async (req, res) => {
     ) {
       return res.status(400).json({ error: "Invalid numeric values" });
     }
-    // const fetchedProducts = Product.productSizes.find({size:small});
-    // const lessThan = fetchedProducts.find({salePrice})
+
     const smallQuantity = parseInt(small_quantity, 10) || 0;
     const mediumQuantity = parseInt(medium_quantity, 10) || 0;
     const largeQuantity = parseInt(large_quantity, 10) || 0;
@@ -93,32 +93,46 @@ const addProducts = async (req, res) => {
     ];
 
     const images = [];
-    const imagesDir = path.join(
-      "D:",
-      "ArmorHead",
+    const imagesDir = path.resolve(
+      __dirname,
       "public",
       "uploads",
       "product-images"
     );
 
+    // Ensure the images directory exists
+    if (!fs.existsSync(imagesDir)) {
+      fs.mkdirSync(imagesDir, { recursive: true });
+    }
+
     if (req.files && req.files.length > 0) {
       for (let i = 0; i < req.files.length; i++) {
-        const imagePath = req.files[i].path; // Use the path provided in req.files
+        const imagePath = req.files[i].path;
 
-        // Crop the image using sharp
-        const croppedImage = await sharp(imagePath)
-          .extract({ left: 0, top: 0, width: 900, height: 900 })
-          .toFormat("jpeg")
-          .toBuffer();
+        try {
+          // Crop the image using sharp
+          const croppedImage = await sharp(imagePath)
+            .extract({ left: 0, top: 0, width: 900, height: 900 })
+            .toFormat("jpeg")
+            .toBuffer();
 
-        // Save the cropped image to a new file
-        const croppedFilename = `cropped_${req.files[i].filename}`;
-        const croppedFilePath = path.join(imagesDir, croppedFilename);
-        await sharp(croppedImage).toFile(croppedFilePath);
+          // Save the cropped image to a new file
+          const croppedFilename = `cropped_${req.files[i].filename}`;
+          const croppedFilePath = path.join(imagesDir, croppedFilename);
+          await sharp(croppedImage).toFile(croppedFilePath);
 
-        images.push(croppedFilename);
+          images.push(croppedFilename);
+        } catch (error) {
+          console.error(
+            `Error processing image ${req.files[i].filename}: ${error.message}`
+          );
+          return res
+            .status(500)
+            .json({ error: `Error processing image ${req.files[i].filename}` });
+        }
       }
     }
+
     console.log(images);
     const newProduct = new Product({
       productName,
@@ -130,6 +144,7 @@ const addProducts = async (req, res) => {
       totalQuantity,
       productImage: images,
     });
+
     console.log(newProduct);
     await newProduct.save();
     res.status(200).json({ success: "Product added successfully" });
