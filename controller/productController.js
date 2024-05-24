@@ -94,7 +94,7 @@ const addProducts = async (req, res) => {
 
     const images = [];
     const imagesDir = path.join(
-      "/",
+      "D:",
       "ArmorHead",
       "public",
       "uploads",
@@ -529,6 +529,7 @@ const getShopPage = async (req, res) => {
     res.render("error/404");
   }
 };
+
 
 const getProductDetailsPage = async (req, res) => {
   try {
