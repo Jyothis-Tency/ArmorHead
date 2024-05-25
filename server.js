@@ -19,14 +19,12 @@ const app = express();
 
 const mongoConnectionString = process.env.MONGO_STRING;
 
-mongoose
-  .connect(mongoConnectionString)
-  .then(() => {
-    console.log("Successfully connected to MongoDB");
-  })
-  .catch((error) => {
-    console.error("Error connecting to MongoDB:", error);
-  });
+mongoose.connect(mongoConnectionString, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  serverSelectionTimeoutMS: 30000, // 30 seconds
+  socketTimeoutMS: 45000, // 45 seconds
+});
 
 // Middlewares
 app.use("/", express.static(path.join(__dirname, "public")));

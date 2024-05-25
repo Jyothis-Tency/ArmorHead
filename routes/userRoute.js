@@ -50,9 +50,7 @@ userRoute.post("/change-password", isLoggedIn, userController.updatePassword);
 // Products Routes
 userRoute.get("/productDetails/:id", productController.getProductDetailsPage);
 userRoute.get("/shop", productController.getShopPage);
-// userRoute.get("/search-product", productController.searchProduct);
 userRoute.post("/filter-price", userController.filterPrice);
-// userRoute.get("/filter", productController.filterProduct);
 
 // WishList Route
 userRoute.get("/wishlist", isLoggedIn, wishlistController.viewWishlist);

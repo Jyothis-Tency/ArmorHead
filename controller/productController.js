@@ -93,8 +93,9 @@ const addProducts = async (req, res) => {
     ];
 
     const images = [];
-    const imagesDir = path.resolve(
-      __dirname,
+    const imagesDir = path.join(
+      "D:",
+      "ArmorHead",
       "public",
       "uploads",
       "product-images"
@@ -120,7 +121,7 @@ const addProducts = async (req, res) => {
           const croppedFilename = `cropped_${req.files[i].filename}`;
           const croppedFilePath = path.join(imagesDir, croppedFilename);
           await sharp(croppedImage).toFile(croppedFilePath);
-
+          
           images.push(croppedFilename);
         } catch (error) {
           console.error(
@@ -544,7 +545,6 @@ const getShopPage = async (req, res) => {
     res.render("error/404");
   }
 };
-
 
 const getProductDetailsPage = async (req, res) => {
   try {
