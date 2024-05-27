@@ -125,12 +125,10 @@ const addProducts = async (req, res) => {
           console.error(
             `Error processing image ${req.files[i].filename}: ${error.message}`
           );
-          return res
-            .status(500)
-            .json({
-              error: true,
-              message: `Error processing image ${req.files[i].filename}`,
-            });
+          return res.status(500).json({
+            error: true,
+            message: `Error processing image ${req.files[i].filename}`,
+          });
         }
       }
     }
