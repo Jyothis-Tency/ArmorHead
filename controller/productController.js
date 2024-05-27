@@ -22,6 +22,7 @@ const getAddProductPage = async (req, res) => {
 
 const addProducts = async (req, res) => {
   try {
+    console.log("addProducts triggered");
     console.log(req.body);
     const {
       productName,
@@ -46,7 +47,9 @@ const addProducts = async (req, res) => {
       !medium_quantity ||
       !large_quantity
     ) {
-      return res.status(400).json({ error: "Missing required fields" });
+      return res
+        .status(400)
+        .json({ error: true, message: "Missing required fields" });
     }
 
     // Additional validation for numeric fields
@@ -57,7 +60,9 @@ const addProducts = async (req, res) => {
       isNaN(medium_quantity) ||
       isNaN(large_quantity)
     ) {
-      return res.status(400).json({ error: "Invalid numeric values" });
+      return res
+        .status(400)
+        .json({ error: true, message: "Invalid numeric values" });
     }
 
     const smallQuantity = parseInt(small_quantity, 10) || 0;
@@ -68,19 +73,12 @@ const addProducts = async (req, res) => {
     const totalQuantity = smallQuantity + mediumQuantity + largeQuantity;
 
     // Check if a product with the same name or image already exists
-    const productExists = await Product.findOne({
-      $or: [
-        { productName },
-        { productImage: { $in: req.files.map((file) => file.filename) } },
-      ],
-    });
+    const productExists = await Product.findOne({ productName: productName });
     if (productExists) {
-      if (
-        productExists.productName === productName &&
-        productExists.productImage.includes(req.files[0].filename)
-      ) {
+      if (productExists.productName === productName) {
         return res.status(400).json({
-          error: "Product with the same name and image already exists",
+          error: true,
+          message: "Product with the same name already exists",
         });
       }
     }
@@ -121,7 +119,7 @@ const addProducts = async (req, res) => {
           const croppedFilename = `cropped_${req.files[i].filename}`;
           const croppedFilePath = path.join(imagesDir, croppedFilename);
           await sharp(croppedImage).toFile(croppedFilePath);
-          
+
           images.push(croppedFilename);
         } catch (error) {
           console.error(
@@ -129,7 +127,10 @@ const addProducts = async (req, res) => {
           );
           return res
             .status(500)
-            .json({ error: `Error processing image ${req.files[i].filename}` });
+            .json({
+              error: true,
+              message: `Error processing image ${req.files[i].filename}`,
+            });
         }
       }
     }
@@ -148,10 +149,13 @@ const addProducts = async (req, res) => {
 
     console.log(newProduct);
     await newProduct.save();
-    res.status(200).json({ success: "Product added successfully" });
+    res.status(200).json({
+      success: true,
+      message: "Product added successfully",
+    });
   } catch (error) {
     console.log(error.message);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ error: true, message: "Internal server error" });
   }
 };
 

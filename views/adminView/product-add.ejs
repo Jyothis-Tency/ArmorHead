@@ -19,10 +19,9 @@
       <div class="card mb-4">
         <div class="card-body">
           <form
-            method="post"
-            action="/admin/addProduct"
+            id="productForm"
             enctype="multipart/form-data"
-            onsubmit="return validateForm()"
+            onsubmit="return false;"
           >
             <div class="mb-4">
               <label for="product_name" class="form-label">Product Name</label>
@@ -177,7 +176,15 @@
     margin-right: 10px;
     /* Adjust margin as needed for spacing between thumbnails */
   }
+
+  .remove-icon {
+    cursor: pointer;
+    color: red;
+    margin-left: 5px;
+  }
 </style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
   // Array to store selected images
@@ -245,10 +252,66 @@
   }
 
   function validateAndSubmit() {
-    console.log("1");
     if (validateForm()) {
-      // If validation passes, submit the form
-      document.forms[0].submit(); // Assuming this is the first (and only) form on your page
+      // If validation passes, use Ajax to submit the form
+      const formData = new FormData(document.getElementById("productForm"));
+
+      // Append selected images to the formData
+      selectedImages.forEach((file, index) => {
+        formData.append("images", file);
+      });
+
+      $.ajax({
+        url: "/admin/addProduct",
+        type: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function (response) {
+          // Handle success
+          console.log("Product added successfully");
+          Toastify({
+            text: response.message,
+            duration: 1000,
+            close: true,
+            gravity: "top",
+            position: "right",
+            backgroundColor: "#4caf50", // Success message color
+          }).showToast();
+
+          // Redirect to admin dashboard after successful login
+          setTimeout(() => {
+            window.location.href = "/admin/productPage";
+          }, 1000);
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+          // Handle error
+          console.error("Error adding product:", errorThrown);
+          if (jqXHR.responseJSON && jqXHR.responseJSON.error) {
+            const errorMessage = jqXHR.responseJSON.message;
+            console.error("Error: " + errorMessage);
+            // Display the error message to the user using Toastify
+            Toastify({
+              text: errorMessage,
+              duration: 3000,
+              close: true,
+              gravity: "top",
+              position: "right",
+              backgroundColor: "#f44336", // Error message color
+            }).showToast();
+          } else {
+            console.error("An unknown error occurred.");
+            Toastify({
+              text: "An unknown error occurred.",
+              duration: 3000,
+              close: true,
+              gravity: "top",
+              position: "right",
+              backgroundColor: "#f44336", // Error message color
+            }).showToast();
+          }
+        },
+      });
     }
   }
 

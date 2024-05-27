@@ -208,18 +208,18 @@
             </div> <!-- table-responsive //end -->
              <!-- Additional Divs for Overall Statistics -->
     <div id="overall-sales">
-        <h3>Overall Sales Count : <%= count %></h3>
+        <h5>Overall Sales Count : <%= count %></h5>
     </div>
 
     <div id="overall-order-amount">
-        <h3>Overall Order Amount: ₹<%= totalOrderAmount %></h3>
+        <h5>Overall Order Amount: ₹<%= totalOrderAmount %></h5>
     </div>
 
     <div id="overall-discount">
         <% if (totalDiscountAmount || totalDiscountAmount===NaN) { %>
-                                    <h3>Overall Discount: ₹<%= totalDiscountAmount %></h3>
+                                    <h5>Overall Discount: ₹<%= totalDiscountAmount %></h5>
                                     <% } else { %>
-                                       <h3>Overall Discount: No Discount</h3>
+                                       <h5>Overall Discount: No Discount</h5>
                                     <% } %>
         
     </div>
