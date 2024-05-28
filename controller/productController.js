@@ -72,9 +72,7 @@ const addProducts = async (req, res) => {
     // Check if a product with the same name already exists
     const productExists = await Product.findOne({ productName: productName });
     if (productExists) {
-      return res
-        .status(400)
-        .json({ error: "Product with the same name and image already exists" });
+      throw new Error("Product with the same name and image already exists");
     }
 
     const productSizes = [
@@ -144,7 +142,7 @@ const addProducts = async (req, res) => {
     });
   } catch (error) {
     console.log(error.message);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(400).json({ error: error.message });
   }
 };
 
