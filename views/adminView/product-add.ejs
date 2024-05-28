@@ -4,7 +4,7 @@
   .error-message {
     color: red;
     margin-top: 5px;
-    font-size: 14px; /* Adjust font size as needed */
+    font-size: 14px;
   }
 </style>
 
@@ -18,11 +18,7 @@
     <div class="col-lg-6">
       <div class="card mb-4">
         <div class="card-body">
-          <form
-            id="productForm"
-            enctype="multipart/form-data"
-            onsubmit="return false;"
-          >
+          <form id="addProductForm" enctype="multipart/form-data">
             <div class="mb-4">
               <label for="product_name" class="form-label">Product Name</label>
               <input
@@ -34,7 +30,6 @@
               />
               <div id="productName-error" class="error-message"></div>
             </div>
-
             <div class="mb-4">
               <label class="form-label">Full description</label>
               <textarea
@@ -50,7 +45,7 @@
                 <div class="mb-4">
                   <label class="form-label">Regular price</label>
                   <input
-                    placeholder="$"
+                    placeholder="₹"
                     name="regularPrice"
                     type="text"
                     class="form-control border"
@@ -62,7 +57,7 @@
                 <div class="mb-4">
                   <label class="form-label">Sale price</label>
                   <input
-                    placeholder="$"
+                    placeholder="₹"
                     name="salePrice"
                     type="text"
                     class="form-control border"
@@ -74,98 +69,100 @@
             <div class="row">
               <div class="col-lg-4">
                 <div class="mb-4">
-                  <label class="form-label">Small (S)</label>
+                  <label class="form-label">Small</label>
                   <input
-                    placeholder="$"
+                    placeholder=""
                     name="small_quantity"
                     type="text"
                     class="form-control border"
                   />
+                  <div id="small-quantity-error" class="error-message"></div>
                 </div>
               </div>
               <div class="col-lg-4">
                 <div class="mb-4">
-                  <label class="form-label">Medium (M)</label>
+                  <label class="form-label">Medium</label>
                   <input
-                    placeholder="$"
+                    placeholder=""
                     name="medium_quantity"
                     type="text"
                     class="form-control border"
                   />
+                  <div id="medium-quantity-error" class="error-message"></div>
                 </div>
               </div>
               <div class="col-lg-4">
-                <div class="mb-3">
-                  <label class="form-label">Large (L)</label>
+                <div class="mb-4">
+                  <label class="form-label">Large</label>
                   <input
                     placeholder=""
                     name="large_quantity"
                     type="text"
                     class="form-control border"
                   />
+                  <div id="large-quantity-error" class="error-message"></div>
                 </div>
               </div>
-            </div>
-            <div class="card mb-4">
-              <div class="card-body">
-                <div class="row gx-2">
-                  <div class="col-sm-6 mb-3">
-                    <label class="form-label">Category</label>
-                    <select
-                      class="form-select border"
-                      style="width: 150px"
-                      name="category"
-                    >
-                      <% for (let i=0; i < cat.length; i++) { %>
-                      <option value="<%= cat[i]._id %>">
-                        <%= cat[i].name %>
-                      </option>
-                      <% } %>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="card mb-2">
-              <div class="card-header">
-                <h4>Choose images</h4>
-              </div>
-              <div class="border row">
-                <div
-                  id="addedImagesContainer"
-                  class="thumbnails-container"
-                ></div>
-              </div>
-              <div class="card-body">
-                <div class="input-upload">
-                  <img src="assets/imgs/theme/upload.svg" alt="" />
-                  <input
-                    class="form-control border"
-                    name="images"
-                    id="imageInput"
-                    type="file"
-                    multiple
-                  />
-                </div>
-              </div>
-            </div>
-            <div>
-              <button
-                class="btn btn-md rounded font-sm hover-up"
-                type="button"
-                onclick="validateAndSubmit()"
-              >
-                Publish
-              </button>
             </div>
           </form>
+        </div>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-body">
+          <div class="row gx-2">
+            <div class="col-sm-6 mb-3">
+              <label class="form-label">Category</label>
+              <select
+                class="form-select border"
+                style="width: 150px"
+                name="category"
+                form="addProductForm"
+              >
+                <% for (let i = 0; i < cat.length; i++) { %>
+                <option value="<%= cat[i]._id %>"><%= cat[i].name %></option>
+                <% } %>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mb-4">
+        <div class="card mb-2">
+          <div class="card-header">
+            <h4>Choose images</h4>
+          </div>
+          <div class="border row">
+            <div id="addedImagesContainer" class="thumbnails-container"></div>
+          </div>
+          <div class="card-body">
+            <div class="input-upload">
+              <img src="admin-assets/imgs/theme/upload.svg" alt="" />
+              <input
+                class="form-control border"
+                name="images"
+                id="imageInput"
+                type="file"
+                multiple
+                form="addProductForm"
+              />
+            </div>
+          </div>
+        </div>
+        <div>
+          <button
+            class="btn btn-md rounded font-sm hover-up"
+            type="button"
+            onclick="validateAndSubmit()"
+          >
+            Publish
+          </button>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Add an empty container div for displaying image thumbnails -->
 <style>
   .thumbnails-container {
     display: flex;
@@ -174,167 +171,114 @@
 
   .thumbnail {
     margin-right: 10px;
-    /* Adjust margin as needed for spacing between thumbnails */
-  }
-
-  .remove-icon {
-    cursor: pointer;
-    color: red;
-    margin-left: 5px;
   }
 </style>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
 <script>
-  // Array to store selected images
   const selectedImages = [];
-
-  // Function to handle file input change
   document
     .getElementById("imageInput")
     .addEventListener("change", handleFileSelect);
 
   function handleFileSelect(event) {
-    // Target the container for displaying thumbnails
-    const addedImagesContainer = document.getElementById(
-      "addedImagesContainer"
-    );
-
-    // Clear previous content
+    const newFiles = Array.from(event.target.files);
     addedImagesContainer.innerHTML = "";
-
-    const files = event.target.files;
-
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-
-      // Add the file to the selected images array
-      selectedImages.push(file);
-
-      // Create thumbnail element
-      const thumbnail = document.createElement("div");
-      thumbnail.classList.add("thumbnail");
-
-      // Create image element
-      const img = document.createElement("img");
-      img.src = URL.createObjectURL(file);
-      img.alt = "thumbnail";
-
-      // Set a fixed width for the image
-      img.style.width = "50px"; // Adjust the width as needed
-      img.style.height = "auto";
-
-      // Create remove icon
-      const removeIcon = document.createElement("span");
-      removeIcon.classList.add("remove-icon");
-      removeIcon.innerHTML = "&times;"; // Multiplication symbol as a cross
-
-      // Event listener to remove the image on icon click
-      removeIcon.addEventListener("click", function () {
-        // Remove the file from the selected images array
-        const index = selectedImages.indexOf(file);
-        if (index !== -1) {
-          selectedImages.splice(index, 1);
+    const allValidFiles = [];
+    selectedImages.forEach((file) => {
+      if (isValidImage(file)) {
+        allValidFiles.push(file);
+        const thumbnail = createThumbnail(file);
+        addedImagesContainer.appendChild(thumbnail);
+      }
+    });
+    newFiles.forEach((file) => {
+      if (isValidImage(file)) {
+        if (!allValidFiles.includes(file)) {
+          allValidFiles.push(file);
+          const thumbnail = createThumbnail(file);
+          addedImagesContainer.appendChild(thumbnail);
         }
+      }
+    });
+    selectedImages.length = 0;
+    selectedImages.push(...allValidFiles);
+  }
 
-        // Remove the thumbnail from the container
-        thumbnail.remove();
-      });
-
-      // Append elements to thumbnail
-      thumbnail.appendChild(img);
-      thumbnail.appendChild(removeIcon);
-
-      // Append thumbnail to the container
-      addedImagesContainer.appendChild(thumbnail);
+  function isValidImage(file) {
+    const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+    if (!allowedTypes.includes(file.type)) {
+      showToast(
+        "Invalid file type. Please upload images of type JPEG, PNG, or GIF.",
+        "red"
+      );
+      return false;
     }
+    const maxSizeBytes = 1024 * 1024;
+    if (file.size > maxSizeBytes) {
+      showToast(
+        "File size exceeds the maximum allowed size. Please upload images that are smaller than 1 MB.",
+        "red"
+      );
+      return false;
+    }
+    return true;
+  }
+
+  function createThumbnail(file) {
+    const thumbnail = document.createElement("div");
+    thumbnail.classList.add("thumbnail");
+    const img = document.createElement("img");
+    img.src = URL.createObjectURL(file);
+    img.alt = "thumbnail";
+    img.style.width = "50px";
+    img.style.height = "auto";
+    const removeIcon = document.createElement("span");
+    removeIcon.classList.add("remove-icon");
+    removeIcon.innerHTML = "&times;";
+    removeIcon.addEventListener("click", function () {
+      const index = selectedImages.indexOf(file);
+      if (index !== -1) {
+        selectedImages.splice(index, 1);
+      }
+      thumbnail.remove();
+    });
+    thumbnail.appendChild(img);
+    thumbnail.appendChild(removeIcon);
+    return thumbnail;
   }
 
   function validateAndSubmit() {
     if (validateForm()) {
-      // If validation passes, use Ajax to submit the form
-      const formData = new FormData(document.getElementById("productForm"));
-
-      // Append selected images to the formData
-      selectedImages.forEach((file, index) => {
-        formData.append("images", file);
-      });
-
-      $.ajax({
-        url: "/admin/addProduct",
-        type: "POST",
-        data: formData,
-        processData: false,
-        contentType: false,
-        success: function (response) {
-          // Handle success
-          console.log("Product added successfully");
-          Toastify({
-            text: response.message,
-            duration: 1000,
-            close: true,
-            gravity: "top",
-            position: "right",
-            backgroundColor: "#4caf50", // Success message color
-          }).showToast();
-
-          // Redirect to admin dashboard after successful login
-          setTimeout(() => {
-            window.location.href = "/admin/productPage";
-          }, 1000);
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-          // Handle error
-          console.error("Error adding product:", errorThrown);
-          if (jqXHR.responseJSON && jqXHR.responseJSON.error) {
-            const errorMessage = jqXHR.responseJSON.message;
-            console.error("Error: " + errorMessage);
-            // Display the error message to the user using Toastify
-            Toastify({
-              text: errorMessage,
-              duration: 3000,
-              close: true,
-              gravity: "top",
-              position: "right",
-              backgroundColor: "#f44336", // Error message color
-            }).showToast();
-          } else {
-            console.error("An unknown error occurred.");
-            Toastify({
-              text: "An unknown error occurred.",
-              duration: 3000,
-              close: true,
-              gravity: "top",
-              position: "right",
-              backgroundColor: "#f44336", // Error message color
-            }).showToast();
-          }
-        },
-      });
+      sendProductData();
     }
   }
 
   function validateForm() {
-    // Reset previous error messages
     resetErrorMessages();
+    let isValid = true;
+    const productName = document.getElementById("product_name").value;
+    const regularPrice = document.getElementsByName("regularPrice")[0].value;
+    const salePrice = document.getElementsByName("salePrice")[0].value;
+    const smallQuantity = document.getElementsByName("small_quantity")[0].value;
+    const mediumQuantity =
+      document.getElementsByName("medium_quantity")[0].value;
+    const largeQuantity = document.getElementsByName("large_quantity")[0].value;
+    const specialCharsRegex = /[!@#$%^&*(),.?":{}|<>]/;
 
-    var isValid = true;
-
-    var productName = document.getElementById("product_name").value;
-    var regularPrice = document.getElementsByName("regularPrice")[0].value;
-    var salePrice = document.getElementsByName("salePrice")[0].value;
-    var smallQuantity = document.getElementsByName("small_quantity")[0].value;
-    var mediumQuantity = document.getElementsByName("medium_quantity")[0].value;
-    var largeQuantity = document.getElementsByName("large_quantity")[0].value;
-
-    // Check if product name is not empty
-    if (productName.trim() === "") {
+    if (productName === "") {
       displayErrorMessage("productName-error", "Product Name is required");
+      isValid = false;
+    } else if (specialCharsRegex.test(productName)) {
+      displayErrorMessage(
+        "productName-error",
+        "Product Name should not contain special characters"
+      );
       isValid = false;
     }
 
-    // Check if prices are positive numbers
     if (isNaN(regularPrice) || regularPrice <= 0) {
       displayErrorMessage(
         "regularPrice-error",
@@ -351,7 +295,6 @@
       isValid = false;
     }
 
-    // Check if sale price is less than regular price
     if (parseFloat(salePrice) >= parseFloat(regularPrice)) {
       displayErrorMessage(
         "salePrice-error",
@@ -360,10 +303,9 @@
       isValid = false;
     }
 
-    // Check if quantities are positive integers
     if (!/^[1-9]\d*$/.test(smallQuantity)) {
       displayErrorMessage(
-        "smallQuantity-error",
+        "small-quantity-error",
         "Small quantity must be a positive integer"
       );
       isValid = false;
@@ -371,7 +313,7 @@
 
     if (!/^[1-9]\d*$/.test(mediumQuantity)) {
       displayErrorMessage(
-        "mediumQuantity-error",
+        "medium-quantity-error",
         "Medium quantity must be a positive integer"
       );
       isValid = false;
@@ -379,29 +321,107 @@
 
     if (!/^[1-9]\d*$/.test(largeQuantity)) {
       displayErrorMessage(
-        "largeQuantity-error",
+        "large-quantity-error",
         "Large quantity must be a positive integer"
       );
       isValid = false;
     }
 
-    // Additional checks can be added for other fields if needed
-
     return isValid;
   }
 
-  function displayErrorMessage(elementId, message) {
-    var errorElement = document.getElementById(elementId);
-    errorElement.innerText = message;
-    errorElement.style.display = "block";
+  function resetErrorMessages() {
+    const errorMessages = document.querySelectorAll(".error-message");
+    errorMessages.forEach((element) => {
+      element.textContent = "";
+    });
   }
 
-  function resetErrorMessages() {
-    var errorElements = document.querySelectorAll(".error-message");
-    errorElements.forEach(function (element) {
-      element.innerText = "";
-      element.style.display = "none";
+  function displayErrorMessage(elementId, message) {
+    const errorElement = document.getElementById(elementId);
+    if (errorElement) {
+      errorElement.textContent = message;
+    }
+  }
+
+  function sendProductData() {
+    console.log("sendProductData triggered");
+    const formData = new FormData();
+    formData.append(
+      "productName",
+      document.getElementById("product_name").value
+    );
+    formData.append(
+      "productDescription",
+      document.querySelector('textarea[name="productDescription"]').value
+    );
+    formData.append(
+      "category",
+      document.querySelector('select[name="category"]').value
+    );
+    formData.append(
+      "regularPrice",
+      document.querySelector('input[name="regularPrice"]').value
+    );
+    formData.append(
+      "salePrice",
+      document.querySelector('input[name="salePrice"]').value
+    );
+    formData.append(
+      "small_quantity",
+      document.querySelector('input[name="small_quantity"]').value
+    );
+    formData.append(
+      "medium_quantity",
+      document.querySelector('input[name="medium_quantity"]').value
+    );
+    formData.append(
+      "large_quantity",
+      document.querySelector('input[name="large_quantity"]').value
+    );
+
+    selectedImages.forEach((file, index) => {
+      formData.append(
+        "images",
+        file,
+        `image-${index}.${file.name.split(".").pop()}`
+      );
     });
+
+    $.ajax({
+      url: "/admin/addProduct",
+      type: "POST",
+      data: formData,
+      processData: false,
+      contentType: false,
+      success: function (result) {
+        if (result.success) {
+          showToast(result.message, "#4caf50"); // Success message color
+          setTimeout(() => {
+            window.location.href = "/admin/productPage";
+          }, 2000);
+        } else if (result.error) {
+          showToast(result.message, "#f44336"); // Error message color
+        }
+      },
+      error: function (xhr) {
+        let message = "An error occurred while submitting the form.";
+        if (xhr.responseJSON && xhr.responseJSON.message) {
+          message = xhr.responseJSON.message;
+        }
+        showToast(message, "#f44336"); // Error message color
+      },
+    });
+  }
+
+  function showToast(message, backgroundColor) {
+    Toastify({
+      text: message,
+      duration: 3000,
+      gravity: "top",
+      position: "right",
+      backgroundColor: backgroundColor,
+    }).showToast();
   }
 </script>
 

@@ -23,7 +23,8 @@ const getAddProductPage = async (req, res) => {
 const addProducts = async (req, res) => {
   try {
     console.log("addProducts triggered");
-    console.log(req.body);
+    console.log("req.body:", req.body);
+
     const {
       productName,
       productDescription,
@@ -34,7 +35,7 @@ const addProducts = async (req, res) => {
       medium_quantity,
       large_quantity,
     } = req.body;
-    console.log(req.files);
+    console.log("req.files:", req.files);
 
     // Backend validation
     if (
@@ -72,22 +73,20 @@ const addProducts = async (req, res) => {
     // Calculate total quantity
     const totalQuantity = smallQuantity + mediumQuantity + largeQuantity;
 
-    // Check if a product with the same name or image already exists
+    // Check if a product with the same name already exists
     const productExists = await Product.findOne({ productName: productName });
     if (productExists) {
-      if (productExists.productName === productName) {
-        return res.status(400).json({
-          error: true,
-          message: "Product with the same name already exists",
-        });
-      }
+      console.log("productExists");
+      return res.status(400).json({
+        error: true,
+        message: "Product with the same name already exists",
+      });
     }
 
     const productSizes = [
       { size: "Small", quantity: smallQuantity },
       { size: "Medium", quantity: mediumQuantity },
       { size: "Large", quantity: largeQuantity },
-      // Add more sizes if needed
     ];
 
     const images = [];
