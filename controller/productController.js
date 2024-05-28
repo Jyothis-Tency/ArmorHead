@@ -48,9 +48,7 @@ const addProducts = async (req, res) => {
       !medium_quantity ||
       !large_quantity
     ) {
-      return res
-        .status(400)
-        .json({ error: true, message: "Missing required fields" });
+      return res.json({ success: false, message: "Missing required fields" });
     }
 
     // Additional validation for numeric fields
@@ -61,9 +59,7 @@ const addProducts = async (req, res) => {
       isNaN(medium_quantity) ||
       isNaN(large_quantity)
     ) {
-      return res
-        .status(400)
-        .json({ error: true, message: "Invalid numeric values" });
+      return res.json({ success: false, message: "Invalid numeric values" });
     }
 
     const smallQuantity = parseInt(small_quantity, 10) || 0;
@@ -77,8 +73,8 @@ const addProducts = async (req, res) => {
     const productExists = await Product.findOne({ productName: productName });
     if (productExists) {
       console.log("productExists");
-      return res.status(400).json({
-        error: true,
+      return res.json({
+        success: false,
         message: "Product with the same name already exists",
       });
     }
@@ -124,8 +120,8 @@ const addProducts = async (req, res) => {
           console.error(
             `Error processing image ${req.files[i].filename}: ${error.message}`
           );
-          return res.status(500).json({
-            error: true,
+          return res.json({
+            success: false,
             message: `Error processing image ${req.files[i].filename}`,
           });
         }
