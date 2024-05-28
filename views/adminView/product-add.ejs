@@ -301,7 +301,15 @@
             method: 'POST',
             body: formData
         })
-        .then(response => response.json())
+        .then(response => {
+    // Check if the response is JSON
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.indexOf('application/json') !== -1) {
+      return response.json();
+    } else {
+      throw new Error('Unexpected response format');
+    }
+  })
         .then(data => {
             if (data.success) {
                 Toastify({
