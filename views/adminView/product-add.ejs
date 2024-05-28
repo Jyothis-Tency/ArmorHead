@@ -304,7 +304,8 @@
         .then(response => {
     // Check if the response is JSON
     console.log("response : ",response);
-    console.log(response.json());
+    let ressss = response.json()
+    console.log();
     const contentType = response.headers.get('content-type');
     if (contentType && contentType.indexOf('application/json') !== -1) {
       console.log("if contentType");
