@@ -404,14 +404,6 @@
           showToast(result.message, "#f44336"); // Error message color
         }
       },
-      error: function (xhr) {
-        console.log("error");
-        let message = "An error occurred while submitting the form.";
-        if (xhr.responseJSON && xhr.responseJSON.message) {
-          message = xhr.responseJSON.message;
-        }
-        showToast(message, "#f44336"); // Error message color
-      },
     });
   }
 
