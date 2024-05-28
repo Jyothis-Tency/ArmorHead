@@ -400,15 +400,19 @@
           setTimeout(() => {
             window.location.href = "/admin/productPage";
           }, 2000);
-        } else {
+        } else if (result.error) {
           showToast(result.message, "#f44336"); // Error message color
         }
       },
-      error: function (xhr) {
-        console.log("error");
+      error: function (response) {
         let message = "An error occurred while submitting the form.";
-        if (xhr.responseJSON && xhr.responseJSON.message) {
-          message = xhr.responseJSON.message;
+        try {
+          const responseData = JSON.parse(response.responseText);
+          if (responseData && responseData.message) {
+            message = responseData.message;
+          }
+        } catch (e) {
+          // Fallback to the default message
         }
         showToast(message, "#f44336"); // Error message color
       },

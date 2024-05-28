@@ -73,8 +73,8 @@ const addProducts = async (req, res) => {
     const productExists = await Product.findOne({ productName: productName });
     if (productExists) {
       console.log("productExists");
-      return res.json({
-        success: false,
+      return res.status(400).json({
+        error: true,
         message: "Product with the same name already exists",
       });
     }
