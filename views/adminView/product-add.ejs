@@ -182,51 +182,56 @@
   </div>
 </section>
 <script>
-  // Array to store selected images
+  const maxFileSize = 2 * 1024 * 1024; // 2 MB
+  const maxTotalFileSize = 10 * 1024 * 1024; // 10 MB total for all files
+  const maxFileCount = 5;
   const selectedImages = [];
 
-  // Function to handle file input change
   document
     .getElementById("imageInput")
     .addEventListener("change", handleFileSelect);
 
   function handleFileSelect(event) {
-    const newFiles = Array.from(event.target.files); // Create a copy of the FileList object
+    const newFiles = Array.from(event.target.files);
+    const addedImagesContainer = document.getElementById(
+      "addedImagesContainer"
+    );
 
-    // Clear previous content
-    addedImagesContainer.innerHTML = "";
+    let totalSize =
+      selectedImages.reduce((acc, file) => acc + file.size, 0) +
+      newFiles.reduce((acc, file) => acc + file.size, 0);
 
-    const allValidFiles = [];
+    if (selectedImages.length + newFiles.length > maxFileCount) {
+      Swal.fire({
+        icon: "error",
+        title: "Too many files",
+        text: `You can upload a maximum of ${maxFileCount} images.`,
+      });
+      return;
+    }
 
-    // Process previously selected images
-    selectedImages.forEach((file) => {
-      if (isValidImage(file)) {
-        allValidFiles.push(file);
+    if (totalSize > maxTotalFileSize) {
+      Swal.fire({
+        icon: "error",
+        title: "Total file size exceeds limit",
+        text: `Total upload size must be less than ${
+          maxTotalFileSize / (1024 * 1024)
+        } MB.`,
+      });
+      return;
+    }
+
+    newFiles.forEach((file) => {
+      if (isValidImage(file) && selectedImages.length < maxFileCount) {
+        selectedImages.push(file);
         const thumbnail = createThumbnail(file);
         addedImagesContainer.appendChild(thumbnail);
       }
     });
-
-    // Process newly selected files
-    newFiles.forEach((file) => {
-      if (isValidImage(file)) {
-        if (!allValidFiles.includes(file)) {
-          allValidFiles.push(file);
-          const thumbnail = createThumbnail(file);
-          addedImagesContainer.appendChild(thumbnail);
-        }
-      }
-    });
-
-    // Update the selectedImages array with the allValidFiles array
-    selectedImages.length = 0;
-    selectedImages.push(...allValidFiles);
   }
 
-  // Function to validate image files
   function isValidImage(file) {
     const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
-    const maxSizeBytes = 1024 * 1024; // 1 MB
 
     if (!allowedTypes.includes(file.type)) {
       Swal.fire({
@@ -237,11 +242,13 @@
       return false;
     }
 
-    if (file.size > maxSizeBytes) {
+    if (file.size > maxFileSize) {
       Swal.fire({
         icon: "error",
-        title: "File size exceeds the maximum allowed size",
-        text: "Please upload images that are smaller than 1 MB.",
+        title: "File size exceeds limit",
+        text: `Please upload images smaller than ${
+          maxFileSize / (1024 * 1024)
+        } MB.`,
       });
       return false;
     }
@@ -249,7 +256,6 @@
     return true;
   }
 
-  // Function to create a thumbnail element for a file
   function createThumbnail(file) {
     const thumbnail = document.createElement("div");
     thumbnail.classList.add("thumbnail");
@@ -264,7 +270,6 @@
     removeIcon.classList.add("remove-icon");
     removeIcon.innerHTML = "&times;"; // Multiplication symbol as a cross
 
-    // Event listener to remove the image on icon click
     removeIcon.addEventListener("click", function () {
       const index = selectedImages.indexOf(file);
       if (index !== -1) {
