@@ -22,9 +22,7 @@ const getAddProductPage = async (req, res) => {
 
 const addProducts = async (req, res) => {
   try {
-    console.log("addProducts triggered");
-    console.log("Request body:", req.body);
-
+    console.log(req.body);
     const {
       productName,
       productDescription,
@@ -35,9 +33,7 @@ const addProducts = async (req, res) => {
       medium_quantity,
       large_quantity,
     } = req.body;
-
-    console.log("Request files:", req.files);
-
+    console.log(req.files);
     // Backend validation
     if (
       !productName ||
@@ -62,7 +58,8 @@ const addProducts = async (req, res) => {
     ) {
       return res.status(400).json({ error: "Invalid numeric values" });
     }
-
+    // const fetchedProducts = Product.productSizes.find({size:small});
+    // const lessThan = fetchedProducts.find({salePrice})
     const smallQuantity = parseInt(small_quantity, 10) || 0;
     const mediumQuantity = parseInt(medium_quantity, 10) || 0;
     const largeQuantity = parseInt(large_quantity, 10) || 0;
@@ -70,68 +67,47 @@ const addProducts = async (req, res) => {
     // Calculate total quantity
     const totalQuantity = smallQuantity + mediumQuantity + largeQuantity;
 
-    // Check if a product with the same name already exists
-    const productExists = await Product.findOne({ productName });
+    // Check if a product with the same name or image already exists
+    const productExists = await Product.findOne({
+      $or: [
+        { productName },
+        { productImage: { $in: req.files.map((file) => file.filename) } },
+      ],
+    });
     if (productExists) {
-      return res
-        .status(400)
-        .json({ error: "Product with the same name already exists" });
+      if (productExists.productName === productName) {
+        console.log("Product with the same name already exists");
+        return res
+          .status(400)
+          .json({ error: "Product with the same name already exists" });
+      }
+      // if (
+      //   productExists.productImage.some((image) =>
+      //     req.files.map((file) => file.filename).includes(image)
+      //   )
+      // ) {
+      //   console.log("Product with the same image already exists");
+      //   return res
+      //     .status(400)
+      //     .json({ error: "Product with the same image already exists" });
+      // }
     }
 
     const productSizes = [
       { size: "Small", quantity: smallQuantity },
       { size: "Medium", quantity: mediumQuantity },
       { size: "Large", quantity: largeQuantity },
+      // Add more sizes if needed
     ];
 
     const images = [];
-    const imagesDir = path.join(
-      __dirname,
-      "..",
-      "public",
-      "uploads",
-      "product-images"
-    );
-
-    // Ensure the images directory exists
-    if (!fs.existsSync(imagesDir)) {
-      fs.mkdirSync(imagesDir, { recursive: true });
-    }
-
     if (req.files && req.files.length > 0) {
       for (let i = 0; i < req.files.length; i++) {
-        const imagePath = req.files[i].path;
-        const originalFilename = req.files[i].originalname;
-
-        try {
-          // Crop the image using sharp
-          const croppedImage = await sharp(imagePath)
-            .extract({ left: 0, top: 0, width: 900, height: 900 })
-            .toFormat("jpeg")
-            .toBuffer();
-
-          // Save the cropped image to a new file
-          const croppedFilename = `cropped_${originalFilename}`;
-          const croppedFilePath = path.join(imagesDir, croppedFilename);
-          await sharp(croppedImage).toFile(croppedFilePath);
-
-          images.push(croppedFilename);
-        } catch (error) {
-          console.error(
-            `Error processing image ${originalFilename}: ${error.message}`
-          );
-          return res
-            .status(400)
-            .json({ error: `Error processing image ${originalFilename}` });
-        }
+        images.push(req.files[i].filename);
       }
-    } else {
-      console.error("No files uploaded");
-      return res.status(400).json({ error: "No files uploaded" });
     }
 
-    console.log("Images processed:", images);
-
+    console.log(images);
     const newProduct = new Product({
       productName,
       productDescription,
@@ -142,14 +118,12 @@ const addProducts = async (req, res) => {
       totalQuantity,
       productImage: images,
     });
-
-    console.log("New product:", newProduct);
+    console.log(newProduct);
     await newProduct.save();
-
     res.status(200).json({ success: "Product added successfully" });
   } catch (error) {
-    console.log("Error:", error.message);
-    res.status(400).json({ error: error.message });
+    console.log(error.message);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
