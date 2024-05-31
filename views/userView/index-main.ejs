@@ -106,38 +106,33 @@
         <div class="col-xl-5 col-lg-12">
           <div class="area-title mb-50">
             <h2>Latest Products</h2>
-            
           </div>
         </div>
         <div class="col-xl-7 col-lg-12">
           <div class="product-tab mb-40">
             <ul class="nav product-nav justify-content-xl-end">
-              <!-- HTML -->
               <li
                 class="nav-item"
                 style="display: flex; align-items: center; gap: 10px"
               >
-                <!-- Flexbox for layout -->
                 <span><strong>To buy these products, Click Here</strong></span>
-                <!-- First span with bold text -->
                 <span
                   class="nav-link"
                   style="
                     color: white;
                     background-color: red;
-                    padding: 10px 15px; /* Padding for the button */
+                    padding: 10px 15px;
                     text-decoration: none;
-                    border-radius: 5px; /* Rounded corners */
-                    cursor: pointer; /* Cursor style for interactivity */
-                    transition: background-color 0.3s; /* Transition for hover effect */
-                    font-weight: bold; /* Making text bold */
+                    border-radius: 5px;
+                    cursor: pointer;
+                    transition: background-color 0.3s;
+                    font-weight: bold;
                   "
                   onmouseover="this.style.backgroundColor = 'yellow'; this.style.color = 'black';"
                   onmouseout="this.style.backgroundColor = 'red'; this.style.color = 'white';"
                   onclick="window.location.href='/shop';"
                 >
                   <strong>Go To Shop Page</strong>
-                  <!-- Second span with bold text -->
                 </span>
               </li>
             </ul>
@@ -149,15 +144,29 @@
           <div class="product-tab-content">
             <div class="tab-content">
               <div class="tab-pane fade show active">
-                <div class="products">
+                <div
+                  class="products"
+                  style="
+                    display: grid;
+                    grid-template-columns: repeat(
+                      auto-fill,
+                      minmax(200px, 1fr)
+                    );
+                    gap: 20px;
+                  "
+                >
                   <% for (let i = 0; i < products.length; i++) { %> <% const
                   product = products[i]; %>
-
-                  <div class="pro-item">
-                    <div class="product-wrapper mb-30">
-                      <!-- Reduced bottom margin -->
-                      <div class="product-img mb-15">
-                        <!-- Reduced image margin -->
+                  <div
+                    class="pro-item"
+                    style="
+                      border: 1px solid #ccc;
+                      border-radius: 5px;
+                      overflow: hidden;
+                    "
+                  >
+                    <div class="product-wrapper" style="padding: 10px">
+                      <div class="product-img" style="margin-bottom: 15px">
                         <img
                           src="/uploads/product-images/<%= product.productImage[1] %>"
                           alt="<%= product.productName %>"
@@ -165,16 +174,36 @@
                         />
                         <div class="sale-tag">
                           <% if (product.isNew) { %>
-                          <span class="new">new</span>
+                          <span
+                            class="new"
+                            style="
+                              position: absolute;
+                              top: 10px;
+                              left: 10px;
+                              background: green;
+                              color: white;
+                              padding: 2px 5px;
+                            "
+                            >new</span
+                          >
                           <% } %> <% if (product.isOnSale) { %>
-                          <span class="sale">sale</span>
+                          <span
+                            class="sale"
+                            style="
+                              position: absolute;
+                              top: 10px;
+                              right: 10px;
+                              background: red;
+                              color: white;
+                              padding: 2px 5px;
+                            "
+                            >sale</span
+                          >
                           <% } %>
                         </div>
                       </div>
-
                       <div class="product-content">
-                        <div class="pro-cat mb-5">
-                          <!-- Reduced category margin -->
+                        <div class="pro-cat" style="margin-bottom: 5px">
                           <% if (product.categories &&
                           product.categories.length) { %> <% for (let j = 0; j <
                           product.categories.length; j++) { %> <% const category
@@ -182,14 +211,16 @@
                           <span><%= category.name %></span>
                           <% } %> <% } %>
                         </div>
-                        <h4>
+                        <h4 style="font-size: 16px; margin-bottom: 10px">
                           <span><%= product.productName %></span>
                         </h4>
                         <div class="product-meta">
-                          <div class="pro-price">
+                          <div class="pro-price" style="font-size: 14px">
                             <span><%= product.salePrice %></span>
                             <% if (product.regularPrice) { %>
-                            <span class="old-price"
+                            <span
+                              class="old-price"
+                              style="text-decoration: line-through; color: #999"
                               ><%= product.regularPrice %></span
                             >
                             <% } %>
@@ -264,20 +295,24 @@
   let currentSlide = 0;
 
   prevBtn.addEventListener("click", () => {
-    currentSlide =
-      currentSlide === 0 ? slides.length - 1 : currentSlide - 1;
-    sliderActive.style.transform = `translateX(-${currentSlide * slideWidth}px)`;
+    currentSlide = currentSlide === 0 ? slides.length - 1 : currentSlide - 1;
+    sliderActive.style.transform = `translateX(-${
+      currentSlide * slideWidth
+    }px)`;
   });
 
   nextBtn.addEventListener("click", () => {
-    currentSlide =
-      currentSlide === slides.length - 1 ? 0 : currentSlide + 1;
-    sliderActive.style.transform = `translateX(-${currentSlide * slideWidth}px)`;
+    currentSlide = currentSlide === slides.length - 1 ? 0 : currentSlide + 1;
+    sliderActive.style.transform = `translateX(-${
+      currentSlide * slideWidth
+    }px)`;
   });
 
   window.addEventListener("resize", () => {
     slideWidth = slides[0].offsetWidth; // Update the width on resize
-    sliderActive.style.transform = `translateX(-${currentSlide * slideWidth}px)`;
+    sliderActive.style.transform = `translateX(-${
+      currentSlide * slideWidth
+    }px)`;
   });
 </script>
 
