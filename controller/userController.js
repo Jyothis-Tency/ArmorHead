@@ -292,7 +292,7 @@ const userProfile = async (req, res) => {
 const updateUser = async (req, res) => {
   try {
     console.log("updateUser triggered");
-    console.log("req.session.userData:",req.session.userData);
+    console.log("req.session.userData:", req.session.userData);
     console.log(req.body);
     const { userId, username, email, phone } = req.body;
     await User.updateOne(
@@ -341,14 +341,15 @@ const postVerifyEmail = async (req, res) => {
     if (!email) {
       return res
         .status(400)
-        .render("userView/forgot-password", { message: "Email is required" });
+        .json({ success: false, message: "Email is required" });
     }
 
     // Check if a user with the provided email exists
     const findUser = await User.findOne({ email });
 
     if (!findUser) {
-      return res.status(404).render("userView/forgot-password", {
+      return res.status(404).json({
+        success: false,
         message: "User with this email does not exist",
       });
     }
@@ -386,14 +387,23 @@ const postVerifyEmail = async (req, res) => {
     req.session.email = email;
 
     // Render OTP verification page
-    res.render("userView/forgotPass-otp");
-
     console.log("Email sent successfully", info.messageId);
+    res.json({ success: true, message: "OTP sent successfully" });
   } catch (error) {
     console.error("Error in forgotEmailValid:", error.message);
-    res.status(500).render("userView/forgot-password", {
+    res.status(500).json({
+      success: false,
       message: "An error occurred while processing your request",
     });
+  }
+};
+
+const getVerifyForgotPassOtp = async (req, res) => {
+  try {
+    console.log("getVerifyForgotPassOtp triggered");
+    res.render("userView/forgotPass-otp");
+  } catch (error) {
+    res.render("userView/404");
   }
 };
 
@@ -855,6 +865,7 @@ module.exports = {
   addAddress,
   getForgotPassPage,
   postVerifyEmail,
+  getVerifyForgotPassOtp,
   verifyForgotPassOtp,
   postNewPassword,
   resendOtp,
