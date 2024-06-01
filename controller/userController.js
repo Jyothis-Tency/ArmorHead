@@ -166,11 +166,6 @@ const otpVerifyPost = async (req, res) => {
         const newUserWallet = new Wallet({
           user: newUser._id,
           walletBalance: 0,
-          history: {
-            date: new Date(),
-            status: "credit",
-            amount: 50,
-          },
         });
         await newUserWallet.save();
       }
