@@ -25,7 +25,7 @@ userRoute.post("/updateUser", isLoggedIn, userController.updateUser);
 userRoute.get("/changePassword", isLoggedIn, userController.changePasswordPage);
 userRoute.get("/forgotPassword", userController.getForgotPassPage);
 userRoute.post("/forgotPassword", userController.postVerifyEmail);
-userRoute.get("/verifyPassOtp", userController.getVerifyForgotPassOtp);
+userRoute.get("/getVerifyPassOtp", userController.getVerifyForgotPassOtp);
 userRoute.post("/verifyPassOtp", userController.verifyForgotPassOtp);
 userRoute.post("/resetPassword", userController.postNewPassword);
 
