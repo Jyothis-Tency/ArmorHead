@@ -334,36 +334,22 @@ const getForgotPassPage = async (req, res) => {
 
 const postVerifyEmail = async (req, res) => {
   try {
-    console.log("postVerifyEmail triggered");
     const { email } = req.body;
-
-    // Check if the email is provided
     if (!email) {
-      return res.json({ success: false, message: "Email is required" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Email is required" });
     }
-
-    // Validate email format (basic validation)
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return res.json({ success: false, message: "Invalid email format" });
-    }
-
-    // Check if a user with the provided email exists
     const findUser = await User.findOne({ email });
-
     if (!findUser) {
-      console.log("User not found");
-      return res.json({
-        success: false,
-        message: "User with this email does not exist",
-      });
+      return res
+        .status(404)
+        .json({
+          success: false,
+          message: "User with this email does not exist",
+        });
     }
-
-    // Generate OTP
     const otp = await otpHelper.generateOtp();
-    console.log("Generated OTP:", otp);
-
-    // Send OTP via email
     const transporter = nodemailer.createTransport({
       service: "gmail",
       port: 587,
@@ -374,34 +360,28 @@ const postVerifyEmail = async (req, res) => {
         pass: process.env.EMAIL_PASSWORD,
       },
     });
-
-    const mailOptions = {
+    const info = await transporter.sendMail({
       from: process.env.EMAIL_USER,
       to: email,
       subject: "Verify Your Account ✔",
       text: `Your OTP is ${otp}`,
       html: `<b><h4>Your OTP: ${otp}</h4><br><a href="">Click here to verify</a></b>`,
-    };
-
-    const info = await transporter.sendMail(mailOptions);
+    });
 
     if (!info) {
       throw new Error("Failed to send OTP email");
     }
-
-    // Store OTP and user email in session
     req.session.userOtp = otp;
     req.session.email = email;
-
-    // Log successful email send
-    console.log("Email sent successfully", info.messageId);
-    res.json({ success: true, message: "OTP sent successfully" });
+    res.json({ success: true, message: "OTP sent to your email" });
   } catch (error) {
-    console.error("Error in postVerifyEmail:", error.message);
-    res.json({
-      success: false,
-      message: "An error occurred while processing your request",
-    });
+    console.error("Error in forgotEmailValid:", error.message);
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: "An error occurred while processing your request",
+      });
   }
 };
 
