@@ -344,11 +344,19 @@ const postVerifyEmail = async (req, res) => {
         .json({ success: false, message: "Email is required" });
     }
 
+    // Validate email format (basic validation)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid email format" });
+    }
+
     // Check if a user with the provided email exists
     const findUser = await User.findOne({ email });
 
     if (!findUser) {
-      console.log("!findUser");
+      console.log("User not found");
       return res.status(404).json({
         success: false,
         message: "User with this email does not exist",
@@ -357,7 +365,7 @@ const postVerifyEmail = async (req, res) => {
 
     // Generate OTP
     const otp = await otpHelper.generateOtp();
-    console.log(otp);
+    console.log("Generated OTP:", otp);
 
     // Send OTP via email
     const transporter = nodemailer.createTransport({
@@ -371,13 +379,15 @@ const postVerifyEmail = async (req, res) => {
       },
     });
 
-    const info = await transporter.sendMail({
+    const mailOptions = {
       from: process.env.EMAIL_USER,
-      to: [email, email2],
+      to: email,
       subject: "Verify Your Account ✔",
       text: `Your OTP is ${otp}`,
       html: `<b><h4>Your OTP: ${otp}</h4><br><a href="">Click here to verify</a></b>`,
-    });
+    };
+
+    const info = await transporter.sendMail(mailOptions);
 
     if (!info) {
       throw new Error("Failed to send OTP email");
@@ -387,17 +397,18 @@ const postVerifyEmail = async (req, res) => {
     req.session.userOtp = otp;
     req.session.email = email;
 
-    // Render OTP verification page
+    // Log successful email send
     console.log("Email sent successfully", info.messageId);
     res.json({ success: true, message: "OTP sent successfully" });
   } catch (error) {
-    console.error("Error in forgotEmailValid:", error.message);
+    console.error("Error in postVerifyEmail:", error.message);
     res.status(500).json({
       success: false,
       message: "An error occurred while processing your request",
     });
   }
 };
+
 
 const getVerifyForgotPassOtp = async (req, res) => {
   try {
