@@ -371,9 +371,8 @@ const postVerifyEmail = async (req, res) => {
     }
     req.session.userOtp = otp;
     req.session.email = email;
-    setTimeout(() => {
-      res.json({ success: true, message: "OTP sent to your email" });
-    }, 6000);
+
+    res.json({ success: true, message: "OTP sent to your email" });
   } catch (error) {
     console.error("Error in forgotEmailValid:", error.message);
     res.status(500).json({
