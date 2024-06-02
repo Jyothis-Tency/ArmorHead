@@ -399,7 +399,7 @@ const postVerifyEmail = async (req, res) => {
 
     // Log successful email send
     console.log("Email sent successfully", info.messageId);
-    res.json({ success: true, message: "OTP sent successfully" });
+    res.status(200).json({ success: true, message: "OTP sent successfully" });
   } catch (error) {
     console.error("Error in postVerifyEmail:", error.message);
     res.status(500).json({
@@ -408,6 +408,7 @@ const postVerifyEmail = async (req, res) => {
     });
   }
 };
+
 
 
 const getVerifyForgotPassOtp = async (req, res) => {
