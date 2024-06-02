@@ -339,17 +339,13 @@ const postVerifyEmail = async (req, res) => {
 
     // Check if the email is provided
     if (!email) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Email is required" });
+      return res.json({ success: false, message: "Email is required" });
     }
 
     // Validate email format (basic validation)
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Invalid email format" });
+      return res.json({ success: false, message: "Invalid email format" });
     }
 
     // Check if a user with the provided email exists
@@ -357,7 +353,7 @@ const postVerifyEmail = async (req, res) => {
 
     if (!findUser) {
       console.log("User not found");
-      return res.status(404).json({
+      return res.json({
         success: false,
         message: "User with this email does not exist",
       });
@@ -399,17 +395,15 @@ const postVerifyEmail = async (req, res) => {
 
     // Log successful email send
     console.log("Email sent successfully", info.messageId);
-    res.status(200).json({ success: true, message: "OTP sent successfully" });
+    res.json({ success: true, message: "OTP sent successfully" });
   } catch (error) {
     console.error("Error in postVerifyEmail:", error.message);
-    res.status(500).json({
+    res.json({
       success: false,
       message: "An error occurred while processing your request",
     });
   }
 };
-
-
 
 const getVerifyForgotPassOtp = async (req, res) => {
   try {
