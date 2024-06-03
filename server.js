@@ -56,6 +56,7 @@ app.use("/admin", adminRoute);
 // server listening
 app.listen(PORT, () => {
   console.log(`Server started running`);
+  console.log("mongoConnectionString", mongoConnectionString);
   console.log(`User Side : http://localhost:${PORT}`);
   console.log(`Admin Side : http://localhost:${PORT}/admin/login`);
 });
