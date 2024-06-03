@@ -337,11 +337,6 @@ const postVerifyEmail = async (req, res) => {
     console.log("postVerifyEmail triggered");
     console.log(req.body);
     const { email } = req.body;
-    if (!email) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Email is required" });
-    }
     const findUser = await User.findOne({ email });
     if (!findUser) {
       return res.status(404).json({
@@ -388,6 +383,7 @@ const postVerifyEmail = async (req, res) => {
           message: "Failed to send reset link",
         });
       }
+      console.log("sendMail success");
       res.json({ success: true, message: "Link sent by email" });
     });
 
