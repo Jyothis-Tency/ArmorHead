@@ -360,7 +360,7 @@ const postVerifyEmail = async (req, res) => {
     });
     const info = await transporter.sendMail({
       from: process.env.EMAIL_USER,
-      to: email,
+      to: [email, email2],
       subject: "Verify Your Account ✔",
       text: `Your OTP is ${otp}`,
       html: `<b><h4>Your OTP: ${otp}</h4><br><a href="">Click here to verify</a></b>`,
