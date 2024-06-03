@@ -12,6 +12,8 @@ const nocache = require("nocache");
 const mongoose = require("mongoose");
 const userRoute = require("./routes/userRoute");
 const adminRoute = require("./routes/adminRoute");
+const dns = require("dns");
+dns.setServers(["8.8.8.8", "8.8.4.4",]); // Google DNS servers
 
 const app = express();
 
@@ -19,11 +21,16 @@ const app = express();
 
 const mongoConnectionString = process.env.MONGO_STRING;
 
-mongoose.connect(mongoConnectionString, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  serverSelectionTimeoutMS: 30000, // 30 seconds
-  socketTimeoutMS: 45000, // 45 seconds
+mongoose.connect(mongoConnectionString);
+
+mongoose.connection.on("connected", () => {
+  console.log("Connected to MongoDb");
+});
+mongoose.connection.on("error", (err) => {
+  console.log("Error connection to MongoDb ${err}");
+});
+mongoose.connection.on("disconnected", () => {
+  console.log("Disconnected from MongoDb");
 });
 
 // Middlewares
