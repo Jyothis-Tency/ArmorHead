@@ -3,7 +3,7 @@ const Order = require("../model/orderModel");
 const Product = require("../model/productModel");
 const Category = require("../model/categoryModel");
 const orderHelper = require("../helper/orderHelper");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const PDFDocument = require("pdfkit");
 function currencyFormat(amount) {
   return Number(amount).toLocaleString("en-in", {

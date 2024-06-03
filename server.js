@@ -13,7 +13,7 @@ const mongoose = require("mongoose");
 const userRoute = require("./routes/userRoute");
 const adminRoute = require("./routes/adminRoute");
 const dns = require("dns");
-dns.setServers(["8.8.8.8", "8.8.4.4",]); // Google DNS servers
+dns.setServers(["8.8.8.8", "8.8.4.4", "1.1.1.1"]); // Google DNS servers
 
 const app = express();
 
