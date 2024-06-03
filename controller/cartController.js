@@ -41,6 +41,7 @@ const userCart = async (req, res) => {
 
 const addToCart = async (req, res) => {
   try {
+    console.log("addToCart triggered");
     const { prodId, quantity, size } = req.body;
     const loggedIn = req.session.userData;
     if (loggedIn === undefined) {

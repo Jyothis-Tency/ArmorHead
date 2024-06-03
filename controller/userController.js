@@ -449,7 +449,7 @@ const postNewPassword = async (req, res) => {
             password: passwordHash,
           },
         }
-      ).then((data) => console.log(data));
+      ).then((data) => console.log("data:", data));
       delete req.session.email;
       res.redirect("/login");
     } else {

@@ -71,11 +71,15 @@ const getCartCount = async (userId) => {
 
 const totalSubtotal = async (userId, cartItems) => {
   try {
+    console.log("totalSubtotal:");
     let total = 0;
-
+    console.log("cartItems:", cartItems);
     for (const cartItem of cartItems) {
+      console.log("cartItem.quantity:", cartItem.quantity);
+      console.log("cartItem.product.salePrice:", cartItem.product.salePrice);
       total += cartItem.quantity * cartItem.product.salePrice;
     }
+    console.log("total:",total);
     const cart = await Cart.findOne({ user: userId });
     if (cart) {
       cart.totalPrice = total;
@@ -110,7 +114,10 @@ const addToUserCart = async (userId, productId, quantity, size = "Small") => {
       if (quantity > productSize.quantity) {
         throw new Error("Out of Stock");
       }
+      console.log("product.salePrice:", product.salePrice);
+      console.log("quantity:", quantity);
       const totalPrice = product.salePrice * quantity;
+      console.log("totalPrice:", totalPrice);
       cart = new Cart({ user: userId, items: [] });
       cart.items.push({
         productId: productId,
@@ -160,7 +167,10 @@ const addToUserCart = async (userId, productId, quantity, size = "Small") => {
         if (quantity > productSize.quantity) {
           throw new Error("Requested quantity exceeds available quantity");
         }
+        console.log("product.salePrice:", product.salePrice);
+        console.log("quantity:", quantity);
         const totalPrice = product.salePrice * quantity;
+        console.log("totalPrice:", totalPrice);
         cart.items.push({
           productId: productId,
           quantity: quantity,
