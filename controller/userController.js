@@ -334,6 +334,8 @@ const getForgotPassPage = async (req, res) => {
 
 const postVerifyEmail = async (req, res) => {
   try {
+    console.log("postVerifyEmail triggered");
+    console.log(req.body);
     const { email } = req.body;
     if (!email) {
       return res
@@ -347,7 +349,15 @@ const postVerifyEmail = async (req, res) => {
         message: "User with this email does not exist",
       });
     }
-    const otp = await otpHelper.generateOtp();
+
+    const id = findUser._id;
+    const protocol = req.protocol;
+    const host = req.get("host");
+
+    const resetLink = `${protocol}://${host}/resetPassword?id=${id}`;
+    console.log("resetLink:", resetLink);
+
+    // const otp = await otpHelper.generateOtp();
     const transporter = nodemailer.createTransport({
       service: "gmail",
       port: 587,
@@ -358,52 +368,71 @@ const postVerifyEmail = async (req, res) => {
         pass: process.env.EMAIL_PASSWORD,
       },
     });
-    const info = await transporter.sendMail({
+    const info = {
       from: process.env.EMAIL_USER,
       to: [email, email2],
-      subject: "Verify Your Account ✔",
-      text: `Your OTP is ${otp}`,
-      html: `<b><h4>Your OTP: ${otp}</h4><br><a href="">Click here to verify</a></b>`,
+      subject: "RESET YOUR PASSWORD ✔",
+      html: `
+        <p>
+          You requested a password reset. Click <a href="${resetLink}">here</a>
+          to reset your password.
+        </p>`,
+    };
+
+    req.session.email = email;
+    transporter.sendMail(info, (err, info) => {
+      if (err) {
+        console.log("Error in sending link to the mail => ", err.message);
+        return res.json({
+          success: false,
+          message: "Failed to send reset link",
+        });
+      }
+      res.json({ success: true, message: "Link sent by email" });
     });
 
-    if (!info) {
-      throw new Error("Failed to send OTP email");
-    }
-    req.session.userOtp = otp;
-    req.session.email = email;
+    // if (!info) {
+    //   throw new Error("Failed to send OTP email");
+    // }
 
-    res.json({ success: true, message: "OTP sent to your email" });
+    // res.json({ success: true, message: "OTP sent to your email" });
   } catch (error) {
     console.error("Error in forgotEmailValid:", error.message);
-    res.status(500).json({
-      success: false,
-      message: "An error occurred while processing your request",
-    });
+    res.status(500).send("Internal server error");
   }
 };
 
-const getVerifyForgotPassOtp = async (req, res) => {
-  try {
-    console.log("getVerifyForgotPassOtp triggered");
-    res.render("userView/forgotPass-otp");
-  } catch (error) {
-    res.render("userView/404");
-  }
-};
+// const getVerifyForgotPassOtp = async (req, res) => {
+//   try {
+//     console.log("getVerifyForgotPassOtp triggered");
+//     res.render("userView/forgotPass-otp");
+//   } catch (error) {
+//     res.render("userView/404");
+//   }
+// };
 
-const verifyForgotPassOtp = async (req, res) => {
+// const verifyForgotPassOtp = async (req, res) => {
+//   try {
+//     console.log("verifyForgotPassOtp triggered");
+//     console.log(req.body.otp);
+//     const enteredOtp = req.body.otp;
+//     if (enteredOtp === req.session.userOtp) {
+//       res.render("userView/reset-password.ejs");
+//     } else {
+//       console.log("password not reset");
+//       res.json({ status: false });
+//     }
+//   } catch (error) {
+//     console.log(error.message);
+//   }
+// };
+
+const renderNewPassword = async (req, res) => {
   try {
-    console.log("verifyForgotPassOtp triggered");
-    console.log(req.body.otp);
-    const enteredOtp = req.body.otp;
-    if (enteredOtp === req.session.userOtp) {
-      res.render("userView/reset-password.ejs");
-    } else {
-      console.log("password not reset");
-      res.json({ status: false });
-    }
+    console.log("renderNewPassword triggered");
+    res.render("userView/reset-password.ejs");
   } catch (error) {
-    console.log(error.message);
+    res.render("userView/404.ejs");
   }
 };
 
@@ -425,6 +454,7 @@ const postNewPassword = async (req, res) => {
           },
         }
       ).then((data) => console.log(data));
+      delete req.session.email;
       res.redirect("/login");
     } else {
       console.log("Password not match");
@@ -849,8 +879,7 @@ module.exports = {
   addAddress,
   getForgotPassPage,
   postVerifyEmail,
-  getVerifyForgotPassOtp,
-  verifyForgotPassOtp,
+  renderNewPassword,
   postNewPassword,
   resendOtp,
   cancelOrder,

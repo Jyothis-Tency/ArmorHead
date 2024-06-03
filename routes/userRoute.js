@@ -25,8 +25,9 @@ userRoute.post("/updateUser", isLoggedIn, userController.updateUser);
 userRoute.get("/changePassword", isLoggedIn, userController.changePasswordPage);
 userRoute.get("/forgotPassword", userController.getForgotPassPage);
 userRoute.post("/forgotPasswordPost", userController.postVerifyEmail);
-userRoute.get("/getVerifyPassOtp", userController.getVerifyForgotPassOtp);
-userRoute.post("/verifyPassOtp", userController.verifyForgotPassOtp);
+// userRoute.get("/getVerifyPassOtp", userController.getVerifyForgotPassOtp);
+// userRoute.post("/verifyPassOtp", userController.verifyForgotPassOtp);
+userRoute.get("/resetPassword", userController.renderNewPassword);
 userRoute.post("/resetPassword", userController.postNewPassword);
 
 // Profile Routes
