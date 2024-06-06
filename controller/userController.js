@@ -224,19 +224,22 @@ const userLoginPost = async (req, res) => {
       const isPasswordCorrect = await bcrypt.compare(
         password,
         checkUser.password
-      );
+      )
 
       if (isPasswordCorrect) {
         req.session.userData = checkUser; // Save user data in session
-        console.log("Authentication successful");
-
-        // Respond with success message
-        return res.status(200).json({ message: "Login successful" });
+        if (checkUser.isBlocked === false) {
+          console.log("Authentication successful");
+          return res.status(200).json({ message: "Login successful" });
+        } else {
+          console.log("user blocked");
+          return res.status(400).json({message:"User is blocked"})
+        } 
       } else {
         console.log("Password incorrect");
 
         // Respond with error message
-        return res.status(401).json({ message: "Invalid email or password" });
+        return res.status(401).json({ message: "Incorrect password" });
       }
     } else {
       console.log("User not found");

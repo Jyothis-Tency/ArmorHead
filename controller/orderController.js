@@ -327,6 +327,13 @@ const updateOrderStatus = async (req, res) => {
       return res.status(404).json({ error: "Order not found" });
     }
 
+    let appliedCoupon;
+    if (order.coupon) {
+      console.log("order.coupon", order.coupon);
+      appliedCoupon = await Coupon.findOne({ couponCode: order.coupon });
+    }
+    console.log("appliedCoupon:", appliedCoupon);
+
     order.orderedItems.forEach((item) => {
       if (item.orderId.toString() === orderId) {
         item.orderStat = newStatus;
@@ -343,20 +350,52 @@ const updateOrderStatus = async (req, res) => {
     const productIn = await Product.findOne({ _id: product });
     const wallet = await Wallet.findOne({ user: order.user });
     order.orderedItems.forEach((items) => {
+      console.log("order", order);
+      console.log("items", items);
       if (items.orderId.toString() === orderId) {
         if (newStatus === "returned") {
+          console.log("productIn.totalQuantity", productIn.totalQuantity);
+          productIn.productSizes.forEach((products) => {
+            if (products.size === items.size) {
+              products.quantity += items.quantity;
+            }
+          });
+          productIn.totalQuantity += items.quantity;
+          productIn.save();
           if (wallet) {
-            wallet.walletBalance += items.quantity * productIn.salePrice;
-            wallet.history.push({
-              date: new Date(),
-              status: "credit",
-              amount: items.quantity * productIn.salePrice,
-            });
+            if (order.coupon) {
+              console.log("order.coupon");
+              console.log("productIn.salePrice", productIn.salePrice);
+              console.log("order.totalAmount", order.totalAmount);
+              console.log("appliedCoupon.discount", appliedCoupon.discount);
+              const couponAddPricePer =
+                (productIn.salePrice / order.totalAmount) *
+                appliedCoupon.discount;
+              console.log("couponAddPrice", couponAddPricePer);
+              const couponAddPrice = parseInt(
+                productIn.salePrice - couponAddPricePer
+              );
+              console.log("couponProduct", couponAddPrice);
+              wallet.walletBalance += items.quantity * couponAddPrice;
+              wallet.history.push({
+                date: new Date(),
+                status: "credit",
+                amount: items.quantity * couponAddPrice,
+              });
+            } else {
+              wallet.walletBalance += items.quantity * productIn.salePrice;
+              wallet.history.push({
+                date: new Date(),
+                status: "credit",
+                amount: items.quantity * productIn.salePrice,
+              });
+            }
           }
         }
       }
     });
     await wallet.save();
+    console.log("updated wallet", wallet);
     console.log("3");
     if (order.orderedItems.length === 1) {
       // If there is only one ordered item, set the orderStatus to the same value as the orderStat

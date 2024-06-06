@@ -69,9 +69,12 @@ const stockDecrease = async (cartItems) => {
       const availableQuantity =
         product.productSizes[sizeIndex].quantity - quantity;
       console.log(availableQuantity);
+      const totalAvailableQuantity = product.totalQuantity - quantity;
+      console.log(totalAvailableQuantity);
 
       if (availableQuantity >= 0) {
         product.productSizes[sizeIndex].quantity = availableQuantity;
+        product.totalQuantity = totalAvailableQuantity;
       } else {
         throw new Error(
           `Insufficient stock for product ${product.productName} in size ${size}`
