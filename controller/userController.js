@@ -217,6 +217,7 @@ const userLoginPost = async (req, res) => {
 
     const { email, password } = req.body; // Extract email and password from the request body
     console.log(email, password);
+    console.log("req.session.userData:", req.session.userData);
 
     const checkUser = await User.findOne({ email });
     if (checkUser) {
