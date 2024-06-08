@@ -124,7 +124,7 @@ const applyCoupon = async (req, res) => {
       cart.coupon = couponCode;
       couponApplied = req.session.coupon;
 
-      await Coupon.updateOne({ couponCode }, { $push: { usedBy: userId } });
+      
       await cart.save();
       console.log("cart.totalPrice : ", cart.totalPrice);
       req.session.couponTotal = cart.totalPrice;

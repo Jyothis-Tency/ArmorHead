@@ -54,6 +54,10 @@ const productSchema = new mongoose.Schema(
       //   );
       // },
     },
+    proOff: {
+      type: Boolean,
+      default: false,
+    },
     productImage: [
       {
         type: String,

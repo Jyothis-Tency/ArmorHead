@@ -35,14 +35,14 @@
                             <div class="col-lg-4">
                                 <div class="mb-4">
                                     <label class="form-label">Regular price</label>
-                                    <input placeholder="$" name="regularPrice" type="number" value="<%= product.regularPrice %>" class="form-control border">
+                                    <input placeholder="$" name="regularPrice" type="number" value="<%= product.regularPrice %>" class="form-control border" min="0" step="0.01">
                                     <div id="regularPrice-error" class="error-message"></div>
                                 </div>
                             </div>
                             <div class="col-lg-4">
                                 <div class="mb-4">
                                     <label class="form-label">Sale price</label>
-                                    <input name="salePrice" type="number" value="<%= product.salePrice %>" class="form-control border">
+                                    <input name="salePrice" type="number" value="<%= product.salePrice %>" class="form-control border" min="0" step="0.01">
                                     <div id="salePrice-error" class="error-message"></div>
                                 </div>
                             </div>
@@ -52,21 +52,21 @@
                             <div class="col-lg-4">
                                 <div class="mb-4">
                                     <label class="form-label">Small</label>
-                                    <input placeholder="" name="small_quantity" value="<%= product.productSizes[0].quantity %>" type="number" class="form-control border">
+                                    <input placeholder="" name="small_quantity" value="<%= product.productSizes[0].quantity %>" type="number" class="form-control border" min="0" step="1">
                                     <div id="small-quantity-error" class="error-message"></div>
                                 </div>
                             </div>
                             <div class="col-lg-4">
                                 <div class="mb-4">
                                     <label class="form-label">Medium</label>
-                                    <input placeholder="" name="medium_quantity" value="<%= product.productSizes[1].quantity %>" type="number" class="form-control border">
+                                    <input placeholder="" name="medium_quantity" value="<%= product.productSizes[1].quantity %>" type="number" class="form-control border" min="0" step="1">
                                     <div id="medium-quantity-error" class="error-message"></div>
                                 </div>
                             </div>
                             <div class="col-lg-4">
                                 <div class="mb-4">
                                     <label class="form-label">Large</label>
-                                    <input placeholder="" name="large_quantity" value="<%= product.productSizes[2].quantity %>" type="number" class="form-control border">
+                                    <input placeholder="" name="large_quantity" value="<%= product.productSizes[2].quantity %>" type="number" class="form-control border" min="0" step="1">
                                     <div id="large-quantity-error" class="error-message"></div>
                                 </div>
                             </div>
@@ -269,6 +269,9 @@
         if (salePrice === "" || salePrice < 0) {
             document.getElementById("salePrice-error").textContent = "Sale price is required and should not be negative.";
             isValid = false;
+        } else if (parseFloat(salePrice) >= parseFloat(regularPrice)) {
+            document.getElementById("salePrice-error").textContent = "Sale price should not be higher than the regular price.";
+            isValid = false;
         }
 
         // Quantity validations
@@ -295,7 +298,7 @@
         return isValid;
     }
 
-        $(document).ready(function () {
+    $(document).ready(function () {
         $('#updatebtn').click(function (e) {
             e.preventDefault();
 

@@ -208,7 +208,7 @@
           </div>
           <div class="mb-3">
             <label for="editProductName" class="col-form-label">Product</label>
-            <select name="product" id="editProductName" class="form-select">
+            <select name="product" id="editProductName" class="form-select" disabled>
               <% for( let i=0; i < products.length; i++ ) { %>
               <option class="form-option" value="<%= products[i]._id %>">
                 <%= products[i].productName %>

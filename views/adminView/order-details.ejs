@@ -32,10 +32,10 @@
             <div class="text">
               <h6 class="mb-1">Deliver to</h6>
               <p class="mb-1">
-                City: <%= orderDetails[0].addressDetails[0].city %>, <%=
-                orderDetails[0].addressDetails[0].state %> <br />
-                <%= orderDetails[0].addressDetails[0].house %> <br />
-                Po Box <%= orderDetails[0].addressDetails[0].pincode %>
+                City: <%= orderDetails[0].address.city %>, <%=
+                orderDetails[0].address.state %> <br />
+                <%= orderDetails[0].address.house %> <br />
+                Po Box <%= orderDetails[0].address.pincode %>
               </p>
             </div>
           </article>
@@ -292,7 +292,6 @@
 <%- include("../partials/adminFooter") %>
 <!-- Include jQuery -->
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-
 <!-- Include Bootstrap JavaScript -->
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>

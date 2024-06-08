@@ -57,10 +57,13 @@ const forOrderPlacing = async (
   try {
     console.log("forOrderPlacing triggered");
     console.log(order);
+    console.log("addressData", addressData);
     let couponAmount;
     if (coupon) {
       let couponUsed = await Coupon.findOne({ couponCode: coupon });
       couponAmount = couponUsed ? couponUsed.discount : 0;
+      couponUsed.usedBy = userId1;
+      couponUsed.save();
     }
     let status =
       order.payment_method == "Cash on Delivery" ? "confirmed" : "pending";
@@ -72,14 +75,49 @@ const forOrderPlacing = async (
     let paymentMethod = order.payment_method;
     // console.log(paymentMethod);
     // let address = await addressHelper.findAnAddress(userId);
-    let address = addressData;
+    const {
+      firstName,
+      lastName,
+      house,
+      locality,
+      city,
+      state,
+      pincode,
+      country,
+      email,
+      phone,
+    } = addressData;
+    console.log(
+      firstName,
+      lastName,
+      house,
+      locality,
+      city,
+      state,
+      pincode,
+      country,
+      email,
+      phone
+    );
+    // let address = addressData;
     // console.log(address);
     let itemsOrdered = cartItems;
     // console.log(itemsOrdered);
     console.log("2");
     let completedOrders = new Order({
       user: userId,
-      address: address,
+      address: {
+        firstName: firstName,
+        lastName: lastName,
+        house: house,
+        locality: locality,
+        city: city,
+        state: state,
+        pincode: pincode,
+        country: country,
+        email: email,
+        phone: phone,
+      },
       orderDate: date,
       totalAmount: totalAmount,
       paymentMethod: paymentMethod,

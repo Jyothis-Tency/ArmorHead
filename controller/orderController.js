@@ -49,7 +49,8 @@ const checkoutRender = async (req, res) => {
   try {
     console.log("checkoutRender triggered");
     const user = req.session.userData;
-    let couponAppliedd = req.session.coupon || "";
+    // let couponAppliedd = req.session.coupon || "";
+    let couponAppliedd = "";
     console.log("couponApplied : ", couponAppliedd);
     cartCount = await cartHelper.getCartCount(user._id);
     let cartItems = await cartHelper.getAllCartItems(user._id);
@@ -122,10 +123,9 @@ const orderDetailsList = async (req, res) => {
 
 const orderDetailsUser = async (req, res) => {
   try {
+    console.log("orderDetailsUser triggered");
     const orderId = req.params.orderId;
     const order = await Order.findById(orderId);
-    const addressId = order.address;
-    const userAddress = await Address.findById(addressId);
     const orderDetails = await Order.aggregate([
       { $match: { _id: new mongoose.Types.ObjectId(orderId) } },
       { $unwind: "$orderedItems" },
@@ -146,20 +146,12 @@ const orderDetailsUser = async (req, res) => {
         },
       },
       {
-        $lookup: {
-          from: "addresses",
-          localField: "userDetails._id",
-          foreignField: "userId",
-          as: "addressDetails",
-        },
-      },
-      {
         $project: {
           orderedItems: 1,
           orderedItemId: "$orderedItems.orderId",
           productDetails: 1,
           userDetails: 1,
-          addressDetails: 1,
+          address: 1,
           orderStatus: "$orderedItems.orderStat",
           paymentStatus: 1,
           totalAmount: 1,
@@ -172,11 +164,10 @@ const orderDetailsUser = async (req, res) => {
     ]);
     const coupons = await Coupon.find();
     console.log("coupons:", coupons);
-    console.log("orderDetails : ", orderDetails, userAddress);
+    console.log("orderDetails : ", orderDetails);
     // Pass the order details, returnMessage, and specificReturnData to the view
     res.render("userView/orderDetails-page", {
       orderDetails,
-      userAddress,
       coupons,
     });
   } catch (error) {
@@ -275,19 +266,11 @@ const getOrderDetailsAdmin = async (req, res) => {
         },
       },
       {
-        $lookup: {
-          from: "addresses",
-          localField: "userDetails._id",
-          foreignField: "userId",
-          as: "addressDetails",
-        },
-      },
-      {
         $project: {
           orderedItems: 1,
           productDetails: 1,
           userDetails: 1,
-          addressDetails: 1,
+          address: 1,
           orderStatus: "$orderedItems.orderStat",
           totalAmount: 1,
           paymentMethod: 1,
@@ -475,7 +458,9 @@ const placeOrder = async (req, res) => {
 
     const userId = req.session.userData._id;
     const selectedAddressId = req.body.selectAddress;
-    const addressData = await Address.findById(selectedAddressId);
+    // const addressData = await Address.findById(selectedAddressId);
+    const addressData = await Address.findOne({ _id: selectedAddressId });
+    console.log("testAddress", addressData);
     const coupon = req.session.coupon;
     const paymentMethod = req.body.payment_method.trim().toLowerCase();
     const cartItems = await cartHelper.getAllCartItems(userId);
@@ -513,7 +498,7 @@ const placeOrder = async (req, res) => {
         cartItems,
         userId,
         req.session.coupon,
-        selectedAddressId
+        addressData
       );
 
       await Order.findOneAndUpdate(
@@ -541,7 +526,7 @@ const placeOrder = async (req, res) => {
           cartItems,
           userId,
           req.session.coupon,
-          selectedAddressId
+          addressData
         );
 
         await Order.findOneAndUpdate(

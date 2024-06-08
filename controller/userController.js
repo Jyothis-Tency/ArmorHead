@@ -13,6 +13,7 @@ const dateFormatHelper = require("../helper/dateFormatHelper");
 const nodemailer = require("nodemailer");
 const email2 = "jyothisgtency@gmail.com";
 const mongoose = require("mongoose");
+const { isAdmin } = require("../authentication/authenticator");
 
 const renderHome = async (req, res) => {
   try {
@@ -108,7 +109,7 @@ const otpVerifyPost = async (req, res) => {
       const hashedPassword = await passwordHelper.securePassword(
         userData.password
       );
-      const referralCode = await referralHelper.generateRandomString();
+
       let newWalletCode;
       if (req.session.referral) {
         const existingUser = await User.findOne({
@@ -138,6 +139,7 @@ const otpVerifyPost = async (req, res) => {
           }
         }
       }
+      const referralCode = await referralHelper.generateRandomString();
       const newUser = new User({
         username: userData.username,
         email: userData.email,
@@ -220,21 +222,26 @@ const userLoginPost = async (req, res) => {
     console.log("req.session.userData:", req.session.userData);
 
     const checkUser = await User.findOne({ email });
+    console.log(checkUser);
     if (checkUser) {
       const isPasswordCorrect = await bcrypt.compare(
         password,
         checkUser.password
-      )
+      );
 
       if (isPasswordCorrect) {
-        req.session.userData = checkUser; // Save user data in session
-        if (checkUser.isBlocked === false) {
-          console.log("Authentication successful");
-          return res.status(200).json({ message: "Login successful" });
+        if (checkUser.isAdmin === "0") {
+          req.session.userData = checkUser; // Save user data in session
+          if (checkUser.isBlocked === false) {
+            console.log("Authentication successful");
+            return res.status(200).json({ message: "Login successful" });
+          } else {
+            console.log("user blocked");
+            return res.status(400).json({ message: "User is blocked" });
+          }
         } else {
-          console.log("user blocked");
-          return res.status(400).json({message:"User is blocked"})
-        } 
+          return res.status(400).json({ message: "Provided email is Admin account" });
+        }
       } else {
         console.log("Password incorrect");
 
