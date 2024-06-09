@@ -351,19 +351,25 @@ const updateOrderStatus = async (req, res) => {
               console.log("productIn.salePrice", productIn.salePrice);
               console.log("order.totalAmount", order.totalAmount);
               console.log("appliedCoupon.discount", appliedCoupon.discount);
-              const couponAddPricePer =
-                (productIn.salePrice / order.totalAmount) *
+              // const couponAddPricePer =
+              //   (productIn.salePrice / order.totalAmount) *
+              //   appliedCoupon.discount;
+              // console.log("couponAddPrice", couponAddPricePer);
+              // const couponAddPrice = parseInt(
+              //   productIn.salePrice - couponAddPricePer
+              // );
+              // console.log("couponProduct", couponAddPrice);
+              const itemPrice = productIn.salePrice * items.quantity;
+              const proportionDiscount =
+                (itemPrice / (order.totalAmount + appliedCoupon.discount)) *
                 appliedCoupon.discount;
-              console.log("couponAddPrice", couponAddPricePer);
-              const couponAddPrice = parseInt(
-                productIn.salePrice - couponAddPricePer
-              );
-              console.log("couponProduct", couponAddPrice);
-              wallet.walletBalance += items.quantity * couponAddPrice;
+              const refundAmount = parseInt(itemPrice - proportionDiscount);
+
+              wallet.walletBalance += refundAmount;
               wallet.history.push({
                 date: new Date(),
                 status: "credit",
-                amount: items.quantity * couponAddPrice,
+                amount: refundAmount,
                 action: "product return",
               });
             } else {

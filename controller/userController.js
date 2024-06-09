@@ -3,6 +3,7 @@ const Product = require("../model/productModel");
 const Address = require("../model/addressModel");
 const Order = require("../model/orderModel");
 const Wallet = require("../model/walletModel");
+const Coupon = require("../model/couponModel");
 const bcrypt = require("bcryptjs");
 const otpHelper = require("../helper/otpHelper");
 const passwordHelper = require("../helper/passwordHelper");
@@ -123,7 +124,7 @@ const otpVerifyPost = async (req, res) => {
               date: new Date(),
               status: "credit",
               amount: 50,
-              action:"referral"
+              action: "referral",
             });
             await wallet.save();
           } else {
@@ -134,7 +135,7 @@ const otpVerifyPost = async (req, res) => {
                 date: new Date(),
                 status: "credit",
                 amount: 50,
-                action:"referral"
+                action: "referral",
               },
             });
             await newWallet.save();
@@ -163,7 +164,7 @@ const otpVerifyPost = async (req, res) => {
             date: new Date(),
             status: "credit",
             amount: 50,
-            action:"referral"
+            action: "referral",
           },
         });
         await newUserWallet.save();
@@ -243,7 +244,9 @@ const userLoginPost = async (req, res) => {
             return res.status(400).json({ message: "User is blocked" });
           }
         } else {
-          return res.status(400).json({ message: "Provided email is Admin account" });
+          return res
+            .status(400)
+            .json({ message: "Provided email is Admin account" });
         }
       } else {
         console.log("Password incorrect");
@@ -544,6 +547,13 @@ const cancelOrder = async (req, res) => {
         .json({ error: "No order found with the specified orderId" });
     }
 
+    let appliedCoupon;
+    if (order.coupon) {
+      console.log("order.coupon", order.coupon);
+      appliedCoupon = await Coupon.findOne({ couponCode: order.coupon });
+    }
+    console.log("appliedCoupon:", appliedCoupon);
+
     // Find the ordered item with the given orderId
     const orderedItemIndex = order.orderedItems.findIndex((item) =>
       item.orderId.equals(orderId)
@@ -584,14 +594,37 @@ const cancelOrder = async (req, res) => {
         }
 
         console.log(order.totalAmount);
-        wallet.walletBalance += orderedItem.quantity * productIn.salePrice;
-        console.log("wallet.walletBalance : ", wallet.walletBalance);
-        wallet.history.push({
-          date: new Date(),
-          status: "credit",
-          amount: orderedItem.quantity * productIn.salePrice,
-          action:"referral"
-        });
+        if (order.coupon) {
+          console.log("order.coupon");
+          console.log("productIn.salePrice", productIn.salePrice);
+          console.log("order.totalAmount", order.totalAmount);
+          console.log("appliedCoupon.discount", appliedCoupon.discount);
+
+          const itemPrice = productIn.salePrice * orderedItem.quantity;
+          const proportionDiscount =
+            (itemPrice / (order.totalAmount + appliedCoupon.discount)) *
+            appliedCoupon.discount;
+          const refundAmount = parseInt(itemPrice - proportionDiscount);
+
+          wallet.walletBalance += refundAmount;
+          console.log("wallet.walletBalance : ", wallet.walletBalance);
+          wallet.history.push({
+            date: new Date(),
+            status: "credit",
+            amount: refundAmount,
+            action: "Order cancel",
+          });
+        } else {
+          wallet.walletBalance += orderedItem.quantity * productIn.salePrice;
+          console.log("wallet.walletBalance : ", wallet.walletBalance);
+          wallet.history.push({
+            date: new Date(),
+            status: "credit",
+            amount: orderedItem.quantity * productIn.salePrice,
+            action: "Order cancel",
+          });
+        }
+
         await wallet.save();
         console.log(wallet.walletBalance);
       }
