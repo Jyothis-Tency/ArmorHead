@@ -45,6 +45,7 @@ const payUsingWallet = async (userId, amount) => {
       date: new Date(),
       status: "debit",
       amount: amount,
+      action:"Product Order"
     });
     await wallet.save();
     // console.log(wallet);

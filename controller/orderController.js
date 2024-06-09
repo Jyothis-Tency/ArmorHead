@@ -364,6 +364,7 @@ const updateOrderStatus = async (req, res) => {
                 date: new Date(),
                 status: "credit",
                 amount: items.quantity * couponAddPrice,
+                action: "product return",
               });
             } else {
               wallet.walletBalance += items.quantity * productIn.salePrice;
@@ -371,6 +372,7 @@ const updateOrderStatus = async (req, res) => {
                 date: new Date(),
                 status: "credit",
                 amount: items.quantity * productIn.salePrice,
+                action: "product return",
               });
             }
           }

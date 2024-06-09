@@ -167,6 +167,7 @@
                   >
                     <div class="product-wrapper" style="padding: 10px">
                       <div class="product-img" style="margin-bottom: 15px">
+                        <a href="/productDetails/<%= product._id %>">
                         <img
                           src="/uploads/product-images/<%= product.productImage[1] %>"
                           alt="<%= product.productName %>"
@@ -201,6 +202,7 @@
                           >
                           <% } %>
                         </div>
+                        </a>
                       </div>
                       <div class="product-content">
                         <div class="pro-cat" style="margin-bottom: 5px">

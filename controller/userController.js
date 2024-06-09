@@ -123,6 +123,7 @@ const otpVerifyPost = async (req, res) => {
               date: new Date(),
               status: "credit",
               amount: 50,
+              action:"referral"
             });
             await wallet.save();
           } else {
@@ -133,6 +134,7 @@ const otpVerifyPost = async (req, res) => {
                 date: new Date(),
                 status: "credit",
                 amount: 50,
+                action:"referral"
               },
             });
             await newWallet.save();
@@ -161,6 +163,7 @@ const otpVerifyPost = async (req, res) => {
             date: new Date(),
             status: "credit",
             amount: 50,
+            action:"referral"
           },
         });
         await newUserWallet.save();
@@ -587,6 +590,7 @@ const cancelOrder = async (req, res) => {
           date: new Date(),
           status: "credit",
           amount: orderedItem.quantity * productIn.salePrice,
+          action:"referral"
         });
         await wallet.save();
         console.log(wallet.walletBalance);

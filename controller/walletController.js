@@ -59,6 +59,7 @@ const addMoneyToWallet = async (req, res) => {
                 date: Date.now(),
                 status: "credit",
                 amount: amount,
+                action:"Add money to wallet"
               },
             },
           },
@@ -75,6 +76,7 @@ const addMoneyToWallet = async (req, res) => {
                 date: Date.now(),
                 status: "credit",
                 amount: amount,
+                action: "Add money to wallet",
               },
             ],
           });

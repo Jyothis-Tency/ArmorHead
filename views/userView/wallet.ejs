@@ -129,6 +129,7 @@
                 <th style="padding: 12px; text-align: left">Date</th>
                 <th style="padding: 12px; text-align: left">Status</th>
                 <th style="padding: 12px; text-align: left">Amount</th>
+                <th style="padding: 12px; text-align: left">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -144,6 +145,9 @@
                   <% if (walletDetails.history[i].status === 'debit') { %> -<%=
                   walletDetails.history[i].amount %> <% } else { %> <%=
                   walletDetails.history[i].amount %> <% } %>
+                </td>
+                <td>
+                  <%= walletDetails.history[i].action %>
                 </td>
               </tr>
               <% } %> <% } else { %>
