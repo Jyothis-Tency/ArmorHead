@@ -189,6 +189,7 @@ const deleteProductOffer = async (req, res) => {
 
 const allCategoryOffer = async (req, res) => {
   try {
+    console.log("allCategoryOffer triggered");
     const catoffers = await categoryOffer
       .find({ "categoryOffer.offerStatus": true })
       .populate("categoryOffer.category");

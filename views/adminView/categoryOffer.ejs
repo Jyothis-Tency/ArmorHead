@@ -571,7 +571,7 @@
                     if (result.isConfirmed) {
                         $.ajax({
                             url: "/admin/delete-catOffer/" + offerId,
-                            type: 'get',
+                            type: 'post',
                         }).done((res) => {
                             if (res) {
                                 Swal.fire(
