@@ -761,6 +761,9 @@
       var isRazorpaySelected = $("#payment_razorpay").is(":checked");
 
       if (!isCodSelected && !isWalletSelected && !isRazorpaySelected) {
+        console.log(
+          "if (!isCodSelected && !isWalletSelected && !isRazorpaySelected)"
+        );
         showToast("Select a payment option", "warning");
       }
 
@@ -769,9 +772,14 @@
       // Get the value of the selected address
       var selectedAddress = $("input[name='selectAddress']:checked").val();
       console.log(selectedAddress);
-
+      if (!selectedAddress) {
+        showToast("Please Select any Address before checkout", "warning");
+        return;
+      }
+      const enSelectedAddress = encodeURIComponent(selectedAddress);
+      console.log("enSelectedAddress", enSelectedAddress);
       // Append the selected address as a separate parameter
-      formData += "&selected_address=" + encodeURIComponent(selectedAddress);
+      formData += "&selected_address=" + enSelectedAddress;
       console.log(formData);
 
       // Send an AJAX request to the backend
@@ -871,7 +879,7 @@
 
               // Redirect to appropriate page or handle as required
               createOrderWithStatusPending();
-              
+
               setTimeout(() => {
                 window.location.href = "/order-details";
               }, 2000);
