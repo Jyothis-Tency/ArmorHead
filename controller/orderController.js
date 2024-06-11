@@ -528,6 +528,7 @@ const placeOrder = async (req, res) => {
       });
     } else if (paymentMethod === "razorpay") {
       try {
+        console.log("else if (paymentMethod === razorpay)");
         const orderDetails = await orderHelper.forOrderPlacing(
           req.body,
           totalAmount,
@@ -539,7 +540,7 @@ const placeOrder = async (req, res) => {
 
         await Order.findOneAndUpdate(
           { _id: orderDetails._id },
-          { paymentStatus: "success" },
+          { paymentStatus: "success", orderStatus: "confirmed" },
           { new: true }
         );
 
@@ -547,7 +548,7 @@ const placeOrder = async (req, res) => {
         await productHelper.stockDecrease(cartItems);
 
         await cartHelper.clearTheCart(userId);
-
+        console.log("After clear cart", orderDetails);
         res.json({ paymentMethod: "razorpay", orderDetails });
       } catch (error) {
         console.error("Error processing Razorpay payment:", error);

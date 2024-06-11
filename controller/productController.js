@@ -2,12 +2,13 @@ const productHelper = require("../helper/productHelper");
 const Product = require("../model/productModel");
 const Category = require("../model/categoryModel");
 const wishlist = require("../model/wishlistModel");
-const productOffer = require("../model/productOfferModel");
-const categoryOffer = require("../model/categoryOfferModel");
+const ProductOffer = require("../model/productOfferModel");
+const CategoryOffer = require("../model/categoryOfferModel");
 const User = require("../model/userModel");
 const fs = require("fs");
 const sharp = require("sharp");
 const path = require("path");
+const { off } = require("process");
 
 const getAddProductPage = async (req, res) => {
   try {
@@ -544,6 +545,25 @@ const getProductDetailsPage = async (req, res) => {
       _id: { $ne: id },
       category: categoryId,
     });
+    let proOffer = await ProductOffer.find({ "productOffer.product": id });
+    let catOffer = await CategoryOffer.find({
+      "categoryOffer.category": findProduct.category,
+    });
+    console.log("proOffer", proOffer);
+    console.log("catOffer", catOffer);
+    let offers = "";
+
+    if (proOffer.length > 0 && catOffer.length > 0) {
+      offers = proOffer[0].discount; // Assuming you want the discount of the first element
+    } else if (proOffer.length > 0 && catOffer.length === 0) {
+      offers = proOffer[0].discount; // Assuming you want the discount of the first element
+    } else if (proOffer.length === 0 && catOffer.length > 0) {
+      offers = catOffer[0].discount; // Assuming you want the discount of the first element
+    } else if (proOffer.length === 0 && catOffer.length === 0) {
+      offers = "No offer";
+    }
+
+    console.log("offers", offers);
     console.log(products);
     if (findProduct) {
       res.render("userView/product-details", {
@@ -552,6 +572,7 @@ const getProductDetailsPage = async (req, res) => {
         user: user,
         wishlist: isInWishlist,
         products,
+        offers,
       });
       console.log("getProductDetailsPage success");
     } else {

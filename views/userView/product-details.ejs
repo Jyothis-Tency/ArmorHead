@@ -1,4 +1,69 @@
 <%- include("../partials/userHeader") %>
+<style>
+  /* Style for the offer text */
+  .offer-text {
+    color: green; /* Green color text */
+    font-size: 2em; /* Increase the size */
+    position: relative; /* Positioning for the star icon */
+    display: inline-flex; /* Align items within the flex container */
+    align-items: center; /* Center items vertically */
+  }
+
+  /* Style for the star icon */
+  .star-icon {
+    display: inline-block; /* Inline block for proper spacing */
+    margin-left: 5px; /* Small margin to separate from the number */
+    width: 1.5em; /* Fixed width for star shape */
+    height: 1.5em; /* Fixed height for star shape */
+    color: white; /* Text color */
+    position: relative; /* For positioning the percent sign */
+  }
+
+  .star-icon::before {
+    content: ""; /* No text content */
+    position: absolute; /* Absolute positioning for the star */
+    top: 0; /* Align at the top */
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%); /* Center align */
+    display: block;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    clip-path: polygon(
+      50% 0%,
+      61% 35%,
+      98% 35%,
+      68% 57%,
+      79% 91%,
+      50% 70%,
+      21% 91%,
+      32% 57%,
+      2% 35%,
+      39% 35%
+    ); /* Star shape */
+    background-color: green; /* Background color */
+    animation: rotate 2s linear infinite; /* Animation */
+  }
+
+  .star-icon::after {
+    content: "%"; /* Add the percent sign */
+    position: absolute; /* Absolute positioning */
+    top: 50%; /* Center vertically */
+    left: 50%; /* Center horizontally */
+    transform: translate(-50%, -50%); /* Center align */
+    color: white; /* Text color for percent sign */
+    font-size: 0.8em; /* Adjust the font size */
+  }
+
+  /* Animation keyframes */
+  @keyframes rotate {
+    0% {
+      transform: translateX(-50%) rotate(0deg); /* Start at 0 degrees */
+    }
+    100% {
+      transform: translateX(-50%) rotate(360deg); /* End at 360 degrees */
+    }
+  }
+</style>
 
 <main>
   <!-- product-page-breadcrumb -->
@@ -101,6 +166,15 @@
               <span class="old-price"
                 >₹<%= data.regularPrice.toFixed(2) %></span
               >
+            </div>
+            <div>
+              <% if(offers==="No offer") { %>
+              <span></span>
+              <% } else { %>
+              <span class="offer-text"
+                ><%= offers %><span class="star-icon"></span> Offer!!!!</span
+              >
+              <% } %>
             </div>
             <div class="product-variant">
               <!-- <div class="product-size variant-item">

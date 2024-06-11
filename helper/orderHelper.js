@@ -139,6 +139,7 @@ const forOrderPlacing = async (
 
 const getOrderDetails = async (userId, page = 1, limit = 5) => {
   try {
+    console.log("getOrderDetails triggered");
     const skip = (page - 1) * limit; // Calculate how many records to skip
 
     const result = await Order.aggregate([
@@ -170,7 +171,7 @@ const getOrderDetails = async (userId, page = 1, limit = 5) => {
       { $skip: skip }, // Skip the calculated number of records
       { $limit: limit }, // Limit the number of records to the specified limit
     ]);
-
+    console.log(result);
     return result;
   } catch (error) {
     console.error("Error finding order details:", error);
