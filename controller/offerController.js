@@ -287,9 +287,8 @@ const addCategoryOffer = async (req, res) => {
       const regularPrice = productToUpdate.regularPrice;
       productToUpdate.oldSalePrice = productToUpdate.salePrice;
       const discountAmount = (regularPrice * discount) / 100;
-      const newSalePrice =
-        productToUpdate.oldSalePrice - parseInt(discountAmount);
-      productToUpdate.salePrice = newSalePrice;
+      const newSalePrice = regularPrice - discountAmount;
+      productToUpdate.salePrice = parseInt(newSalePrice);
       await productToUpdate.save();
     }
     console.log(productsWithProductOffer);
