@@ -82,7 +82,7 @@
                     data-parent="#addressAccordion"
                   >
                     <div class="card-body">
-                      <form class="edit-address-form">
+                      <form class="edit-address-form" id="editAddressForm">
                         <div class="checkout-form-list">
                           <label
                             >First Name<span class="required">*</span></label
@@ -93,6 +93,10 @@
                             value="<%= address.firstName %>"
                             disabled
                           />
+                          <div
+                            class="invalid-feedback"
+                            id="editFirstNameError"
+                          ></div>
                         </div>
                         <div class="checkout-form-list">
                           <label
@@ -104,6 +108,10 @@
                             value="<%= address.lastName %>"
                             disabled
                           />
+                          <div
+                            class="invalid-feedback"
+                            id="editLastNameError"
+                          ></div>
                         </div>
                         <div class="checkout-form-list">
                           <label
@@ -115,6 +123,10 @@
                             value="<%= address.house %>"
                             disabled
                           />
+                          <div
+                            class="invalid-feedback"
+                            id="editHouseError"
+                          ></div>
                         </div>
                         <div class="checkout-form-list">
                           <label>Locality<span class="required">*</span></label>
@@ -124,6 +136,10 @@
                             value="<%= address.locality %>"
                             disabled
                           />
+                          <div
+                            class="invalid-feedback"
+                            id="editLocalityError"
+                          ></div>
                         </div>
                         <div class="checkout-form-list">
                           <label>City<span class="required">*</span></label>
@@ -133,6 +149,10 @@
                             value="<%= address.city %>"
                             disabled
                           />
+                          <div
+                            class="invalid-feedback"
+                            id="editCityError"
+                          ></div>
                         </div>
                         <div class="checkout-form-list">
                           <label>State<span class="required">*</span></label>
@@ -142,6 +162,10 @@
                             value="<%= address.state %>"
                             disabled
                           />
+                          <div
+                            class="invalid-feedback"
+                            id="editStateError"
+                          ></div>
                         </div>
                         <div class="checkout-form-list">
                           <label>Pincode<span class="required">*</span></label>
@@ -151,6 +175,23 @@
                             value="<%= address.pincode %>"
                             disabled
                           />
+                          <div
+                            class="invalid-feedback"
+                            id="editPincodeError"
+                          ></div>
+                        </div>
+                        <div class="checkout-form-list">
+                          <label>Country<span class="required">*</span></label>
+                          <input
+                            type="text"
+                            name="country"
+                            value="<%= address.country %>"
+                            disabled
+                          />
+                          <div
+                            class="invalid-feedback"
+                            id="editCountryError"
+                          ></div>
                         </div>
                         <div class="checkout-form-list">
                           <label
@@ -162,6 +203,10 @@
                             value="<%= address.email %>"
                             disabled
                           />
+                          <div
+                            class="invalid-feedback"
+                            id="editEmailError"
+                          ></div>
                         </div>
                         <div class="checkout-form-list">
                           <label>Phone<span class="required">*</span></label>
@@ -171,6 +216,10 @@
                             value="<%= address.phone %>"
                             disabled
                           />
+                          <div
+                            class="invalid-feedback"
+                            id="editPhoneError"
+                          ></div>
                         </div>
                         <button
                           type="button"
@@ -236,6 +285,7 @@
                           name="firstName"
                           required
                         />
+                        <div class="invalid-feedback" id="firstNameError"></div>
                       </div>
                       <div class="form-group">
                         <label for="lastName"
@@ -248,6 +298,7 @@
                           name="lastName"
                           required
                         />
+                        <div class="invalid-feedback" id="lastNameError"></div>
                       </div>
                       <div class="form-group">
                         <label for="house"
@@ -260,6 +311,7 @@
                           name="house"
                           required
                         />
+                        <div class="invalid-feedback" id="houseError"></div>
                       </div>
                       <div class="form-group">
                         <label for="locality"
@@ -272,6 +324,7 @@
                           name="locality"
                           required
                         />
+                        <div class="invalid-feedback" id="localityError"></div>
                       </div>
                       <div class="form-group">
                         <label for="city"
@@ -284,6 +337,7 @@
                           name="city"
                           required
                         />
+                        <div class="invalid-feedback" id="cityError"></div>
                       </div>
                       <div class="form-group">
                         <label for="state"
@@ -296,6 +350,7 @@
                           name="state"
                           required
                         />
+                        <div class="invalid-feedback" id="stateError"></div>
                       </div>
                       <div class="form-group">
                         <label for="pincode"
@@ -308,6 +363,7 @@
                           name="pincode"
                           required
                         />
+                        <div class="invalid-feedback" id="pincodeError"></div>
                       </div>
                       <div class="form-group">
                         <label for="country"
@@ -320,6 +376,7 @@
                           name="country"
                           required
                         />
+                        <div class="invalid-feedback" id="countryError"></div>
                       </div>
                       <div class="form-group">
                         <label for="email"
@@ -332,6 +389,7 @@
                           name="email"
                           required
                         />
+                        <div class="invalid-feedback" id="emailError"></div>
                       </div>
                       <div class="form-group">
                         <label for="phone"
@@ -344,6 +402,7 @@
                           name="phone"
                           required
                         />
+                        <div class="invalid-feedback" id="phoneError"></div>
                       </div>
                       <button
                         type="submit"
@@ -1002,8 +1061,20 @@
 
 <script>
   function addNewAddress(event) {
+    console.log("addNewAddress");
+    console.log(addAddressErr);
     event.preventDefault(); // Prevent the default form submission
-
+    if (addAddressErr) {
+      // Handle invalid form scenario
+      Toastify({
+        text: "Please fix the validation errors before submitting.",
+        duration: 1000,
+        gravity: "top",
+        position: "center",
+        backgroundColor: "red",
+      }).showToast();
+      return;
+    }
     // Get the values of the input fields
     const firstName = document.getElementById("firstName").value;
     const lastName = document.getElementById("lastName").value;
@@ -1055,11 +1126,11 @@
         } else {
           // Handle error response
           Toastify({
-            text: "Address not added",
+            text: "Address not added. Fill all inputs",
             duration: 1000,
             gravity: "top",
             position: "center",
-            backgroundColor: "green",
+            backgroundColor: "red",
           }).showToast();
         }
       })
@@ -1083,10 +1154,44 @@
     const inputs = form.querySelectorAll("input");
     inputs.forEach((input) => {
       input.disabled = false;
+      input.addEventListener("input", validateInputForEdit);
     });
     form.querySelector(".edit-button").style.display = "none";
     form.querySelector(".confirm-edit-button").style.display = "inline-block";
     form.querySelector(".cancel-edit-button").style.display = "inline-block";
+  }
+  let editError = false;
+  function validateInputForEdit(event) {
+    console.log("validateInput");
+    const input = event.target;
+    const inputValue = input.value.trim();
+    const inputId = input.id || input.name; // Use input.name if id is not available
+    const errorElement = input.nextElementSibling; // Target the next sibling element for error display
+
+    if (inputValue === "") {
+      showError(errorElement, `${input.name} is required.`);
+      editError = true;
+    } else if (
+      input.type === "text" &&
+      /\d/.test(inputValue) &&
+      inputId !== "phone" &&
+      inputId !== "pincode"
+    ) {
+      showError(errorElement, `${input.name} should not contain numbers.`);
+      editError = true;
+    } else if (inputId === "email" && !/\S+@\S+\.\S+/.test(inputValue)) {
+      showError(errorElement, "Invalid email address.");
+      editError = true;
+    } else if (inputId === "phone" && !/^\d+$/.test(inputValue)) {
+      showError(errorElement, "Phone number should contain only digits.");
+      editError = true;
+    } else if (inputId === "pincode" && !/^\d+$/.test(inputValue)) {
+      showError(errorElement, "Pincode should contain only digits.");
+      editError = true;
+    } else {
+      clearError(errorElement);
+      editError = false;
+    }
   }
 
   function cancelEdit(button) {
@@ -1104,6 +1209,19 @@
   }
 
   function confirmEdit(button, addressId) {
+    console.log("confirmEdit");
+    console.log(editError);
+    if (editError) {
+      // Handle invalid form scenario
+      Toastify({
+        text: "Please fix the validation errors before submitting.",
+        duration: 1000,
+        gravity: "top",
+        position: "center",
+        backgroundColor: "red",
+      }).showToast();
+      return;
+    }
     const form = button.closest("form");
     const formData = new FormData(form);
     const addressData = {};
@@ -1147,8 +1265,73 @@
         console.error("Error:", error);
       });
   }
+
+  // Add event listeners to the form inputs
+  document.querySelectorAll("#addAddressForm input").forEach((input) => {
+    console.log("");
+    input.addEventListener("input", validateInput);
+  });
+
+  // document.querySelectorAll("#editAddressForm input").forEach((input) => {
+  //   console.log(".edit-address-form input");
+  //   input.addEventListener("input", validateInput);
+  // });
+  let addAddressErr = false;
+  // Validation functions
+  function validateInput(event) {
+    console.log("validateInput");
+    const input = event.target;
+    const inputValue = input.value.trim();
+    const inputId = input.id || input.name; // Use input.name if id is not available
+    const errorElement = input.nextElementSibling; // Target the next sibling element for error display
+
+    if (inputValue === "") {
+      showError(errorElement, `${input.name} is required.`);
+      addAddressErr = true;
+    } else if (
+      input.type === "text" &&
+      /\d/.test(inputValue) &&
+      inputId !== "phone" &&
+      inputId !== "pincode"
+    ) {
+      showError(errorElement, `${input.name} should not contain numbers.`);
+      addAddressErr = true;
+    } else if (inputId === "email" && !/\S+@\S+\.\S+/.test(inputValue)) {
+      showError(errorElement, "Invalid email address.");
+      addAddressErr = true;
+    } else if (inputId === "phone" && !/^\d+$/.test(inputValue)) {
+      showError(errorElement, "Phone number should contain only digits.");
+      addAddressErr = true;
+    } else if (inputId === "pincode" && !/^\d+$/.test(inputValue)) {
+      showError(errorElement, "Pincode should contain only digits.");
+      addAddressErr = true;
+    } else {
+      clearError(errorElement);
+      addAddressErr = false;
+    }
+  }
+
+  function showError(errorElement, message) {
+    errorElement.textContent = message;
+    errorElement.classList.add("invalid-feedback");
+    errorElement.style.display = "block"; // Show the error element
+  }
+
+  function clearError(errorElement) {
+    errorElement.textContent = "";
+    errorElement.classList.remove("invalid-feedback");
+    errorElement.style.display = "none"; // Hide the error element
+  }
 </script>
 
+<style>
+  .invalid-feedback {
+    color: red;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+    display: none; /* Initially hide the error message */
+  }
+</style>
 <!-- <script>
     // Wait for the document to be fully loaded
     document.addEventListener("DOMContentLoaded", function() {
