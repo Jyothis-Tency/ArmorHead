@@ -10,13 +10,11 @@ const getCouponPage = async (req, res) => {
   try {
     let allCoupons = await couponHelper.findAllCoupons();
     for (let i = 0; i < allCoupons.length; i++) {
-      if (allCoupons[i].discount > 50) {
-        if (allCoupons[i].expiryDate) {
-          allCoupons[i].discount = cartHelper.currencyFormat(
-            allCoupons[i].discount
-          );
-          allCoupons[i].expiryDate = dateFormat(allCoupons[i].expiryDate);
-        }
+      if (allCoupons[i].expiryDate) {
+        allCoupons[i].discount = cartHelper.currencyFormat(
+          allCoupons[i].discount
+        );
+        allCoupons[i].expiryDate = dateFormat(allCoupons[i].expiryDate);
       }
     }
     res.render("adminView/coupon", { coupons: allCoupons });
@@ -126,7 +124,6 @@ const applyCoupon = async (req, res) => {
       cart.coupon = couponCode;
       couponApplied = req.session.coupon;
 
-      
       await cart.save();
       console.log("cart.totalPrice : ", cart.totalPrice);
       req.session.couponTotal = cart.totalPrice;
