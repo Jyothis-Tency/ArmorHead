@@ -356,6 +356,7 @@ const postVerifyEmail = async (req, res) => {
     const { email } = req.body;
     const findUser = await User.findOne({ email });
     if (!findUser) {
+      console.log("!findUser");
       return res.status(404).json({
         success: false,
         message: "User with this email does not exist",
